@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:study_planner/pages/dashboard_page.dart';
-import 'package:study_planner/services/study_stats_types.dart';
-import 'package:study_planner/providers/dashboard_providers.dart';
+import 'package:yume_log/pages/dashboard_page.dart';
+import 'package:yume_log/services/study_stats_types.dart';
+import 'package:yume_log/providers/dashboard_providers.dart';
 
 import '../helpers/test_helpers.dart';
 

@@ -1,6 +1,7 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:study_planner/pages/settings_page.dart';
+import 'package:yume_log/pages/settings_page.dart';
 
 import '../helpers/test_helpers.dart';
 
@@ -23,6 +24,14 @@ void main() {
     expect(find.text('外観'), findsOneWidget);
     expect(find.text('通知'), findsOneWidget);
     expect(find.text('データ管理'), findsOneWidget);
+    expect(find.text('フィードバック'), findsOneWidget);
+
+    // スクロールして下部のセクションを確認
+    await tester.scrollUntilVisible(
+      find.text('アプリ情報'),
+      200,
+      scrollable: find.byType(Scrollable).first,
+    );
     expect(find.text('アプリ情報'), findsOneWidget);
   });
 
@@ -66,8 +75,52 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    expect(find.text('Study Planner'), findsOneWidget);
+    await tester.scrollUntilVisible(
+      find.text('ユメログ'),
+      200,
+      scrollable: find.byType(Scrollable).first,
+    );
+
+    expect(find.text('ユメログ'), findsOneWidget);
     expect(find.text('1.0.0'), findsOneWidget);
+  });
+
+  testWidgets('ヘルプセクションが表示される', (tester) async {
+    final prefs = await getPrefs();
+    await tester.pumpWidget(
+      wrapWithProviders(const SettingsPage(), prefs: prefs, db: setup.db),
+    );
+    await tester.pumpAndSettle();
+
+    await tester.scrollUntilVisible(
+      find.text('ヘルプ'),
+      200,
+      scrollable: find.byType(Scrollable).first,
+    );
+
+    expect(find.text('ヘルプ'), findsOneWidget);
+    expect(find.text('チュートリアルを開始'), findsOneWidget);
+    expect(find.text('体験版の制限事項'), findsOneWidget);
+  });
+
+  testWidgets('チュートリアルをタップすると確認ダイアログが表示される', (tester) async {
+    final prefs = await getPrefs();
+    await tester.pumpWidget(
+      wrapWithProviders(const SettingsPage(), prefs: prefs, db: setup.db),
+    );
+    await tester.pumpAndSettle();
+
+    await tester.scrollUntilVisible(
+      find.text('チュートリアルを開始'),
+      200,
+      scrollable: find.byType(Scrollable).first,
+    );
+
+    await tester.tap(find.text('チュートリアルを開始'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('チュートリアルを開始'), findsWidgets);
+    expect(find.text('開始する'), findsOneWidget);
   });
 
   testWidgets('全削除をタップすると確認ダイアログが表示される', (tester) async {
@@ -82,5 +135,16 @@ void main() {
 
     expect(find.textContaining('すべてのデータを削除します'), findsOneWidget);
     expect(find.text('削除する'), findsOneWidget);
+  });
+
+  testWidgets('フィードバックセクションが表示される', (tester) async {
+    final prefs = await getPrefs();
+    await tester.pumpWidget(
+      wrapWithProviders(const SettingsPage(), prefs: prefs, db: setup.db),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('フィードバック'), findsOneWidget);
+    expect(find.text('フィードバックを送信'), findsOneWidget);
   });
 }

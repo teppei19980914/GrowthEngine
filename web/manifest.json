@@ -1,11 +1,11 @@
 {
-    "name": "study_planner",
-    "short_name": "study_planner",
+    "name": "yume_log",
+    "short_name": "yume_log",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
     "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
+    "description": "ユメログ - 学習計画管理アプリ",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [

@@ -18,8 +18,8 @@ class GoalListNotifier extends AsyncNotifier<List<Goal>> {
     return service.getAllGoals();
   }
 
-  /// Goalを作成する.
-  Future<void> createGoal({
+  /// Goalを作成し、作成されたGoalのIDを返す.
+  Future<String> createGoal({
     required String dreamId,
     required String why,
     required String whenTarget,
@@ -28,7 +28,7 @@ class GoalListNotifier extends AsyncNotifier<List<Goal>> {
     required String how,
   }) async {
     final service = ref.read(goalServiceProvider);
-    await service.createGoal(
+    final goal = await service.createGoal(
       dreamId: dreamId,
       why: why,
       whenTarget: whenTarget,
@@ -37,6 +37,7 @@ class GoalListNotifier extends AsyncNotifier<List<Goal>> {
       how: how,
     );
     ref.invalidateSelf();
+    return goal.id;
   }
 
   /// Goalを更新する.

@@ -6,10 +6,15 @@ library;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
+import '../dialogs/feedback_dialog.dart';
 import '../providers/service_providers.dart';
 import '../providers/theme_provider.dart';
+import '../services/feedback_service.dart';
 import '../theme/app_theme.dart';
+import '../widgets/tutorial/tutorial_banner.dart';
+import '../widgets/web/web_trial_banner.dart';
 
 /// 通知有効/無効Provider.
 final _notificationsEnabledProvider = FutureProvider<bool>((ref) async {
@@ -108,6 +113,35 @@ class SettingsPage extends ConsumerWidget {
         ),
         const SizedBox(height: 24),
 
+        // フィードバック・制限解除
+        _SectionHeader(
+            title: 'フィードバック', icon: Icons.rate_review_outlined),
+        _FeedbackCard(ref: ref, colors: colors),
+        const SizedBox(height: 24),
+
+        // ヘルプ
+        _SectionHeader(title: 'ヘルプ', icon: Icons.help_outline),
+        Card(
+          child: Column(
+            children: [
+              ListTile(
+                leading: Icon(Icons.school_outlined, color: colors.accent),
+                title: const Text('チュートリアルを開始'),
+                subtitle: const Text('実際に操作しながらアプリの使い方を体験'),
+                onTap: () => _startTutorial(context, ref),
+              ),
+              const Divider(height: 1),
+              ListTile(
+                leading: const Icon(Icons.language),
+                title: const Text('体験版の制限事項'),
+                subtitle: const Text('Web体験版の制限と注意事項を確認'),
+                onTap: () => _showTrialInfo(context, ref),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 24),
+
         // バージョン情報
         _SectionHeader(title: 'アプリ情報', icon: Icons.info_outlined),
         Card(
@@ -115,7 +149,7 @@ class SettingsPage extends ConsumerWidget {
             children: [
               const ListTile(
                 leading: Icon(Icons.apps),
-                title: Text('Study Planner'),
+                title: Text('ユメログ'),
                 subtitle: Text('学習計画管理アプリ'),
               ),
               const Divider(height: 1),
@@ -140,6 +174,52 @@ class SettingsPage extends ConsumerWidget {
         ),
       ],
     );
+  }
+
+  Future<void> _startTutorial(BuildContext context, WidgetRef ref) async {
+    final tutorialState = ref.read(tutorialStateProvider);
+    if (tutorialState.isActive) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('チュートリアルは既に実行中です')),
+      );
+      return;
+    }
+
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('チュートリアルを開始'),
+        content: const Text(
+          '実際にアプリを操作しながら基本的な使い方を体験します。\n\n'
+          '画面上部のバナーに従って操作してください。\n'
+          'チュートリアル中に作成したデータは、完了時に保持するか削除するかを選べます。',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: const Text('キャンセル'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            child: const Text('開始する'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed != true || !context.mounted) return;
+
+    await ref.read(tutorialStateProvider.notifier).start();
+
+    if (!context.mounted) return;
+    // ダッシュボードに戻る（チュートリアルはそこから始まる）
+    GoRouter.of(context).go('/');
+  }
+
+  Future<void> _showTrialInfo(BuildContext context, WidgetRef ref) async {
+    final prefs = ref.read(sharedPreferencesProvider);
+    if (!context.mounted) return;
+    await showWebTrialDialog(context, prefs);
   }
 
   Future<void> _exportData(BuildContext context, WidgetRef ref) async {
@@ -276,6 +356,74 @@ class SettingsPage extends ConsumerWidget {
         SnackBar(content: Text('削除に失敗しました: $e')),
       );
     }
+  }
+}
+
+/// フィードバックカード.
+class _FeedbackCard extends StatelessWidget {
+  const _FeedbackCard({required this.ref, required this.colors});
+
+  final WidgetRef ref;
+  final AppColors colors;
+
+  @override
+  Widget build(BuildContext context) {
+    final feedbackService = ref.watch(feedbackServiceProvider);
+    final level = feedbackService.unlockLevel;
+    final isMax = feedbackService.isMaxLevel;
+    final theme = Theme.of(context);
+
+    return Card(
+      child: Column(
+        children: [
+          ListTile(
+            leading: Icon(
+              isMax ? Icons.lock_open : Icons.rate_review_outlined,
+              color: isMax ? colors.success : colors.accent,
+            ),
+            title: Text(isMax ? 'フィードバック送信済み' : 'フィードバックを送信'),
+            subtitle: Text(
+              isMax
+                  ? '制限は完全に解除されています'
+                  : 'ご意見を送信すると制限が解除されます'
+                      '（レベル$level / $feedbackMaxLevel）',
+            ),
+            onTap: isMax
+                ? null
+                : () => showFeedbackDialog(context, feedbackService),
+          ),
+          if (!isMax) ...[
+            const Divider(height: 1),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(4),
+                      child: LinearProgressIndicator(
+                        value: level / feedbackMaxLevel,
+                        minHeight: 6,
+                        backgroundColor:
+                            theme.colorScheme.surfaceContainerHighest,
+                        valueColor: AlwaysStoppedAnimation(colors.accent),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Text(
+                    'レベル$level',
+                    style: theme.textTheme.labelSmall?.copyWith(
+                      color: theme.hintColor,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ],
+      ),
+    );
   }
 }
 

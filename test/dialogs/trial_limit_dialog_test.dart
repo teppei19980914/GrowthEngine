@@ -1,12 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:study_planner/dialogs/trial_limit_dialog.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:yume_log/dialogs/trial_limit_dialog.dart';
+import 'package:yume_log/services/feedback_service.dart';
 
 void main() {
+  late FeedbackService feedbackService;
+
+  setUp(() async {
+    SharedPreferences.setMockInitialValues({});
+    final prefs = await SharedPreferences.getInstance();
+    feedbackService = FeedbackService(prefs);
+  });
+
   Widget buildApp({
     required String itemName,
     required int currentCount,
     required int maxCount,
+    FeedbackService? fbService,
   }) {
     return MaterialApp(
       home: Builder(
@@ -17,6 +28,7 @@ void main() {
               itemName: itemName,
               currentCount: currentCount,
               maxCount: maxCount,
+              feedbackService: fbService,
             ),
             child: const Text('Open'),
           ),
@@ -75,23 +87,6 @@ void main() {
     expect(find.text('2 / 2'), findsOneWidget);
   });
 
-  testWidgets('デスクトップ版アップグレードメッセージが表示される', (tester) async {
-    await tester.pumpWidget(buildApp(
-      itemName: '夢',
-      currentCount: 2,
-      maxCount: 2,
-    ));
-    await tester.tap(find.text('Open'));
-    await tester.pumpAndSettle();
-
-    expect(find.text('デスクトップ版なら無制限'), findsOneWidget);
-    expect(
-      find.text('デスクトップ版をインストールすると、'
-          '全ての機能を制限なくご利用いただけます。'),
-      findsOneWidget,
-    );
-  });
-
   testWidgets('Web体験版の制限テキストが表示される', (tester) async {
     await tester.pumpWidget(buildApp(
       itemName: '夢',
@@ -113,14 +108,57 @@ void main() {
     await tester.tap(find.text('Open'));
     await tester.pumpAndSettle();
 
-    // ダイアログが表示されていることを確認
     expect(find.text('夢の上限に達しました'), findsOneWidget);
 
-    // 閉じるボタンをタップ
     await tester.tap(find.text('閉じる'));
     await tester.pumpAndSettle();
 
-    // ダイアログが閉じたことを確認
     expect(find.text('夢の上限に達しました'), findsNothing);
+  });
+
+  testWidgets('feedbackServiceありでフィードバックボタンが表示される',
+      (tester) async {
+    await tester.pumpWidget(buildApp(
+      itemName: '夢',
+      currentCount: 2,
+      maxCount: 2,
+      fbService: feedbackService,
+    ));
+    await tester.tap(find.text('Open'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('フィードバックで制限を解除'), findsOneWidget);
+    expect(find.text('フィードバックを送信'), findsOneWidget);
+  });
+
+  testWidgets('feedbackServiceなしでフィードバックボタンが非表示',
+      (tester) async {
+    await tester.pumpWidget(buildApp(
+      itemName: '夢',
+      currentCount: 2,
+      maxCount: 2,
+    ));
+    await tester.tap(find.text('Open'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('フィードバックを送信'), findsNothing);
+  });
+
+  testWidgets('最大レベル時はフィードバックボタンが非表示', (tester) async {
+    SharedPreferences.setMockInitialValues({'feedback_unlock_level': 3});
+    final prefs = await SharedPreferences.getInstance();
+    final maxService = FeedbackService(prefs);
+
+    await tester.pumpWidget(buildApp(
+      itemName: '夢',
+      currentCount: 2,
+      maxCount: 2,
+      fbService: maxService,
+    ));
+    await tester.tap(find.text('Open'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('フィードバックを送信'), findsNothing);
+    expect(find.textContaining('完全に解除'), findsOneWidget);
   });
 }

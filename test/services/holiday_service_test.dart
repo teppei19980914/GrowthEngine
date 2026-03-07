@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:study_planner/services/holiday_service.dart';
+import 'package:yume_log/services/holiday_service.dart';
 
 void main() {
   late HolidayService service;

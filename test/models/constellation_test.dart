@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:study_planner/data/constellations.dart';
-import 'package:study_planner/models/constellation.dart';
+import 'package:yume_log/data/constellations.dart';
+import 'package:yume_log/models/constellation.dart';
 
 void main() {
   group('ConstellationDef', () {

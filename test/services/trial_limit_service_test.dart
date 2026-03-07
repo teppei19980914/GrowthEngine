@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:study_planner/services/trial_limit_service.dart';
+import 'package:yume_log/services/trial_limit_service.dart';
 
 void main() {
   // テスト環境では kIsWeb == false なので isTrialMode は常に false
@@ -26,29 +26,62 @@ void main() {
   });
 
   group('制限値の定義', () {
-    test('夢の上限は2', () {
+    test('レベル0の夢の上限は2', () {
       expect(trialMaxDreams, 2);
+      expect(maxDreams(0), 2);
     });
 
-    test('目標の上限は各夢3', () {
+    test('レベル0の目標の上限は各夢3', () {
       expect(trialMaxGoalsPerDream, 3);
+      expect(maxGoalsPerDream(0), 3);
     });
 
-    test('タスクの上限は各目標5', () {
+    test('レベル0のタスクの上限は各目標5', () {
       expect(trialMaxTasksPerGoal, 5);
+      expect(maxTasksPerGoal(0), 5);
     });
 
-    test('書籍の上限は5', () {
+    test('レベル0の書籍の上限は5', () {
       expect(trialMaxBooks, 5);
+      expect(maxBooks(0), 5);
+    });
+  });
+
+  group('段階的解除', () {
+    test('レベル1で制限が緩和される', () {
+      expect(maxDreams(1), 4);
+      expect(maxGoalsPerDream(1), 5);
+      expect(maxTasksPerGoal(1), 8);
+      expect(maxBooks(1), 8);
+    });
+
+    test('レベル2でさらに緩和される', () {
+      expect(maxDreams(2), 6);
+      expect(maxGoalsPerDream(2), 8);
+      expect(maxTasksPerGoal(2), 12);
+      expect(maxBooks(2), 12);
+    });
+
+    test('レベル3で実質無制限', () {
+      expect(maxDreams(3), 999);
+      expect(maxGoalsPerDream(3), 999);
+      expect(maxTasksPerGoal(3), 999);
+      expect(maxBooks(3), 999);
     });
   });
 
   group('trialLimitDescription', () {
-    test('制限情報が含まれる', () {
-      expect(trialLimitDescription, contains('$trialMaxDreams'));
-      expect(trialLimitDescription, contains('$trialMaxGoalsPerDream'));
-      expect(trialLimitDescription, contains('$trialMaxTasksPerGoal'));
-      expect(trialLimitDescription, contains('$trialMaxBooks'));
+    test('レベル0の制限情報が含まれる', () {
+      final desc = trialLimitDescription();
+      expect(desc, contains('2'));
+      expect(desc, contains('3'));
+      expect(desc, contains('5'));
+      expect(desc, contains('レベル0'));
+    });
+
+    test('レベル3では完全解除メッセージ', () {
+      final desc = trialLimitDescription(unlockLevel: 3);
+      expect(desc, contains('完全に解除'));
     });
   });
 }

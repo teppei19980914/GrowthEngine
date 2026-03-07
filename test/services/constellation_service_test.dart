@@ -1,10 +1,10 @@
 import 'package:drift/drift.dart' hide isNull, isNotNull;
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:study_planner/data/constellations.dart';
-import 'package:study_planner/database/app_database.dart' hide Dream;
-import 'package:study_planner/models/dream.dart';
-import 'package:study_planner/services/constellation_service.dart';
+import 'package:yume_log/data/constellations.dart';
+import 'package:yume_log/database/app_database.dart' hide Dream;
+import 'package:yume_log/models/dream.dart';
+import 'package:yume_log/services/constellation_service.dart';
 
 void main() {
   late AppDatabase db;

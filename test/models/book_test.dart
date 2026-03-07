@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:study_planner/models/book.dart';
+import 'package:yume_log/models/book.dart';
 
 void main() {
   group('BookStatus', () {

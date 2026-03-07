@@ -4,25 +4,25 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:study_planner/app.dart';
-import 'package:study_planner/database/app_database.dart' hide Book, Dream, Goal, Task;
-import 'package:study_planner/models/goal.dart';
-import 'package:study_planner/providers/dashboard_providers.dart';
-import 'package:study_planner/providers/database_provider.dart';
-import 'package:study_planner/providers/goal_providers.dart';
-import 'package:study_planner/providers/theme_provider.dart';
-import 'package:study_planner/services/study_stats_types.dart';
-import 'package:study_planner/models/task.dart';
-import 'package:study_planner/pages/stats_page.dart';
-import 'package:study_planner/providers/gantt_providers.dart';
-import 'package:study_planner/models/book.dart';
-import 'package:study_planner/models/constellation.dart';
-import 'package:study_planner/models/dream.dart';
-import 'package:study_planner/providers/book_providers.dart';
-import 'package:study_planner/providers/constellation_providers.dart';
-import 'package:study_planner/providers/dream_providers.dart';
-import 'package:study_planner/widgets/notification/notification_button.dart';
-import 'package:study_planner/widgets/stats/goal_stats_section.dart';
+import 'package:yume_log/app.dart';
+import 'package:yume_log/database/app_database.dart' hide Book, Dream, Goal, Task;
+import 'package:yume_log/models/goal.dart';
+import 'package:yume_log/providers/dashboard_providers.dart';
+import 'package:yume_log/providers/database_provider.dart';
+import 'package:yume_log/providers/goal_providers.dart';
+import 'package:yume_log/providers/theme_provider.dart';
+import 'package:yume_log/services/study_stats_types.dart';
+import 'package:yume_log/models/task.dart';
+import 'package:yume_log/pages/stats_page.dart';
+import 'package:yume_log/providers/gantt_providers.dart';
+import 'package:yume_log/models/book.dart';
+import 'package:yume_log/models/constellation.dart';
+import 'package:yume_log/models/dream.dart';
+import 'package:yume_log/providers/book_providers.dart';
+import 'package:yume_log/providers/constellation_providers.dart';
+import 'package:yume_log/providers/dream_providers.dart';
+import 'package:yume_log/widgets/notification/notification_button.dart';
+import 'package:yume_log/widgets/stats/goal_stats_section.dart';
 
 /// テスト用のProviderScopeオーバーライドを作成する.
 List<Override> _testOverrides(
@@ -171,7 +171,7 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         overrides: _testOverrides(prefs, db),
-        child: const StudyPlannerApp(),
+        child: const YumeLogApp(),
       ),
     );
     await tester.pumpAndSettle();
@@ -186,7 +186,7 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         overrides: _testOverrides(prefs, db),
-        child: const StudyPlannerApp(),
+        child: const YumeLogApp(),
       ),
     );
     await tester.pumpAndSettle();
@@ -207,7 +207,7 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         overrides: _testOverrides(prefs, db),
-        child: const StudyPlannerApp(),
+        child: const YumeLogApp(),
       ),
     );
     await tester.pumpAndSettle();
@@ -231,7 +231,7 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         overrides: _testOverrides(prefs, db),
-        child: const StudyPlannerApp(),
+        child: const YumeLogApp(),
       ),
     );
     await tester.pumpAndSettle();

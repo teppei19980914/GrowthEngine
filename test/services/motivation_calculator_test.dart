@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:study_planner/models/study_log.dart';
-import 'package:study_planner/services/motivation_calculator.dart';
-import 'package:study_planner/services/study_stats_types.dart';
+import 'package:yume_log/models/study_log.dart';
+import 'package:yume_log/services/motivation_calculator.dart';
+import 'package:yume_log/services/study_stats_types.dart';
 
 void main() {
   List<StudyLog> makeLogs(List<(DateTime, int)> entries) {

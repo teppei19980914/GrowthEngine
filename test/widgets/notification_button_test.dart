@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:study_planner/models/notification.dart' as model;
-import 'package:study_planner/widgets/notification/notification_button.dart';
+import 'package:yume_log/models/notification.dart' as model;
+import 'package:yume_log/widgets/notification/notification_button.dart';
 
 import '../helpers/test_helpers.dart';
 

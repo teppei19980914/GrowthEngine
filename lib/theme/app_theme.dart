@@ -6,6 +6,7 @@ library;
 import 'package:flutter/material.dart';
 
 import 'catppuccin_colors.dart';
+export 'catppuccin_colors.dart' show AppColors;
 
 /// テーマタイプ.
 enum ThemeType {

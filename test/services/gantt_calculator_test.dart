@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:study_planner/services/gantt_calculator.dart';
-import 'package:study_planner/services/study_stats_types.dart';
+import 'package:yume_log/services/gantt_calculator.dart';
+import 'package:yume_log/services/study_stats_types.dart';
 
 void main() {
   late GanttCalculator calc;

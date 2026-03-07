@@ -158,12 +158,15 @@ class GanttPage extends ConsumerWidget {
     // 体験版: タスク数の制限チェック
     final allTasks = ref.read(ganttTasksProvider).valueOrNull ?? [];
     final tasksForGoal = allTasks.where((t) => t.goalId == goalId).length;
-    if (!canAddTask(currentTaskCountForGoal: tasksForGoal)) {
+    final level = ref.read(unlockLevelProvider);
+    if (!canAddTask(
+        currentTaskCountForGoal: tasksForGoal, unlockLevel: level)) {
       await showTrialLimitDialog(
         context,
         itemName: 'タスク（この目標）',
         currentCount: tasksForGoal,
-        maxCount: trialMaxTasksPerGoal,
+        maxCount: maxTasksPerGoal(level),
+        feedbackService: ref.read(feedbackServiceProvider),
       );
       return;
     }

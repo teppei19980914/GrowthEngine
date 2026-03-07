@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:study_planner/app.dart';
+import 'package:yume_log/app.dart';
 
 import '../helpers/test_helpers.dart';
 
@@ -21,7 +21,7 @@ void main() {
     final prefs = await SharedPreferences.getInstance();
     return ProviderScope(
       overrides: createTestOverrides(prefs: prefs, db: setup.db),
-      child: const StudyPlannerApp(),
+      child: const YumeLogApp(),
     );
   }
 

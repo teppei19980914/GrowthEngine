@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:study_planner/pages/goal_page.dart';
-import 'package:study_planner/providers/dream_providers.dart';
-import 'package:study_planner/providers/goal_providers.dart';
+import 'package:yume_log/pages/goal_page.dart';
+import 'package:yume_log/providers/dream_providers.dart';
+import 'package:yume_log/providers/goal_providers.dart';
 
 import '../helpers/test_helpers.dart';
 

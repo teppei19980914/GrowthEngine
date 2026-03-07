@@ -20,6 +20,7 @@ import 'theme/app_theme.dart';
 import 'widgets/navigation/app_drawer.dart';
 import 'widgets/milestone/milestone_button.dart';
 import 'widgets/notification/notification_button.dart';
+import 'widgets/tutorial/tutorial_banner.dart';
 
 /// ページタイトルマップ.
 const _pageTitles = <String, String>{
@@ -62,16 +63,16 @@ final _router = GoRouter(
 );
 
 /// アプリケーションのルートウィジェット.
-class StudyPlannerApp extends ConsumerWidget {
-  /// StudyPlannerAppを作成する.
-  const StudyPlannerApp({super.key});
+class YumeLogApp extends ConsumerWidget {
+  /// YumeLogAppを作成する.
+  const YumeLogApp({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final themeType = ref.watch(themeProvider);
 
     return MaterialApp.router(
-      title: 'Study Planner - 学習計画管理',
+      title: 'ユメログ - 学習計画管理',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
@@ -107,7 +108,12 @@ class _AppShell extends StatelessWidget {
         ],
       ),
       drawer: const AppDrawer(),
-      body: child,
+      body: Column(
+        children: [
+          const TutorialBanner(),
+          Expanded(child: child),
+        ],
+      ),
     );
   }
 }

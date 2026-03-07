@@ -1,4 +1,4 @@
-package com.studyplanner.study_planner
+package com.yumelog.yume_log
 
 import io.flutter.embedding.android.FlutterActivity
 

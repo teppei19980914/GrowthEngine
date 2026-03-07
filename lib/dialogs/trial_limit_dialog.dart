@@ -1,35 +1,67 @@
 /// 体験版の制限到達ダイアログ.
 ///
-/// 制限に達した際にデスクトップ版への導線を表示する.
+/// 制限に達した際にフィードバック送信による解除を案内する.
 library;
 
 import 'package:flutter/material.dart';
 
+import '../services/feedback_service.dart';
 import '../services/trial_limit_service.dart';
+import 'feedback_dialog.dart';
 
 /// 体験版の制限到達ダイアログを表示する.
 ///
 /// [itemName] は制限に達した項目名（例: '夢', '目標', 'タスク', '書籍'）.
 /// [currentCount] は現在の登録数.
 /// [maxCount] は制限数.
+/// [feedbackService] はフィードバック送信・解除レベル管理用.
 Future<void> showTrialLimitDialog(
   BuildContext context, {
   required String itemName,
   required int currentCount,
   required int maxCount,
+  FeedbackService? feedbackService,
 }) async {
   await showDialog<void>(
     context: context,
-    builder: (context) => AlertDialog(
+    builder: (context) => _TrialLimitDialog(
+      itemName: itemName,
+      currentCount: currentCount,
+      maxCount: maxCount,
+      feedbackService: feedbackService,
+    ),
+  );
+}
+
+class _TrialLimitDialog extends StatelessWidget {
+  const _TrialLimitDialog({
+    required this.itemName,
+    required this.currentCount,
+    required this.maxCount,
+    this.feedbackService,
+  });
+
+  final String itemName;
+  final int currentCount;
+  final int maxCount;
+  final FeedbackService? feedbackService;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final level = feedbackService?.unlockLevel ?? 0;
+    final isMaxLevel = feedbackService?.isMaxLevel ?? false;
+
+    return AlertDialog(
       title: Row(
         children: [
           Icon(
             Icons.lock_outline,
             size: 24,
-            color: Theme.of(context).colorScheme.primary,
+            color: theme.colorScheme.primary,
           ),
           const SizedBox(width: 8),
-          Text('$itemNameの上限に達しました'),
+          Expanded(child: Text('$itemNameの上限に達しました')),
         ],
       ),
       content: Column(
@@ -40,47 +72,43 @@ Future<void> showTrialLimitDialog(
           const SizedBox(height: 16),
           Text(
             'Web体験版では$itemNameを$maxCount件まで登録できます。',
-            style: Theme.of(context).textTheme.bodyMedium,
+            style: theme.textTheme.bodyMedium,
           ),
           const SizedBox(height: 12),
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.primary.withAlpha(15),
-              borderRadius: BorderRadius.circular(8),
-              border: Border.all(
-                color: Theme.of(context).colorScheme.primary.withAlpha(40),
+          if (!isMaxLevel) ...[
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: theme.colorScheme.primary.withAlpha(15),
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(
+                  color: theme.colorScheme.primary.withAlpha(40),
+                ),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'フィードバックで制限を解除',
+                    style: theme.textTheme.titleSmall?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: theme.colorScheme.primary,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  const Text('アプリの改善にご協力いただくと、'
+                      '制限が段階的に解除されます。'),
+                ],
               ),
             ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'デスクトップ版なら無制限',
-                  style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: Theme.of(context).colorScheme.primary,
-                      ),
-                ),
-                const SizedBox(height: 4),
-                const Text('デスクトップ版をインストールすると、'
-                    '全ての機能を制限なくご利用いただけます。'),
-                const SizedBox(height: 8),
-                Text(
-                  '設定画面のエクスポート機能で現在のデータを'
-                  'デスクトップ版に移行できます。',
-                  style: Theme.of(context).textTheme.bodySmall,
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 12),
+            const SizedBox(height: 12),
+          ],
           Text(
-            trialLimitDescription,
-            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: Theme.of(context).hintColor,
-                ),
+            trialLimitDescription(unlockLevel: level),
+            style: theme.textTheme.bodySmall?.copyWith(
+              color: theme.hintColor,
+            ),
           ),
         ],
       ),
@@ -89,9 +117,19 @@ Future<void> showTrialLimitDialog(
           onPressed: () => Navigator.of(context).pop(),
           child: const Text('閉じる'),
         ),
+        if (!isMaxLevel && feedbackService != null)
+          FilledButton.icon(
+            onPressed: () async {
+              Navigator.of(context).pop();
+              if (!context.mounted) return;
+              await showFeedbackDialog(context, feedbackService!);
+            },
+            icon: const Icon(Icons.rate_review, size: 18),
+            label: const Text('フィードバックを送信'),
+          ),
       ],
-    ),
-  );
+    );
+  }
 }
 
 /// 使用量バー.

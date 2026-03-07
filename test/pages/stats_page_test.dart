@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:study_planner/pages/stats_page.dart';
+import 'package:yume_log/pages/stats_page.dart';
 
 import '../helpers/test_helpers.dart';
 

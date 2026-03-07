@@ -8,11 +8,14 @@ import '../services/book_service.dart';
 import '../services/dashboard_layout_service.dart';
 import '../services/data_export_service.dart';
 import '../services/dream_service.dart';
+import '../services/feedback_service.dart';
 import '../services/goal_service.dart';
 import '../services/notification_service.dart';
 import '../services/study_log_service.dart';
 import '../services/task_service.dart';
+import '../services/tutorial_service.dart';
 import 'database_provider.dart';
+import 'theme_provider.dart';
 
 /// DreamServiceのProvider.
 final dreamServiceProvider = Provider<DreamService>((ref) {
@@ -78,4 +81,21 @@ final dataExportServiceProvider = Provider<DataExportService>((ref) {
 final dashboardLayoutServiceProvider =
     Provider<DashboardLayoutService>((ref) {
   return DashboardLayoutService();
+});
+
+/// FeedbackServiceのProvider.
+final feedbackServiceProvider = Provider<FeedbackService>((ref) {
+  final prefs = ref.watch(sharedPreferencesProvider);
+  return FeedbackService(prefs);
+});
+
+/// 現在の解除レベルのProvider.
+final unlockLevelProvider = Provider<int>((ref) {
+  return ref.watch(feedbackServiceProvider).unlockLevel;
+});
+
+/// TutorialServiceのProvider.
+final tutorialServiceProvider = Provider<TutorialService>((ref) {
+  final prefs = ref.watch(sharedPreferencesProvider);
+  return TutorialService(prefs);
 });

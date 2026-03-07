@@ -41,12 +41,14 @@ class _BookPageState extends ConsumerState<BookPage> {
 
     final currentCount =
         ref.read(bookListProvider).valueOrNull?.length ?? 0;
-    if (!canAddBook(currentCount: currentCount)) {
+    final level = ref.read(unlockLevelProvider);
+    if (!canAddBook(currentCount: currentCount, unlockLevel: level)) {
       await showTrialLimitDialog(
         context,
         itemName: '書籍',
         currentCount: currentCount,
-        maxCount: trialMaxBooks,
+        maxCount: maxBooks(level),
+        feedbackService: ref.read(feedbackServiceProvider),
       );
       return;
     }

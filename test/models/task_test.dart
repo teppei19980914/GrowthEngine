@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:study_planner/models/task.dart';
+import 'package:yume_log/models/task.dart';
 
 void main() {
   group('TaskStatus', () {

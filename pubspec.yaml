@@ -1,5 +1,5 @@
-name: study_planner
-description: "Study Planner - 学習計画管理アプリ"
+name: yume_log
+description: "ユメログ - 学習計画管理アプリ"
 publish_to: 'none'
 version: 1.0.0+1
 

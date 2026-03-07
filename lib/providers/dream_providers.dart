@@ -19,14 +19,16 @@ class DreamListNotifier extends AsyncNotifier<List<Dream>> {
     return service.getAllDreams();
   }
 
-  /// Dreamを作成する.
-  Future<void> createDream({
+  /// Dreamを作成し、作成されたDreamのIDを返す.
+  Future<String> createDream({
     required String title,
     String description = '',
   }) async {
     final service = ref.read(dreamServiceProvider);
-    await service.createDream(title: title, description: description);
+    final dream =
+        await service.createDream(title: title, description: description);
     ref.invalidateSelf();
+    return dream.id;
   }
 
   /// Dreamを更新する.

@@ -1,4 +1,4 @@
-# Study Planner Flutter
+# ユメログ (YumeLog)
 
 学習計画管理アプリ — Flutter/Dart による全面書き直し版。
 

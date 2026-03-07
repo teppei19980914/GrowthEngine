@@ -13,8 +13,11 @@ import '../models/dream.dart';
 import '../models/goal.dart';
 import '../providers/dream_providers.dart';
 import '../providers/goal_providers.dart';
+import '../providers/service_providers.dart';
 import '../services/trial_limit_service.dart';
+import '../services/tutorial_service.dart';
 import '../theme/app_theme.dart';
+import '../widgets/tutorial/tutorial_banner.dart';
 
 /// 目標ページ.
 class GoalPage extends ConsumerWidget {
@@ -130,24 +133,33 @@ class GoalPage extends ConsumerWidget {
       return;
     }
 
-    // 体験版: 目標数の制限チェック
-    final goals = ref.read(goalListProvider).valueOrNull ?? [];
-    final totalMax = trialMaxDreams * trialMaxGoalsPerDream;
-    if (!canAddGoal(currentGoalCountForDream: goals.length) &&
-        goals.length >= totalMax) {
-      await showTrialLimitDialog(
-        context,
-        itemName: '目標',
-        currentCount: goals.length,
-        maxCount: totalMax,
-      );
-      return;
+    final tutorialState = ref.read(tutorialStateProvider);
+    final isTutorial = tutorialState.isActive &&
+        tutorialState.step == TutorialStep.addGoal;
+
+    // チュートリアル中は制限をバイパス
+    if (!isTutorial) {
+      final goals = ref.read(goalListProvider).valueOrNull ?? [];
+      final level = ref.read(unlockLevelProvider);
+      final totalMax = maxDreams(level) * maxGoalsPerDream(level);
+      if (!canAddGoal(
+              currentGoalCountForDream: goals.length, unlockLevel: level) &&
+          goals.length >= totalMax) {
+        await showTrialLimitDialog(
+          context,
+          itemName: '目標',
+          currentCount: goals.length,
+          maxCount: totalMax,
+          feedbackService: ref.read(feedbackServiceProvider),
+        );
+        return;
+      }
     }
 
     final result = await showGoalDialog(context, dreams: dreams);
     if (result == null) return;
 
-    await ref.read(goalListProvider.notifier).createGoal(
+    final goalId = await ref.read(goalListProvider.notifier).createGoal(
           dreamId: result.dreamId,
           why: result.why,
           whenTarget: result.whenTarget,
@@ -155,6 +167,13 @@ class GoalPage extends ConsumerWidget {
           what: result.what,
           how: result.how,
         );
+
+    // チュートリアル中: 目標IDを記録してステップを進める
+    if (isTutorial) {
+      final tutorialService = ref.read(tutorialServiceProvider);
+      await tutorialService.setTutorialGoalId(goalId);
+      await ref.read(tutorialStateProvider.notifier).advanceStep();
+    }
   }
 
   Future<void> _editGoal(

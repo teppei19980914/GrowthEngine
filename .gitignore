@@ -31,10 +31,16 @@ migrate_working_dir/
 **/ios/Flutter/.last_build_id
 .dart_tool/
 .flutter-plugins-dependencies
+.metadata
 .pub-cache/
 .pub/
 /build/
 /coverage/
+
+# Source maps and build artifacts
+*.js.map
+*.js.deps
+sqlite3.dll
 
 # Symbolication related
 app.*.symbols

@@ -101,7 +101,7 @@ class AppDrawer extends StatelessWidget {
             padding: const EdgeInsets.fromLTRB(16, 48, 16, 8),
             child: Align(
               alignment: Alignment.centerLeft,
-              child: Text('Study Planner', style: theme.textTheme.titleLarge),
+              child: Text('ユメログ', style: theme.textTheme.titleLarge),
             ),
           ),
           const Divider(indent: 16, endIndent: 16),

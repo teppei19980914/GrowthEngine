@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:study_planner/models/task.dart';
-import 'package:study_planner/widgets/gantt/gantt_chart.dart';
+import 'package:yume_log/models/task.dart';
+import 'package:yume_log/widgets/gantt/gantt_chart.dart';
 
 void main() {
   Widget buildSubject({

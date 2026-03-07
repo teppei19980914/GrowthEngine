@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:study_planner/dialogs/task_dialog.dart';
-import 'package:study_planner/models/task.dart';
+import 'package:yume_log/dialogs/task_dialog.dart';
+import 'package:yume_log/models/task.dart';
 
 void main() {
   Widget buildApp({Task? task}) {

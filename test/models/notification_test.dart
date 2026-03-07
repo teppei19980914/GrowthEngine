@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:study_planner/models/notification.dart';
+import 'package:yume_log/models/notification.dart';
 
 void main() {
   group('NotificationType', () {

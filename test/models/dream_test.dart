@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:study_planner/models/dream.dart';
+import 'package:yume_log/models/dream.dart';
 
 void main() {
   group('Dream', () {

@@ -3,8 +3,8 @@ import 'dart:convert';
 import 'package:drift/drift.dart' hide isNull, isNotNull;
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:study_planner/database/app_database.dart';
-import 'package:study_planner/services/data_export_service.dart';
+import 'package:yume_log/database/app_database.dart';
+import 'package:yume_log/services/data_export_service.dart';
 
 AppDatabase _createDb() => AppDatabase(NativeDatabase.memory());
 

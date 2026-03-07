@@ -1,8 +1,8 @@
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:study_planner/database/app_database.dart';
-import 'package:study_planner/models/notification.dart';
-import 'package:study_planner/services/notification_service.dart';
+import 'package:yume_log/database/app_database.dart';
+import 'package:yume_log/models/notification.dart';
+import 'package:yume_log/services/notification_service.dart';
 
 AppDatabase _createDb() => AppDatabase(NativeDatabase.memory());
 

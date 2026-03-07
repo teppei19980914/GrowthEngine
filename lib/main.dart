@@ -1,4 +1,4 @@
-/// Study Planner アプリケーションのエントリポイント.
+/// ユメログ アプリケーションのエントリポイント.
 library;
 
 import 'package:flutter/material.dart';
@@ -18,7 +18,7 @@ Future<void> main() async {
       overrides: [
         sharedPreferencesProvider.overrideWithValue(prefs),
       ],
-      child: const StudyPlannerApp(),
+      child: const YumeLogApp(),
     ),
   );
 }

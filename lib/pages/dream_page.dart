@@ -13,8 +13,11 @@ import '../dialogs/trial_limit_dialog.dart';
 import '../models/dream.dart';
 import '../providers/dream_providers.dart';
 import '../providers/goal_providers.dart';
+import '../providers/service_providers.dart';
 import '../services/trial_limit_service.dart';
+import '../services/tutorial_service.dart';
 import '../theme/app_theme.dart';
+import '../widgets/tutorial/tutorial_banner.dart';
 
 /// 夢ページ.
 class DreamPage extends ConsumerWidget {
@@ -123,25 +126,41 @@ class DreamPage extends ConsumerWidget {
   }
 
   Future<void> _addDream(BuildContext context, WidgetRef ref) async {
-    final currentCount =
-        ref.read(dreamListProvider).valueOrNull?.length ?? 0;
-    if (!canAddDream(currentCount: currentCount)) {
-      await showTrialLimitDialog(
-        context,
-        itemName: '夢',
-        currentCount: currentCount,
-        maxCount: trialMaxDreams,
-      );
-      return;
+    final tutorialState = ref.read(tutorialStateProvider);
+    final isTutorial = tutorialState.isActive &&
+        tutorialState.step == TutorialStep.addDream;
+
+    // チュートリアル中は制限をバイパス
+    if (!isTutorial) {
+      final currentCount =
+          ref.read(dreamListProvider).valueOrNull?.length ?? 0;
+      final level = ref.read(unlockLevelProvider);
+      if (!canAddDream(currentCount: currentCount, unlockLevel: level)) {
+        await showTrialLimitDialog(
+          context,
+          itemName: '夢',
+          currentCount: currentCount,
+          maxCount: maxDreams(level),
+          feedbackService: ref.read(feedbackServiceProvider),
+        );
+        return;
+      }
     }
 
     final result = await showDreamDialog(context);
     if (result == null) return;
 
-    await ref.read(dreamListProvider.notifier).createDream(
+    final dreamId = await ref.read(dreamListProvider.notifier).createDream(
           title: result.title,
           description: result.description,
         );
+
+    // チュートリアル中: 夢IDを記録してステップを進める
+    if (isTutorial) {
+      final tutorialService = ref.read(tutorialServiceProvider);
+      await tutorialService.setTutorialDreamId(dreamId);
+      await ref.read(tutorialStateProvider.notifier).advanceStep();
+    }
   }
 
   Future<void> _editDream(

@@ -104,6 +104,14 @@ class _WebTrialBannerState extends State<WebTrialBanner> {
   }
 }
 
+/// Web体験版のダイアログを表示する（設定画面などから手動表示用）.
+Future<void> showWebTrialDialog(
+  BuildContext context,
+  SharedPreferences prefs,
+) async {
+  await _showTrialDialog(context, barrierDismissible: true);
+}
+
 /// Web体験版の初回ダイアログを表示する.
 ///
 /// 初回のみ表示し、以降はSharedPreferencesで制御する.
@@ -118,9 +126,16 @@ Future<void> showWebTrialDialogIfNeeded(
 
   if (!context.mounted) return;
 
+  await _showTrialDialog(context, barrierDismissible: false);
+}
+
+Future<void> _showTrialDialog(
+  BuildContext context, {
+  required bool barrierDismissible,
+}) async {
   await showDialog<void>(
     context: context,
-    barrierDismissible: false,
+    barrierDismissible: barrierDismissible,
     builder: (context) => AlertDialog(
       title: const Row(
         children: [
@@ -162,6 +177,14 @@ Future<void> showWebTrialDialogIfNeeded(
             'デスクトップ版をインストールすると、全機能を制限なく'
             'ご利用いただけます。',
             style: TextStyle(fontWeight: FontWeight.w500),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'この情報は設定画面からいつでも確認できます。',
+            style: TextStyle(
+              color: Theme.of(context).hintColor,
+              fontSize: 12,
+            ),
           ),
         ],
       ),

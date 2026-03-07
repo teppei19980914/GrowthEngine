@@ -1,23 +1,28 @@
-# GrowthEngine - Claude Code 運用ガイド
+# ユメログ (GrowthEngine) - Claude Code 運用ガイド
 
 ## プロジェクト概要
 
-- Flutter Web 体験版アプリ (StudyQualificationApplication の Flutter 移植版)
-- GitHub Pages でホスティング: `https://teppei19980914.github.io/GrowthEngine/`
+- **ユメログ** - Flutter マルチプラットフォームアプリ (StudyQualificationApplication の Flutter 移植版)
+- Web 体験版: GitHub Pages (`https://teppei19980914.github.io/GrowthEngine/`)
+- ネイティブ版 (Android/iOS/Windows等) も同一リポジトリで管理
 - Drift ORM + Riverpod 状態管理
 
 ## 運用フロー
 
-本リポジトリは体験版アプリ専用。以下のフローで運用する。
+以下のフローで運用する。
 
-### Claude Code が担当 (ステップ 1, 2)
+### Claude Code が担当 (ステップ 1)
 
 1. **プログラム修正**: ソースコード修正時、対応するテストコードも必ず追加・修正する
+   - コミット & プッシュはユーザーが手動で実施（GitHub Actions の無料枠節約のため）
+
+### ユーザーが手動で実施 (ステップ 2)
+
 2. **コミット & プッシュ**: 修正完了後、main ブランチにコミット & プッシュする
 
 ### GitHub Actions が担当 (ステップ 3, 4)
 
-3. **テスト & デプロイ**: push をトリガーに `flutter analyze` → `flutter test` → `flutter build web` → GitHub Pages デプロイ を自動実行
+3. **テスト & デプロイ**: push をトリガーに `flutter analyze` → `flutter test --coverage` → `flutter build web` → GitHub Pages デプロイ を自動実行
 4. **公開**: デプロイ成功後、GitHub Pages に自動反映
 
 ## コミットルール
