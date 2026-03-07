@@ -22,7 +22,7 @@
 
 ## コミットルール
 
-- テスト (`flutter test`) とアナライズ (`flutter analyze`) がローカルで通ることを確認してからコミットする
+- ローカルでのテスト実行は不要（GitHub Actions に一任）
 - テストコードの追加・修正を伴わないソースコード変更はコミットしない
 - コミットメッセージは変更内容を端的に記述する
 
@@ -48,8 +48,9 @@ flutter build web --release --base-href "/GrowthEngine/"
 
 ## GitHub Actions ワークフロー
 
-- **deploy.yml**: main push 時 → テスト → GitHub Pages デプロイ
-- **test.yml**: PR 時 → テストのみ実行
+- **deploy.yml**: main push 時 → テスト（カバレッジ付き） → GitHub Pages デプロイ
+- **test.yml**: PR 時 → テスト（カバレッジ付き）のみ実行
+- カバレッジレポートは各ワークフロー実行の Summary タブに出力される
 
 ## 技術スタック
 

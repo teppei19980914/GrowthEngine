@@ -18,4 +18,57 @@ jobs:
 
       - run: flutter analyze
 
-      - run: flutter test
+      - name: Run tests with coverage
+        run: flutter test --coverage
+
+      - name: Coverage summary
+        run: |
+          echo "## Coverage Report" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          if [ -f coverage/lcov.info ]; then
+            total_lines=$(grep -c "^DA:" coverage/lcov.info || true)
+            hit_lines=$(grep "^DA:" coverage/lcov.info | grep -v ",0$" | wc -l || true)
+            if [ "$total_lines" -gt 0 ]; then
+              pct=$((hit_lines * 100 / total_lines))
+              echo "**Overall: ${pct}% (${hit_lines}/${total_lines} lines)**" >> $GITHUB_STEP_SUMMARY
+            fi
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "| File | Coverage |" >> $GITHUB_STEP_SUMMARY
+            echo "|------|----------|" >> $GITHUB_STEP_SUMMARY
+            current_file=""
+            file_total=0
+            file_hit=0
+            while IFS= read -r line; do
+              case "$line" in
+                SF:*)
+                  if [ -n "$current_file" ] && [ "$file_total" -gt 0 ]; then
+                    file_pct=$((file_hit * 100 / file_total))
+                    short=$(echo "$current_file" | sed 's|^lib/||')
+                    echo "| ${short} | ${file_pct}% |" >> $GITHUB_STEP_SUMMARY
+                  fi
+                  current_file="${line#SF:}"
+                  file_total=0
+                  file_hit=0
+                  ;;
+                DA:*)
+                  file_total=$((file_total + 1))
+                  count="${line##*,}"
+                  if [ "$count" != "0" ]; then
+                    file_hit=$((file_hit + 1))
+                  fi
+                  ;;
+                end_of_record)
+                  if [ -n "$current_file" ] && [ "$file_total" -gt 0 ]; then
+                    file_pct=$((file_hit * 100 / file_total))
+                    short=$(echo "$current_file" | sed 's|^lib/||')
+                    echo "| ${short} | ${file_pct}% |" >> $GITHUB_STEP_SUMMARY
+                  fi
+                  current_file=""
+                  file_total=0
+                  file_hit=0
+                  ;;
+              esac
+            done < coverage/lcov.info
+          else
+            echo "No coverage data generated." >> $GITHUB_STEP_SUMMARY
+          fi
