@@ -177,7 +177,7 @@ class _GoalDialogContentState extends State<_GoalDialogContent> {
                 ),
                 const SizedBox(height: 4),
                 DropdownButtonFormField<String>(
-                  value: _selectedDreamId,
+                  initialValue: _selectedDreamId,
                   decoration: const InputDecoration(
                     hintText: '夢を選択してください',
                   ),
