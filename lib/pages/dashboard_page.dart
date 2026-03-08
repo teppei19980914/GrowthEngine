@@ -18,7 +18,7 @@ import '../services/dashboard_layout_service.dart';
 import '../services/remote_config_service.dart';
 import '../services/study_stats_types.dart';
 import '../theme/app_theme.dart';
-import '../theme/catppuccin_colors.dart';
+
 
 /// ダッシュボードページ.
 class DashboardPage extends ConsumerStatefulWidget {

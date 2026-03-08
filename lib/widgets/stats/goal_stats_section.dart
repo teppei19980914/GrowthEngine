@@ -7,7 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../providers/dashboard_providers.dart';
 import '../../services/study_stats_types.dart';
 import '../../theme/app_theme.dart';
-import '../../theme/catppuccin_colors.dart';
+
 
 /// 目標別統計の表示用データ.
 class GoalStatsDisplayData {

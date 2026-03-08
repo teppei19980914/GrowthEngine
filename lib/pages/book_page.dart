@@ -15,7 +15,7 @@ import '../providers/book_providers.dart';
 import '../providers/service_providers.dart';
 import '../services/trial_limit_service.dart';
 import '../theme/app_theme.dart';
-import '../theme/catppuccin_colors.dart';
+
 
 /// 書籍ページ.
 class BookPage extends ConsumerStatefulWidget {

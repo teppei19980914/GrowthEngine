@@ -103,7 +103,7 @@ class _FeedbackDialogState extends State<_FeedbackDialog> {
               Text('カテゴリ *', style: theme.textTheme.labelLarge),
               const SizedBox(height: 8),
               DropdownButtonFormField<FeedbackCategory>(
-                value: _category,
+                initialValue: _category,
                 decoration: const InputDecoration(
                   border: OutlineInputBorder(),
                   hintText: 'カテゴリを選択してください',

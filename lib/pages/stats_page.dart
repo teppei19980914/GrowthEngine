@@ -14,7 +14,7 @@ import '../providers/service_providers.dart';
 import '../services/study_stats_calculator.dart';
 import '../services/study_stats_types.dart';
 import '../theme/app_theme.dart';
-import '../theme/catppuccin_colors.dart';
+
 import '../widgets/stats/goal_stats_section.dart';
 
 /// 全ログProvider（統計ページ用）.

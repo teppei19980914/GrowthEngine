@@ -90,7 +90,7 @@ class FeedbackService {
     if (trimmed.length < feedbackMinLength) {
       return FeedbackValidation(
         isValid: false,
-        errorMessage: '${feedbackMinLength}文字以上入力してください'
+        errorMessage: '$feedbackMinLength文字以上入力してください'
             '（現在${trimmed.length}文字）',
       );
     }
