@@ -9,6 +9,8 @@ import '../services/dashboard_layout_service.dart';
 import '../services/data_export_service.dart';
 import '../services/dream_service.dart';
 import '../services/feedback_service.dart';
+import '../services/gantt_excel_export_service.dart';
+import '../services/gantt_excel_import_service.dart';
 import '../services/goal_service.dart';
 import '../services/notification_service.dart';
 import '../services/remote_config_service.dart';
@@ -114,4 +116,17 @@ final unlockLevelProvider = Provider<int>((ref) {
 final tutorialServiceProvider = Provider<TutorialService>((ref) {
   final prefs = ref.watch(sharedPreferencesProvider);
   return TutorialService(prefs);
+});
+
+/// GanttExcelExportServiceのProvider.
+final ganttExcelExportServiceProvider =
+    Provider<GanttExcelExportService>((ref) {
+  return GanttExcelExportService();
+});
+
+/// GanttExcelImportServiceのProvider.
+final ganttExcelImportServiceProvider =
+    Provider<GanttExcelImportService>((ref) {
+  final taskService = ref.watch(taskServiceProvider);
+  return GanttExcelImportService(taskService: taskService);
 });

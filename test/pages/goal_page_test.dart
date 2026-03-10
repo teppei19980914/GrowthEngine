@@ -49,7 +49,7 @@ void main() {
     expect(find.text('基本情報技術者'), findsOneWidget);
   });
 
-  testWidgets('目標カードのWhy/Howが表示される', (tester) async {
+  testWidgets('目標カードのHowが表示される', (tester) async {
     final prefs = await getPrefs();
     await tester.pumpWidget(
       wrapWithProviders(
@@ -64,7 +64,8 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    expect(find.text('スキルアップ'), findsOneWidget);
+    // WhyはDream側に移動したためGoalカードには表示されない
+    expect(find.text('スキルアップ'), findsNothing);
     expect(find.text('毎日1時間'), findsOneWidget);
   });
 

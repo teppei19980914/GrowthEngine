@@ -12,7 +12,10 @@ import '../dialogs/trial_limit_dialog.dart';
 import '../models/goal.dart';
 import '../models/task.dart';
 import '../providers/gantt_providers.dart';
+import '../providers/goal_providers.dart';
 import '../providers/service_providers.dart';
+import '../services/file_save_service.dart' as file_io;
+import '../services/gantt_excel_import_service.dart';
 import '../services/trial_limit_service.dart';
 import '../services/tutorial_service.dart';
 import '../theme/app_theme.dart';
@@ -81,6 +84,40 @@ class GanttPage extends ConsumerWidget {
                   icon: const Icon(Icons.add, size: 18),
                   label: const Text('読書スケジュールを追加'),
                 ),
+              const SizedBox(width: 8),
+              // エクスポート/インポートメニュー
+              PopupMenuButton<String>(
+                icon: const Icon(Icons.more_vert),
+                tooltip: 'エクスポート/インポート',
+                onSelected: (value) {
+                  switch (value) {
+                    case 'export':
+                      _exportToExcel(context, ref);
+                    case 'import':
+                      _importFromExcel(context, ref);
+                  }
+                },
+                itemBuilder: (context) => [
+                  const PopupMenuItem(
+                    value: 'export',
+                    child: ListTile(
+                      leading: Icon(Icons.file_download_outlined),
+                      title: Text('Excelエクスポート'),
+                      dense: true,
+                      contentPadding: EdgeInsets.zero,
+                    ),
+                  ),
+                  const PopupMenuItem(
+                    value: 'import',
+                    child: ListTile(
+                      leading: Icon(Icons.file_upload_outlined),
+                      title: Text('Excelインポート'),
+                      dense: true,
+                      contentPadding: EdgeInsets.zero,
+                    ),
+                  ),
+                ],
+              ),
             ],
           ),
           const SizedBox(height: 12),
@@ -295,6 +332,112 @@ class GanttPage extends ConsumerWidget {
       );
     }
     ref.invalidate(ganttTasksProvider);
+  }
+
+  Future<void> _exportToExcel(BuildContext context, WidgetRef ref) async {
+    final tasks = ref.read(ganttTasksProvider).valueOrNull ?? [];
+    if (tasks.isEmpty) {
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('エクスポートするタスクがありません')),
+      );
+      return;
+    }
+
+    final goals =
+        await ref.read(goalServiceProvider).getAllGoals();
+    final exportService = ref.read(ganttExcelExportServiceProvider);
+
+    try {
+      final result = exportService.export(tasks: tasks, goals: goals);
+      final saved = await file_io.saveFile(
+        bytes: result.bytes,
+        fileName: result.fileName,
+      );
+      if (!context.mounted) return;
+      if (saved) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('${result.fileName} をエクスポートしました')),
+        );
+      }
+    } on Object catch (e) {
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('エクスポートに失敗しました: $e')),
+      );
+    }
+  }
+
+  Future<void> _importFromExcel(BuildContext context, WidgetRef ref) async {
+    final bytes = await file_io.pickFile(allowedExtensions: ['xlsx']);
+    if (bytes == null) return;
+
+    final goals =
+        await ref.read(goalServiceProvider).getAllGoals();
+    final importService = ref.read(ganttExcelImportServiceProvider);
+
+    try {
+      final result = await importService.import(
+        bytes: bytes,
+        goals: goals,
+      );
+      ref.invalidate(ganttTasksProvider);
+      ref.invalidate(goalListProvider);
+      if (!context.mounted) return;
+      _showImportResultDialog(context, result);
+    } on Object catch (e) {
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('インポートに失敗しました: $e')),
+      );
+    }
+  }
+
+  void _showImportResultDialog(
+    BuildContext context,
+    GanttImportResult result,
+  ) {
+    showDialog<void>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('インポート結果'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('更新: ${result.updatedCount}件'),
+            Text('新規作成: ${result.createdCount}件'),
+            if (result.skippedCount > 0)
+              Text('スキップ: ${result.skippedCount}件'),
+            if (result.errors.isNotEmpty) ...[
+              const SizedBox(height: 12),
+              const Text('詳細:', style: TextStyle(fontWeight: FontWeight.bold)),
+              const SizedBox(height: 4),
+              ConstrainedBox(
+                constraints: const BoxConstraints(maxHeight: 200),
+                child: SingleChildScrollView(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: result.errors
+                        .map((e) => Padding(
+                              padding: const EdgeInsets.only(bottom: 4),
+                              child: Text(e, style: const TextStyle(fontSize: 12)),
+                            ))
+                        .toList(),
+                  ),
+                ),
+              ),
+            ],
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('OK'),
+          ),
+        ],
+      ),
+    );
   }
 
   Future<bool?> _confirmDelete(BuildContext context, String title) {
