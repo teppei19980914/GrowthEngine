@@ -1,4 +1,4 @@
-/// 学習ログDAO.
+/// 活動ログDAO.
 library;
 
 import 'package:drift/drift.dart';
@@ -55,7 +55,7 @@ class StudyLogDao extends DatabaseAccessor<AppDatabase>
   Future<int> deleteByTaskId(String taskId) =>
       (delete(studyLogs)..where((t) => t.taskId.equals(taskId))).go();
 
-  /// 全学習ログの合計時間（分）を取得する.
+  /// 全活動ログの合計時間（分）を取得する.
   Future<int> getTotalMinutes() async {
     final sum = studyLogs.durationMinutes.sum();
     final query = selectOnly(studyLogs)..addColumns([sum]);

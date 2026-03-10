@@ -13,17 +13,23 @@
 
 ### Claude Code が担当 (ステップ 1)
 
-1. **プログラム修正**: ソースコード修正時、対応するテストコードも必ず追加・修正する
+1. **プログラム修正**: `sonarcloud-reports/latest-report.txt` の指摘内容を読み込み、セキュリティを考慮したうえでソースコード修正。対応するテストコードも必ず追加・修正する
    - コミット & プッシュはユーザーが手動で実施（GitHub Actions の無料枠節約のため）
 
-### ユーザーが手動で実施 (ステップ 2)
+### ユーザーが手動で実施 (ステップ 2, 3)
 
-2. **コミット & プッシュ**: 修正完了後、main ブランチにコミット & プッシュする
+2. **ローカル動作確認**: `run_windows.bat` で Windows ネイティブアプリを起動し動作確認
+3. **コミット & プッシュ**: 修正完了後、main ブランチにコミット & プッシュする
 
-### GitHub Actions が担当 (ステップ 3, 4)
+### GitHub Actions が担当 (ステップ 4, 5, 6)
 
-3. **テスト & デプロイ**: push をトリガーに `flutter analyze` → `flutter test --coverage` → `flutter build web` → GitHub Pages デプロイ を自動実行
-4. **公開**: デプロイ成功後、GitHub Pages に自動反映
+4. **テスト & デプロイ** (deploy.yml): push をトリガーに `flutter analyze` → `flutter test --coverage` → `flutter build web` → GitHub Pages デプロイ を自動実行
+5. **SonarCloud 静的解析** (sonarcloud.yml): push をトリガーにテスト → SonarCloud Dart 解析 → レポートを `sonarcloud-reports/` に自動コミット
+6. **公開**: デプロイ成功後、GitHub Pages に自動反映
+
+### ユーザーが手動で実施 (ステップ 7)
+
+7. **Web 動作確認**: ブラウザで体験版アプリの動作確認
 
 ## コミットルール
 
@@ -54,8 +60,10 @@ flutter build web --release --base-href "/GrowthEngine/"
 ## GitHub Actions ワークフロー
 
 - **deploy.yml**: main push 時 → テスト（カバレッジ付き） → GitHub Pages デプロイ
+- **sonarcloud.yml**: main push 時 → テスト → SonarCloud 解析 → レポート自動コミット
 - **test.yml**: PR 時 → テスト（カバレッジ付き）のみ実行
 - カバレッジレポートは各ワークフロー実行の Summary タブに出力される
+- SonarCloud レポートは `sonarcloud-reports/latest-report.txt` に自動保存される
 
 ## 技術スタック
 
@@ -65,3 +73,4 @@ flutter build web --release --base-href "/GrowthEngine/"
 - fl_chart (グラフ)
 - go_router (ルーティング)
 - shared_preferences (設定永続化)
+- SonarQube Cloud (静的コード解析・セキュリティ)

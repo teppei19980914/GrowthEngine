@@ -1,6 +1,6 @@
 /// 星座ページ.
 ///
-/// 総合学習時間に応じて12星座が順番に完成していく.
+/// 総合活動時間に応じて12星座が順番に完成していく.
 library;
 
 import 'package:flutter/material.dart';
@@ -30,7 +30,7 @@ class ConstellationPage extends ConsumerWidget {
         children: [
           // ヘッダー
           Text(
-            '学習時間に応じて星が灯り、星座が完成します。'
+            '活動時間に応じて星が灯り、星座が完成します。'
             '${minutesPerStar ~/ 60}時間ごとに1つの星が輝きます。',
             style: theme.textTheme.bodyMedium?.copyWith(
               color: colors.textSecondary,

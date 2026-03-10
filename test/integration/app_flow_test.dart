@@ -42,9 +42,9 @@ void main() {
     // 目標ページ
     await tester.tap(find.byIcon(Icons.menu));
     await tester.pumpAndSettle();
-    await tester.tap(find.text('3W1H 目標').last);
+    await tester.tap(find.text('目標').last);
     await tester.pumpAndSettle();
-    expect(find.text('3W1H 目標'), findsWidgets);
+    expect(find.text('目標'), findsWidgets);
 
     // ガントチャートページ
     await tester.tap(find.byIcon(Icons.menu));
@@ -89,7 +89,7 @@ void main() {
     // 目標ページに遷移
     await tester.tap(find.byIcon(Icons.menu));
     await tester.pumpAndSettle();
-    await tester.tap(find.text('3W1H 目標').last);
+    await tester.tap(find.text('目標').last);
     await tester.pumpAndSettle();
 
     // 追加ボタンをタップ（夢がないのでSnackBarが表示される）

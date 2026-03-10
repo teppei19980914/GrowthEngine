@@ -46,7 +46,7 @@ const navItems = [
   NavItem(
     icon: Icons.flag_outlined,
     selectedIcon: Icons.flag,
-    label: '3W1H 目標',
+    label: '目標',
     path: '/goals',
   ),
   NavItem(

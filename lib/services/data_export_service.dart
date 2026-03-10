@@ -211,6 +211,7 @@ class DataExportService {
       'id': dream.id,
       'title': dream.title,
       'description': dream.description,
+      'why': dream.why,
       'created_at': dream.createdAt.toIso8601String(),
       'updated_at': dream.updatedAt.toIso8601String(),
     };
@@ -221,6 +222,7 @@ class DataExportService {
       id: Value(map['id'] as String),
       title: Value(map['title'] as String? ?? ''),
       description: Value(map['description'] as String? ?? ''),
+      why: Value(map['why'] as String? ?? ''),
       createdAt: Value(DateTime.parse(map['created_at'] as String)),
       updatedAt: Value(DateTime.parse(map['updated_at'] as String)),
     );
@@ -417,7 +419,7 @@ class ImportResult {
   /// インポートした書籍数.
   final int bookCount;
 
-  /// インポートした学習ログ数.
+  /// インポートした活動ログ数.
   final int studyLogCount;
 
   /// インポートした通知数.

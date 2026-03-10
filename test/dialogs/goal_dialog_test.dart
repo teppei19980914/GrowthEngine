@@ -34,16 +34,15 @@ void main() {
 
     expect(find.text('新しい目標を追加'), findsOneWidget);
     expect(find.text('紐づく夢'), findsOneWidget);
-    expect(find.text('What（何を学習するか）'), findsOneWidget);
-    expect(find.text('Why（なぜ学習するか）'), findsOneWidget);
-    expect(find.text('How（どうやって学習するか）'), findsOneWidget);
+    expect(find.text('What（何を目標とするか）'), findsOneWidget);
+    expect(find.text('When（いつまでに達成するか）'), findsOneWidget);
+    expect(find.text('How（どうやって達成するか）'), findsOneWidget);
   });
 
   testWidgets('編集モードでダイアログが表示される', (tester) async {
     final goal = Goal(
       dreamId: 'dream-1',
       what: 'テスト目標',
-      why: 'テスト理由',
       how: 'テスト方法',
       whenType: WhenType.period,
       whenTarget: '3ヶ月',
@@ -55,7 +54,6 @@ void main() {
     expect(find.text('目標を編集'), findsOneWidget);
     // フォームフィールドに値がセットされている
     expect(find.text('テスト目標'), findsOneWidget);
-    expect(find.text('テスト理由'), findsOneWidget);
     expect(find.text('テスト方法'), findsOneWidget);
   });
 

@@ -174,7 +174,7 @@ Future<void> _showTrialDialog(
           const _NoticeItem(
             icon: Icons.warning_amber_outlined,
             text: 'ブラウザのキャッシュ/データを削除すると、'
-                '全ての学習記録が消えます。',
+                '全ての活動記録が消えます。',
           ),
           const SizedBox(height: 8),
           const _NoticeItem(

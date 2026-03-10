@@ -1,7 +1,7 @@
 /// 統計ページ.
 ///
 /// サマリー、自己ベスト、実施率、アクティビティチャート、
-/// 最近の学習ログを表示する.
+/// 最近の活動ログを表示する.
 library;
 
 import 'package:flutter/material.dart';
@@ -69,7 +69,7 @@ class StatsPage extends ConsumerWidget {
           _ActivityChartSection(colors: colors),
           const SizedBox(height: 16),
 
-          // 最近の学習ログ
+          // 最近の活動ログ
           _RecentLogsSection(colors: colors),
         ],
       ),
@@ -103,7 +103,7 @@ class _SummarySection extends ConsumerWidget {
               runSpacing: 12,
               children: [
                 _SummaryTile(
-                  label: '合計学習時間',
+                  label: '合計活動時間',
                   value: recordAsync.when(
                     data: (d) => '${d.totalHours.toStringAsFixed(1)}h',
                     loading: () => '...',
@@ -113,7 +113,7 @@ class _SummarySection extends ConsumerWidget {
                   iconColor: colors.accent,
                 ),
                 _SummaryTile(
-                  label: '学習日数',
+                  label: '活動日数',
                   value: recordAsync.when(
                     data: (d) => '${d.totalStudyDays}日',
                     loading: () => '...',
@@ -123,7 +123,7 @@ class _SummarySection extends ConsumerWidget {
                   iconColor: colors.success,
                 ),
                 _SummaryTile(
-                  label: '連続学習',
+                  label: '連続活動',
                   value: streakAsync.when(
                     data: (d) => '${d.currentStreak}日',
                     loading: () => '...',
@@ -239,7 +239,7 @@ class _PersonalRecordSection extends ConsumerWidget {
               data: (data) => Column(
                 children: [
                   _RecordItem(
-                    label: '1日の最高学習時間',
+                    label: '1日の最高活動時間',
                     value: _formatMinutes(data.bestDayMinutes),
                     detail: data.bestDayDate != null
                         ? DateFormat('yyyy/MM/dd').format(data.bestDayDate!)
@@ -247,7 +247,7 @@ class _PersonalRecordSection extends ConsumerWidget {
                   ),
                   const Divider(height: 16),
                   _RecordItem(
-                    label: '1週間の最高学習時間',
+                    label: '1週間の最高活動時間',
                     value: _formatMinutes(data.bestWeekMinutes),
                     detail: data.bestWeekStart != null
                         ? '${DateFormat('MM/dd').format(data.bestWeekStart!)}〜'
@@ -255,7 +255,7 @@ class _PersonalRecordSection extends ConsumerWidget {
                   ),
                   const Divider(height: 16),
                   _RecordItem(
-                    label: '最長連続学習',
+                    label: '最長連続活動',
                     value: '${data.longestStreak}日',
                   ),
                 ],
@@ -338,7 +338,7 @@ class _ConsistencySection extends ConsumerWidget {
               children: [
                 Icon(Icons.bar_chart_outlined, size: 20, color: colors.accent),
                 const SizedBox(width: 8),
-                Text('学習の実施率', style: theme.textTheme.titleMedium),
+                Text('活動の実施率', style: theme.textTheme.titleMedium),
               ],
             ),
             const SizedBox(height: 12),
@@ -648,7 +648,7 @@ class _BarChart extends StatelessWidget {
   }
 }
 
-/// 最近の学習ログセクション.
+/// 最近の活動ログセクション.
 class _RecentLogsSection extends ConsumerWidget {
   const _RecentLogsSection({required this.colors});
   final AppColors colors;
@@ -669,7 +669,7 @@ class _RecentLogsSection extends ConsumerWidget {
               children: [
                 Icon(Icons.history, size: 20, color: colors.textSecondary),
                 const SizedBox(width: 8),
-                Text('最近の学習ログ', style: theme.textTheme.titleMedium),
+                Text('最近の活動ログ', style: theme.textTheme.titleMedium),
               ],
             ),
             const SizedBox(height: 12),
@@ -680,7 +680,7 @@ class _RecentLogsSection extends ConsumerWidget {
                     padding: const EdgeInsets.symmetric(vertical: 24),
                     child: Center(
                       child: Text(
-                        '学習ログがありません',
+                        '活動ログがありません',
                         style: TextStyle(color: colors.textMuted),
                       ),
                     ),

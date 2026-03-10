@@ -1,4 +1,4 @@
-/// 3W1H 目標ページ.
+/// 目標ページ.
 ///
 /// 目標一覧をカードリストで表示し、追加・編集・削除を提供する.
 library;
@@ -41,7 +41,7 @@ class GoalPage extends ConsumerWidget {
             children: [
               Expanded(
                 child: Text(
-                  '3W1H（What / Why / When / How）で学習目標を管理します。',
+                  '夢の実現に向けた目標を管理します。',
                   style: theme.textTheme.bodyMedium?.copyWith(
                     color: colors.textSecondary,
                   ),
@@ -159,7 +159,6 @@ class GoalPage extends ConsumerWidget {
 
     final goalId = await ref.read(goalListProvider.notifier).createGoal(
           dreamId: result.dreamId,
-          why: result.why,
           whenTarget: result.whenTarget,
           whenType: result.whenType,
           what: result.what,
@@ -192,7 +191,6 @@ class GoalPage extends ConsumerWidget {
     await ref.read(goalListProvider.notifier).updateGoal(
           goalId: goal.id,
           dreamId: result.dreamId,
-          why: result.why,
           whenTarget: result.whenTarget,
           whenType: result.whenType,
           what: result.what,
@@ -322,14 +320,7 @@ class _GoalCard extends StatelessWidget {
                     ),
                     const SizedBox(height: 8),
 
-                    // 3W1H 情報
-                    _InfoRow(
-                      icon: Icons.help_outline,
-                      label: 'Why',
-                      value: goal.why,
-                      color: colors.textSecondary,
-                    ),
-                    const SizedBox(height: 4),
+                    // 目標情報
                     _InfoRow(
                       icon: Icons.build_outlined,
                       label: 'How',
@@ -414,7 +405,7 @@ class _WhenBadge extends StatelessWidget {
   }
 }
 
-/// 3W1H 情報行.
+/// 情報行.
 class _InfoRow extends StatelessWidget {
   const _InfoRow({
     required this.icon,

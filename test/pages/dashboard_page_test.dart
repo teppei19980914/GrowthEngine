@@ -23,29 +23,29 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    // 今日の学習バナーが表示される
-    expect(find.text('今日は学習済み!'), findsOneWidget);
+    // 今日の活動バナーが表示される
+    expect(find.text('今日は活動済み!'), findsOneWidget);
   });
 
-  testWidgets('合計学習時間が表示される', (tester) async {
+  testWidgets('合計活動時間が表示される', (tester) async {
     final prefs = await getPrefs();
     await tester.pumpWidget(
       wrapWithProviders(const DashboardPage(), prefs: prefs, db: setup.db),
     );
     await tester.pumpAndSettle();
 
-    expect(find.text('合計学習時間'), findsOneWidget);
+    expect(find.text('合計活動時間'), findsOneWidget);
     expect(find.text('10.5h'), findsOneWidget);
   });
 
-  testWidgets('連続学習が表示される', (tester) async {
+  testWidgets('連続活動が表示される', (tester) async {
     final prefs = await getPrefs();
     await tester.pumpWidget(
       wrapWithProviders(const DashboardPage(), prefs: prefs, db: setup.db),
     );
     await tester.pumpAndSettle();
 
-    expect(find.text('連続学習'), findsOneWidget);
+    expect(find.text('連続活動'), findsOneWidget);
     expect(find.text('3日'), findsOneWidget);
   });
 
@@ -77,7 +77,7 @@ void main() {
     expect(find.text('リセット'), findsOneWidget);
   });
 
-  testWidgets('未学習状態のバナーを表示する', (tester) async {
+  testWidgets('未活動状態のバナーを表示する', (tester) async {
     final prefs = await getPrefs();
     await tester.pumpWidget(
       wrapWithProviders(
@@ -97,6 +97,6 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    expect(find.text('まだ学習していません'), findsOneWidget);
+    expect(find.text('まだ活動していません'), findsOneWidget);
   });
 }

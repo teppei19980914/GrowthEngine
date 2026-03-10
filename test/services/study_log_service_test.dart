@@ -55,7 +55,7 @@ void main() {
 
   group('StudyLogService', () {
     group('addStudyLog', () {
-      test('学習ログを追加する', () async {
+      test('活動ログを追加する', () async {
         final log = await service.addStudyLog(
           taskId: 'task-1',
           studyDate: DateTime(2025, 3, 1),

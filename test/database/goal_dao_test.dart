@@ -24,7 +24,7 @@ void main() {
     String why = 'テスト理由',
     String whenTarget = '2026-12-31',
     String whenType = 'date',
-    String what = 'テスト学習',
+    String what = 'テスト活動',
     String how = 'テスト方法',
     String color = '#4A9EFF',
   }) {
@@ -47,7 +47,7 @@ void main() {
       await dao.insertGoal(createGoal());
       final goals = await dao.getAll();
       expect(goals.length, 1);
-      expect(goals[0].what, 'テスト学習');
+      expect(goals[0].what, 'テスト活動');
     });
 
     test('getAll returns empty list initially', () async {
@@ -68,7 +68,7 @@ void main() {
       final goal = await dao.getById('goal-1');
       expect(goal, isNotNull);
       expect(goal!.id, 'goal-1');
-      expect(goal.what, 'テスト学習');
+      expect(goal.what, 'テスト活動');
     });
 
     test('getById returns null when not found', () async {
@@ -81,13 +81,13 @@ void main() {
       final updated = await dao.updateGoal(
         GoalsCompanion(
           id: const Value('goal-1'),
-          what: const Value('更新された学習'),
+          what: const Value('更新された活動'),
           updatedAt: Value(DateTime(2026, 6, 1)),
         ),
       );
       expect(updated, isTrue);
       final goal = await dao.getById('goal-1');
-      expect(goal!.what, '更新された学習');
+      expect(goal!.what, '更新された活動');
     });
 
     test('updateGoal returns false when not found', () async {

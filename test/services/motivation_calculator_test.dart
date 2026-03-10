@@ -51,7 +51,7 @@ void main() {
       expect(result.longestStreak, 3);
     });
 
-    test('昨日まで連続（今日は未学習）', () {
+    test('昨日まで連続（今日は未活動）', () {
       final logs = makeLogs([
         (DateTime(2025, 2, 27), 30),
         (DateTime(2025, 2, 28), 30),
@@ -129,7 +129,7 @@ void main() {
       );
     });
 
-    test('連続学習ストリーク実績', () {
+    test('連続活動ストリーク実績', () {
       final logs = makeLogs([
         (DateTime(2025, 3, 1), 30),
       ]);
@@ -151,7 +151,7 @@ void main() {
       );
     });
 
-    test('学習日数の実績', () {
+    test('活動日数の実績', () {
       final dates = List.generate(
         7,
         (i) => DateTime(2025, 3, 1 + i),
@@ -215,7 +215,7 @@ void main() {
       expect(result.totalStudyDays, 0);
     });
 
-    test('1日の最高学習時間', () {
+    test('1日の最高活動時間', () {
       final logs = makeLogs([
         (DateTime(2025, 3, 1), 60),
         (DateTime(2025, 3, 1), 30),
@@ -226,7 +226,7 @@ void main() {
       expect(result.bestDayDate, DateTime(2025, 3, 1));
     });
 
-    test('週間の最高学習時間', () {
+    test('週間の最高活動時間', () {
       // 同じ週（月曜始まり）に複数日
       final logs = makeLogs([
         (DateTime(2025, 3, 3), 60), // Monday
@@ -282,7 +282,7 @@ void main() {
       expect(result.overallTotalDays, 1);
     });
 
-    test('今週の学習日数と時間', () {
+    test('今週の活動日数と時間', () {
       // 2025-03-05 is Wednesday (weekday=3)
       final logs = makeLogs([
         (DateTime(2025, 3, 3), 60),
@@ -298,7 +298,7 @@ void main() {
       expect(result.thisWeekMinutes, 90);
     });
 
-    test('今月の学習日数と時間', () {
+    test('今月の活動日数と時間', () {
       final logs = makeLogs([
         (DateTime(2025, 3, 1), 60),
         (DateTime(2025, 3, 3), 30),
@@ -314,7 +314,7 @@ void main() {
     });
 
     test('全体の実施率', () {
-      // 10日間の期間で5日学習
+      // 10日間の期間で5日活動
       final logs = makeLogs([
         (DateTime(2025, 3, 1), 30),
         (DateTime(2025, 3, 3), 30),

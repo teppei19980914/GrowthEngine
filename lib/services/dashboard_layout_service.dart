@@ -13,21 +13,21 @@ const _prefsKeyLayout = 'dashboard_layout';
 const widgetRegistry = <String, WidgetMetadata>{
   'today_banner': WidgetMetadata(
     widgetType: 'today_banner',
-    displayName: '今日の学習状況',
+    displayName: '今日の活動状況',
     icon: '\u2705',
     defaultSpan: 2,
     allowedSpans: [1, 2],
   ),
   'total_time_card': WidgetMetadata(
     widgetType: 'total_time_card',
-    displayName: '合計学習時間',
+    displayName: '合計活動時間',
     icon: '\u23F1\uFE0F',
     defaultSpan: 1,
     allowedSpans: [1, 2],
   ),
   'study_days_card': WidgetMetadata(
     widgetType: 'study_days_card',
-    displayName: '学習日数',
+    displayName: '活動日数',
     icon: '\uD83D\uDCC5',
     defaultSpan: 1,
     allowedSpans: [1, 2],
@@ -48,7 +48,7 @@ const widgetRegistry = <String, WidgetMetadata>{
   ),
   'streak_card': WidgetMetadata(
     widgetType: 'streak_card',
-    displayName: '連続学習',
+    displayName: '連続活動',
     icon: '\uD83D\uDD25',
     defaultSpan: 1,
     allowedSpans: [1, 2],
@@ -69,14 +69,14 @@ const widgetRegistry = <String, WidgetMetadata>{
   ),
   'consistency': WidgetMetadata(
     widgetType: 'consistency',
-    displayName: '学習の実施率',
+    displayName: '活動の実施率',
     icon: '\uD83D\uDCCA',
     defaultSpan: 1,
     allowedSpans: [1, 2],
   ),
   'daily_chart': WidgetMetadata(
     widgetType: 'daily_chart',
-    displayName: '学習アクティビティ',
+    displayName: 'アクティビティ',
     icon: '\uD83D\uDCC8',
     defaultSpan: 2,
     allowedSpans: [1, 2],

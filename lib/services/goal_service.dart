@@ -1,4 +1,4 @@
-/// 3W1H学習目標のビジネスロジック.
+/// 目標のビジネスロジック.
 library;
 
 import 'package:drift/drift.dart';
@@ -39,14 +39,12 @@ class GoalService {
   /// Goalを作成する.
   Future<Goal> createGoal({
     required String dreamId,
-    required String why,
     required String whenTarget,
     required WhenType whenType,
     required String what,
     required String how,
   }) async {
     _validateFields({
-      'why': why,
       'whenTarget': whenTarget,
       'what': what,
       'how': how,
@@ -54,7 +52,6 @@ class GoalService {
     final color = await _assignColor();
     final goal = Goal(
       dreamId: dreamId,
-      why: why,
       whenTarget: whenTarget,
       whenType: whenType,
       what: what,
@@ -69,14 +66,12 @@ class GoalService {
   Future<Goal?> updateGoal({
     required String goalId,
     required String dreamId,
-    required String why,
     required String whenTarget,
     required WhenType whenType,
     required String what,
     required String how,
   }) async {
     _validateFields({
-      'why': why,
       'whenTarget': whenTarget,
       'what': what,
       'how': how,
@@ -86,7 +81,6 @@ class GoalService {
 
     final updated = _rowToGoal(existing).copyWith(
       dreamId: dreamId,
-      why: why,
       whenTarget: whenTarget,
       whenType: whenType,
       what: what,

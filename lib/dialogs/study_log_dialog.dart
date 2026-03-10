@@ -1,6 +1,6 @@
-/// 学習ログ記録ダイアログ.
+/// 活動ログ記録ダイアログ.
 ///
-/// 学習日、学習時間（分）、メモを入力させる.
+/// 活動日、活動時間（分）、メモを入力させる.
 library;
 
 import 'package:flutter/material.dart';
@@ -16,17 +16,17 @@ class StudyLogDialogResult {
     required this.memo,
   });
 
-  /// 学習日.
+  /// 活動日.
   final DateTime studyDate;
 
-  /// 学習時間（分）.
+  /// 活動時間（分）.
   final int durationMinutes;
 
   /// メモ.
   final String memo;
 }
 
-/// 学習ログダイアログを表示する.
+/// 活動ログダイアログを表示する.
 ///
 /// [taskName]はダイアログタイトルに表示するタスク名.
 Future<StudyLogDialogResult?> showStudyLogDialog(
@@ -101,7 +101,7 @@ class _StudyLogDialogContentState extends State<_StudyLogDialogContent> {
 
     if (totalMinutes <= 0) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('学習時間は1分以上で入力してください')),
+        const SnackBar(content: Text('活動時間は1分以上で入力してください')),
       );
       return;
     }
@@ -120,7 +120,7 @@ class _StudyLogDialogContentState extends State<_StudyLogDialogContent> {
     final theme = Theme.of(context);
 
     return AlertDialog(
-      title: Text('学習ログを記録: ${widget.taskName}'),
+      title: Text('活動ログを記録: ${widget.taskName}'),
       content: SizedBox(
         width: 400,
         child: Form(
@@ -129,8 +129,8 @@ class _StudyLogDialogContentState extends State<_StudyLogDialogContent> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // 学習日
-              Text('学習日', style: theme.textTheme.titleSmall),
+              // 活動日
+              Text('活動日', style: theme.textTheme.titleSmall),
               const SizedBox(height: 4),
               TextFormField(
                 controller: _dateController,
@@ -146,8 +146,8 @@ class _StudyLogDialogContentState extends State<_StudyLogDialogContent> {
               ),
               const SizedBox(height: 16),
 
-              // 学習時間
-              Text('学習時間', style: theme.textTheme.titleSmall),
+              // 活動時間
+              Text('活動時間', style: theme.textTheme.titleSmall),
               const SizedBox(height: 4),
               Row(
                 children: [
@@ -182,7 +182,7 @@ class _StudyLogDialogContentState extends State<_StudyLogDialogContent> {
               TextFormField(
                 controller: _memoController,
                 decoration: const InputDecoration(
-                  hintText: '学習内容のメモ（任意）',
+                  hintText: '活動内容のメモ（任意）',
                 ),
                 maxLines: 2,
               ),

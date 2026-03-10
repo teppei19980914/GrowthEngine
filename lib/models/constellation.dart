@@ -100,7 +100,7 @@ class ConstellationOverallProgress {
   /// 各星座の進捗リスト.
   final List<ConstellationProgress> constellations;
 
-  /// 累計学習時間（分）.
+  /// 累計活動時間（分）.
   final int totalMinutes;
 
   /// 点灯済みの星の総数.
@@ -109,7 +109,7 @@ class ConstellationOverallProgress {
   /// 全星座の星の総数.
   final int totalStars;
 
-  /// 合計学習時間（時間）.
+  /// 合計活動時間（時間）.
   double get totalHours => totalMinutes / 60.0;
 
   /// 全体完成率（0.0〜1.0）.

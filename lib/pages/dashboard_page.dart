@@ -1,6 +1,6 @@
 /// ダッシュボードページ.
 ///
-/// カスタマイズ可能なウィジェットグリッドで学習状況を一覧表示する.
+/// カスタマイズ可能なウィジェットグリッドで活動状況を一覧表示する.
 library;
 
 import 'package:flutter/material.dart';
@@ -273,7 +273,7 @@ class _DashboardWidgetCard extends ConsumerWidget {
   }
 }
 
-/// 今日の学習バナー.
+/// 今日の活動バナー.
 class _TodayBannerContent extends ConsumerWidget {
   const _TodayBannerContent({required this.colors});
   final AppColors colors;
@@ -301,7 +301,7 @@ class _TodayBannerContent extends ConsumerWidget {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Text(
-                    data.studied ? '今日は学習済み!' : 'まだ学習していません',
+                    data.studied ? '今日は活動済み!' : 'まだ活動していません',
                     style: theme.textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.bold,
                     ),
@@ -323,7 +323,7 @@ class _TodayBannerContent extends ConsumerWidget {
   }
 }
 
-/// 合計学習時間カード.
+/// 合計活動時間カード.
 class _TotalTimeContent extends ConsumerWidget {
   const _TotalTimeContent({required this.colors});
   final AppColors colors;
@@ -337,7 +337,7 @@ class _TotalTimeContent extends ConsumerWidget {
       data: (data) => _StatDisplay(
         icon: Icons.timer_outlined,
         iconColor: colors.accent,
-        label: '合計学習時間',
+        label: '合計活動時間',
         value: '${data.totalHours.toStringAsFixed(1)}h',
         theme: theme,
       ),
@@ -347,7 +347,7 @@ class _TotalTimeContent extends ConsumerWidget {
   }
 }
 
-/// 学習日数カード.
+/// 活動日数カード.
 class _StudyDaysContent extends ConsumerWidget {
   const _StudyDaysContent({required this.colors});
   final AppColors colors;
@@ -361,7 +361,7 @@ class _StudyDaysContent extends ConsumerWidget {
       data: (data) => _StatDisplay(
         icon: Icons.calendar_today_outlined,
         iconColor: colors.success,
-        label: '学習日数',
+        label: '活動日数',
         value: '${data.totalStudyDays}日',
         theme: theme,
       ),
@@ -433,7 +433,7 @@ class _StreakContent extends ConsumerWidget {
       data: (data) => _StatDisplay(
         icon: Icons.local_fire_department_outlined,
         iconColor: colors.error,
-        label: '連続学習',
+        label: '連続活動',
         value: '${data.currentStreak}日',
         subtitle: '最長: ${data.longestStreak}日',
         theme: theme,
@@ -592,7 +592,7 @@ class _ConsistencyContent extends ConsumerWidget {
             children: [
               Icon(Icons.bar_chart_outlined, size: 20, color: colors.accent),
               const SizedBox(width: 8),
-              Text('学習の実施率', style: theme.textTheme.titleSmall),
+              Text('活動の実施率', style: theme.textTheme.titleSmall),
             ],
           ),
           const SizedBox(height: 8),
@@ -653,7 +653,7 @@ class _DailyChartContent extends ConsumerWidget {
             children: [
               Icon(Icons.show_chart, size: 20, color: colors.success),
               const SizedBox(width: 8),
-              Text('学習アクティビティ (30日)', style: theme.textTheme.titleSmall),
+              Text('アクティビティ (30日)', style: theme.textTheme.titleSmall),
             ],
           ),
           const SizedBox(height: 12),

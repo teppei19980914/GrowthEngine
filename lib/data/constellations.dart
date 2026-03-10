@@ -6,7 +6,7 @@ library;
 
 import '../models/constellation.dart';
 
-/// 1つの星を点灯するのに必要な学習時間（分）.
+/// 1つの星を点灯するのに必要な活動時間（分）.
 const minutesPerStar = 300; // 5時間
 
 /// 利用可能な星座一覧.

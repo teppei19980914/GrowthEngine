@@ -13,7 +13,7 @@ const _streakThresholds = [3, 7, 14, 30, 60, 100];
 
 /// モチベーション関連の統計を計算するクラス.
 class MotivationCalculator {
-  /// ストリーク（連続学習日数）を計算する.
+  /// ストリーク（連続活動日数）を計算する.
   static StreakData calculateStreak(
     List<StudyLog> logs, {
     DateTime? today,
@@ -52,7 +52,7 @@ class MotivationCalculator {
     );
   }
 
-  /// 今日の学習データを計算する.
+  /// 今日の活動データを計算する.
   static TodayStudyData calculateTodayStudy(
     List<StudyLog> logs, {
     DateTime? today,
@@ -213,7 +213,7 @@ class MotivationCalculator {
     );
   }
 
-  /// 学習の実施率を計算する.
+  /// 活動の実施率を計算する.
   static ConsistencyData calculateConsistency(
     List<StudyLog> logs, {
     DateTime? today,
@@ -309,7 +309,7 @@ class MotivationCalculator {
       case MilestoneType.totalHours:
         return '累計$value時間';
       case MilestoneType.studyDays:
-        return '$value日学習';
+        return '$value日活動';
       case MilestoneType.streak:
         return '$value日連続';
     }

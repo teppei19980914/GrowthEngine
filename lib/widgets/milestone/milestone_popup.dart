@@ -35,21 +35,21 @@ class MilestonePopup extends StatelessWidget {
           children: [
             _StatRow(
               icon: '\u{23F0}',
-              label: '累計学習時間',
+              label: '累計活動時間',
               value: '${data.totalHours}時間',
               theme: theme,
             ),
             const SizedBox(height: 8),
             _StatRow(
               icon: '\u{1F4C5}',
-              label: '累計学習日数',
+              label: '累計活動日数',
               value: '${data.studyDays}日',
               theme: theme,
             ),
             const SizedBox(height: 8),
             _StatRow(
               icon: '\u{1F525}',
-              label: '連続学習日数',
+              label: '連続活動日数',
               value: '${data.currentStreak}日',
               theme: theme,
             ),

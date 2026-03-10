@@ -1,13 +1,13 @@
 /// 星座進捗の計算ロジック.
 ///
-/// 全学習時間の合計から12星座を順番に埋めていく.
+/// 全活動時間の合計から12星座を順番に埋めていく.
 library;
 
 import '../data/constellations.dart';
 import '../database/daos/study_log_dao.dart';
 import '../models/constellation.dart';
 
-/// 総合学習時間ベースの星座進捗を算出するサービス.
+/// 総合活動時間ベースの星座進捗を算出するサービス.
 class ConstellationService {
   /// ConstellationServiceを作成する.
   ConstellationService({
@@ -16,15 +16,15 @@ class ConstellationService {
 
   final StudyLogDao _studyLogDao;
 
-  /// 全学習時間を合計し、12星座を順番に埋めた進捗を返す.
+  /// 全活動時間を合計し、12星座を順番に埋めた進捗を返す.
   Future<ConstellationOverallProgress> getOverallProgress() async {
-    // 全学習ログの合計時間を算出
+    // 全活動ログの合計時間を算出
     final totalMinutes = await _studyLogDao.getTotalMinutes();
 
     return calculateProgress(totalMinutes);
   }
 
-  /// 合計学習時間（分）から星座進捗を計算する（テスト用に公開）.
+  /// 合計活動時間（分）から星座進捗を計算する（テスト用に公開）.
   ConstellationOverallProgress calculateProgress(int totalMinutes) {
     var remainingStars = (totalMinutes ~/ minutesPerStar);
     var totalLitStars = 0;

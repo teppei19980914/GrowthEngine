@@ -40,11 +40,11 @@ void main() {
       await _openDialog(tester, data);
 
       expect(find.text('実績'), findsOneWidget);
-      expect(find.text('累計学習時間'), findsOneWidget);
+      expect(find.text('累計活動時間'), findsOneWidget);
       expect(find.text('42.5時間'), findsOneWidget);
-      expect(find.text('累計学習日数'), findsOneWidget);
+      expect(find.text('累計活動日数'), findsOneWidget);
       expect(find.text('30日'), findsOneWidget);
-      expect(find.text('連続学習日数'), findsOneWidget);
+      expect(find.text('連続活動日数'), findsOneWidget);
       expect(find.text('7日'), findsOneWidget);
     });
 
@@ -62,7 +62,7 @@ void main() {
           Milestone(
             milestoneType: MilestoneType.studyDays,
             value: 30,
-            label: '30日学習達成',
+            label: '30日活動達成',
           ),
         ],
       );
@@ -70,7 +70,7 @@ void main() {
       await _openDialog(tester, data);
 
       expect(find.textContaining('累計10時間達成'), findsOneWidget);
-      expect(find.textContaining('30日学習達成'), findsOneWidget);
+      expect(find.textContaining('30日活動達成'), findsOneWidget);
       // 未達成メッセージは表示されない
       expect(find.text('まだ実績はありません'), findsNothing);
     });

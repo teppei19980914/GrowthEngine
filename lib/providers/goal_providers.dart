@@ -21,7 +21,6 @@ class GoalListNotifier extends AsyncNotifier<List<Goal>> {
   /// Goalを作成し、作成されたGoalのIDを返す.
   Future<String> createGoal({
     required String dreamId,
-    required String why,
     required String whenTarget,
     required WhenType whenType,
     required String what,
@@ -30,7 +29,6 @@ class GoalListNotifier extends AsyncNotifier<List<Goal>> {
     final service = ref.read(goalServiceProvider);
     final goal = await service.createGoal(
       dreamId: dreamId,
-      why: why,
       whenTarget: whenTarget,
       whenType: whenType,
       what: what,
@@ -44,7 +42,6 @@ class GoalListNotifier extends AsyncNotifier<List<Goal>> {
   Future<void> updateGoal({
     required String goalId,
     required String dreamId,
-    required String why,
     required String whenTarget,
     required WhenType whenType,
     required String what,
@@ -54,7 +51,6 @@ class GoalListNotifier extends AsyncNotifier<List<Goal>> {
     await service.updateGoal(
       goalId: goalId,
       dreamId: dreamId,
-      why: why,
       whenTarget: whenTarget,
       whenType: whenType,
       what: what,

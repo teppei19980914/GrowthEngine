@@ -31,9 +31,8 @@ class _AppGuideDialogState extends State<_AppGuideDialog> {
     _GuidePage(
       icon: Icons.flag,
       title: 'ステップ2: 目標を設定',
-      description: '「3W1H 目標」ページで、夢を実現するための具体的な目標を設定します。\n\n'
+      description: '「目標」ページで、夢を実現するための具体的な目標を設定します。\n\n'
           '- What（何を）\n'
-          '- Why（なぜ）\n'
           '- When（いつまでに）\n'
           '- How（どうやって）',
     ),
@@ -42,27 +41,27 @@ class _AppGuideDialogState extends State<_AppGuideDialog> {
       title: 'ステップ3: タスクを管理',
       description: '「ガントチャート」ページで、目標に紐づくタスクを作成し、'
           'スケジュールを管理します。\n\n'
-          'タスクをタップすると学習ログの記録やタイマーも使えます。',
+          'タスクをタップすると活動ログの記録やタイマーも使えます。',
     ),
     _GuidePage(
       icon: Icons.menu_book,
       title: 'ステップ4: 書籍を管理',
-      description: '「書籍」ページで学習に使う書籍を登録できます。\n\n'
+      description: '「書籍」ページで参考書籍を登録できます。\n\n'
           '読書の進捗管理や、読了時の要約・感想の記録ができます。',
     ),
     _GuidePage(
       icon: Icons.bar_chart,
       title: 'ステップ5: 統計で振り返り',
-      description: '「統計」ページで学習の実績を確認できます。\n\n'
-          '- 学習時間・日数の推移\n'
-          '- 連続学習ストリーク\n'
+      description: '「統計」ページで活動の実績を確認できます。\n\n'
+          '- 活動時間・日数の推移\n'
+          '- 連続活動ストリーク\n'
           '- 目標別・書籍別の統計',
     ),
     _GuidePage(
       icon: Icons.stars,
       title: 'ステップ6: 星座で成長を実感',
-      description: '「星座」ページでは、学習の積み重ねが星座として可視化されます。\n\n'
-          '夢ごとに星座が割り当てられ、学習するほど星が輝きます。',
+      description: '「星座」ページでは、活動の積み重ねが星座として可視化されます。\n\n'
+          '夢ごとに星座が割り当てられ、活動するほど星が輝きます。',
     ),
   ];
 

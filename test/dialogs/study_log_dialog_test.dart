@@ -17,15 +17,15 @@ void main() {
     );
   }
 
-  testWidgets('学習ログダイアログが表示される', (tester) async {
+  testWidgets('活動ログダイアログが表示される', (tester) async {
     await tester.pumpWidget(buildApp());
     await tester.tap(find.text('Open'));
     await tester.pumpAndSettle();
 
-    // タイトルは '学習ログを記録: テストタスク'
-    expect(find.textContaining('学習ログを記録'), findsOneWidget);
+    // タイトルは '活動ログを記録: テストタスク'
+    expect(find.textContaining('活動ログを記録'), findsOneWidget);
     expect(find.textContaining('テストタスク'), findsOneWidget);
-    expect(find.text('学習日'), findsOneWidget);
+    expect(find.text('活動日'), findsOneWidget);
   });
 
   testWidgets('時間入力フィールドが表示される', (tester) async {
@@ -33,7 +33,7 @@ void main() {
     await tester.tap(find.text('Open'));
     await tester.pumpAndSettle();
 
-    expect(find.text('学習時間'), findsOneWidget);
+    expect(find.text('活動時間'), findsOneWidget);
   });
 
   testWidgets('0分では保存できない', (tester) async {
@@ -65,6 +65,6 @@ void main() {
     await tester.tap(find.text('キャンセル'));
     await tester.pumpAndSettle();
 
-    expect(find.textContaining('学習ログを記録'), findsNothing);
+    expect(find.textContaining('活動ログを記録'), findsNothing);
   });
 }

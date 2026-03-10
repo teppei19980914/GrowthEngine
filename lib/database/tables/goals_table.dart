@@ -3,7 +3,7 @@ library;
 
 import 'package:drift/drift.dart';
 
-/// 3W1H学習目標テーブル.
+/// 目標テーブル.
 class Goals extends Table {
   /// 一意識別子.
   TextColumn get id => text()();
@@ -11,7 +11,7 @@ class Goals extends Table {
   /// 紐づく夢のID.
   TextColumn get dreamId => text().withDefault(const Constant(''))();
 
-  /// なぜ学習するのか（動機・理由）.
+  /// なぜその夢を目指すのか（動機・理由）※Dream側に移動済み.
   TextColumn get why => text()();
 
   /// いつまでに（目標日付または期間の説明）.
@@ -20,10 +20,10 @@ class Goals extends Table {
   /// When指定タイプ（date or period）.
   TextColumn get whenType => text()();
 
-  /// 何を学習するのか.
+  /// 何を目標とするか.
   TextColumn get what => text()();
 
-  /// どうやって学習するのか.
+  /// どうやって達成するか.
   TextColumn get how => text()();
 
   /// 表示色（ガントチャート用）.

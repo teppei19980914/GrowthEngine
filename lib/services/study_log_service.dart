@@ -1,4 +1,4 @@
-/// 学習ログのビジネスロジック.
+/// 活動ログのビジネスロジック.
 library;
 
 import 'package:drift/drift.dart';
@@ -16,7 +16,7 @@ class StudyLogService {
 
   final StudyLogDao _studyLogDao;
 
-  /// 学習ログを追加する.
+  /// 活動ログを追加する.
   Future<StudyLog> addStudyLog({
     required String taskId,
     required DateTime studyDate,

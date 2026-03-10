@@ -26,7 +26,7 @@ void main() {
     // 追加ボタンが表示される
     expect(find.byIcon(Icons.add), findsOneWidget);
     // ヘッダー説明テキスト
-    expect(find.textContaining('3W1H'), findsWidgets);
+    expect(find.textContaining('目標'), findsWidgets);
   });
 
   testWidgets('サンプル目標が表示される', (tester) async {
@@ -45,7 +45,7 @@ void main() {
     await tester.pumpAndSettle();
 
     // 目標タイトルが表示される
-    expect(find.text('Flutter学習'), findsOneWidget);
+    expect(find.text('Flutter活動'), findsOneWidget);
     expect(find.text('基本情報技術者'), findsOneWidget);
   });
 

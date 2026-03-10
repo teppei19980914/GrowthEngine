@@ -28,7 +28,7 @@ import 'widgets/tutorial/tutorial_banner.dart';
 const _pageTitles = <String, String>{
   '/': 'ダッシュボード',
   '/dreams': '夢',
-  '/goals': '3W1H 目標',
+  '/goals': '目標',
   '/gantt': 'ガントチャート',
   '/books': '書籍',
   '/constellations': '星座',
@@ -74,7 +74,7 @@ class YumeLogApp extends ConsumerWidget {
     final themeType = ref.watch(themeProvider);
 
     return MaterialApp.router(
-      title: 'ユメログ - 学習計画管理',
+      title: 'ユメログ - 夢実現支援',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,

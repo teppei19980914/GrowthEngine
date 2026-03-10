@@ -11,6 +11,7 @@ class DreamDialogResult {
   const DreamDialogResult({
     required this.title,
     required this.description,
+    required this.why,
   });
 
   /// 夢のタイトル.
@@ -18,6 +19,9 @@ class DreamDialogResult {
 
   /// 夢の説明.
   final String description;
+
+  /// なぜこの夢を叶えたいか.
+  final String why;
 }
 
 /// 夢ダイアログを表示する.
@@ -46,6 +50,7 @@ class _DreamDialogContentState extends State<_DreamDialogContent> {
   final _formKey = GlobalKey<FormState>();
   late final TextEditingController _titleController;
   late final TextEditingController _descriptionController;
+  late final TextEditingController _whyController;
 
   bool get _isEdit => widget.dream != null;
 
@@ -55,12 +60,14 @@ class _DreamDialogContentState extends State<_DreamDialogContent> {
     _titleController = TextEditingController(text: widget.dream?.title ?? '');
     _descriptionController =
         TextEditingController(text: widget.dream?.description ?? '');
+    _whyController = TextEditingController(text: widget.dream?.why ?? '');
   }
 
   @override
   void dispose() {
     _titleController.dispose();
     _descriptionController.dispose();
+    _whyController.dispose();
     super.dispose();
   }
 
@@ -71,6 +78,7 @@ class _DreamDialogContentState extends State<_DreamDialogContent> {
       DreamDialogResult(
         title: _titleController.text.trim(),
         description: _descriptionController.text.trim(),
+        why: _whyController.text.trim(),
       ),
     );
   }
@@ -112,9 +120,23 @@ class _DreamDialogContentState extends State<_DreamDialogContent> {
                 TextFormField(
                   controller: _descriptionController,
                   decoration: const InputDecoration(
-                    hintText: '例: 人の役に立つ医療に携わりたい',
+                    hintText: '例: 困っている人を助けられる医者になりたい',
                   ),
                   maxLines: 4,
+                  minLines: 2,
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  'Why（なぜこの夢を叶えたいか）',
+                  style: theme.textTheme.titleSmall,
+                ),
+                const SizedBox(height: 4),
+                TextFormField(
+                  controller: _whyController,
+                  decoration: const InputDecoration(
+                    hintText: '例: 幼い頃に医者に助けられた経験がある',
+                  ),
+                  maxLines: 3,
                   minLines: 2,
                 ),
               ],

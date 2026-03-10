@@ -1,9 +1,9 @@
-/// 学習ログテーブル定義.
+/// 活動ログテーブル定義.
 library;
 
 import 'package:drift/drift.dart';
 
-/// 学習ログテーブル.
+/// 活動ログテーブル.
 class StudyLogs extends Table {
   /// 一意識別子.
   TextColumn get id => text()();
@@ -11,10 +11,10 @@ class StudyLogs extends Table {
   /// 紐づくTaskのID.
   TextColumn get taskId => text()();
 
-  /// 学習実施日.
+  /// 活動実施日.
   DateTimeColumn get studyDate => dateTime()();
 
-  /// 学習時間（分単位）.
+  /// 活動時間（分単位）.
   IntColumn get durationMinutes => integer()();
 
   /// メモ.

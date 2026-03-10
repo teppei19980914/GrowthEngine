@@ -179,7 +179,6 @@ void main() {
 
       await container.read(goalListProvider.notifier).createGoal(
             dreamId: dreamId,
-            why: 'テスト理由',
             whenTarget: '2026-12-31',
             whenType: WhenType.date,
             what: 'テスト目標',
@@ -364,7 +363,7 @@ void main() {
     });
 
     test('constellationProgressProvider は全星座の進捗を返す', () async {
-      // 学習ログがないので全星座0個
+      // 活動ログがないので全星座0個
       final progress =
           await container.read(constellationProgressProvider.future);
       expect(progress.constellations.length, 36);

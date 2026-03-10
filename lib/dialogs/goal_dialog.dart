@@ -1,6 +1,6 @@
 /// 目標の追加・編集ダイアログ.
 ///
-/// 3W1Hフォーム（What, Why, When, How）を表示し、
+/// What, When, How フォームを表示し、
 /// ユーザーに目標情報を入力させる.
 library;
 
@@ -16,7 +16,6 @@ class GoalDialogResult {
   const GoalDialogResult({
     required this.dreamId,
     required this.what,
-    required this.why,
     required this.whenType,
     required this.whenTarget,
     required this.how,
@@ -25,11 +24,8 @@ class GoalDialogResult {
   /// 紐づく夢のID.
   final String dreamId;
 
-  /// 何を学習するか.
+  /// 何を目標とするか.
   final String what;
-
-  /// なぜ学習するか.
-  final String why;
 
   /// When指定タイプ.
   final WhenType whenType;
@@ -37,7 +33,7 @@ class GoalDialogResult {
   /// いつまでに.
   final String whenTarget;
 
-  /// どうやって学習するか.
+  /// どうやって達成するか.
   final String how;
 }
 
@@ -81,7 +77,6 @@ class _GoalDialogContent extends StatefulWidget {
 class _GoalDialogContentState extends State<_GoalDialogContent> {
   final _formKey = GlobalKey<FormState>();
   late final TextEditingController _whatController;
-  late final TextEditingController _whyController;
   late final TextEditingController _whenTargetController;
   late final TextEditingController _howController;
   late WhenType _whenType;
@@ -95,7 +90,6 @@ class _GoalDialogContentState extends State<_GoalDialogContent> {
     super.initState();
     final goal = widget.goal;
     _whatController = TextEditingController(text: goal?.what ?? '');
-    _whyController = TextEditingController(text: goal?.why ?? '');
     _howController = TextEditingController(text: goal?.how ?? '');
     _whenType = goal?.whenType ?? WhenType.date;
     _selectedDreamId =
@@ -118,7 +112,6 @@ class _GoalDialogContentState extends State<_GoalDialogContent> {
   @override
   void dispose() {
     _whatController.dispose();
-    _whyController.dispose();
     _whenTargetController.dispose();
     _howController.dispose();
     super.dispose();
@@ -147,7 +140,6 @@ class _GoalDialogContentState extends State<_GoalDialogContent> {
       GoalDialogResult(
         dreamId: _selectedDreamId!,
         what: _whatController.text.trim(),
-        why: _whyController.text.trim(),
         whenType: _whenType,
         whenTarget: _whenTargetController.text.trim(),
         how: _howController.text.trim(),
@@ -195,43 +187,25 @@ class _GoalDialogContentState extends State<_GoalDialogContent> {
                 ),
                 const SizedBox(height: 16),
 
-                // What — 何を
+                // What — 何を目標とするか
                 Text(
-                  'What（何を学習するか）',
+                  'What（何を目標とするか）',
                   style: theme.textTheme.titleSmall,
                 ),
                 const SizedBox(height: 4),
                 TextFormField(
                   controller: _whatController,
                   decoration: const InputDecoration(
-                    hintText: '例: TOEIC 900点',
+                    hintText: '例: TOEIC 900点を取得する',
                   ),
                   validator: (v) =>
                       v == null || v.trim().isEmpty ? '必須項目です' : null,
                 ),
                 const SizedBox(height: 16),
 
-                // Why — なぜ
+                // When — いつまでに達成するか
                 Text(
-                  'Why（なぜ学習するか）',
-                  style: theme.textTheme.titleSmall,
-                ),
-                const SizedBox(height: 4),
-                TextFormField(
-                  controller: _whyController,
-                  decoration: const InputDecoration(
-                    hintText: '例: 海外赴任に備えて英語力を高めたい',
-                  ),
-                  maxLines: 3,
-                  minLines: 2,
-                  validator: (v) =>
-                      v == null || v.trim().isEmpty ? '必須項目です' : null,
-                ),
-                const SizedBox(height: 16),
-
-                // When — いつまでに
-                Text(
-                  'When（いつまでに）',
+                  'When（いつまでに達成するか）',
                   style: theme.textTheme.titleSmall,
                 ),
                 const SizedBox(height: 4),
@@ -284,9 +258,9 @@ class _GoalDialogContentState extends State<_GoalDialogContent> {
                   ),
                 const SizedBox(height: 16),
 
-                // How — どうやって
+                // How — どうやって達成するか
                 Text(
-                  'How（どうやって学習するか）',
+                  'How（どうやって達成するか）',
                   style: theme.textTheme.titleSmall,
                 ),
                 const SizedBox(height: 4),

@@ -23,37 +23,20 @@ void main() {
       test('Goalを作成する', () async {
         final goal = await service.createGoal(
           dreamId: 'dream-1',
-          why: 'テスト理由',
           whenTarget: '2025年末',
           whenType: WhenType.date,
           what: 'テスト内容',
           how: 'テスト方法',
         );
-        expect(goal.why, 'テスト理由');
         expect(goal.what, 'テスト内容');
         expect(goal.how, 'テスト方法');
         expect(goal.color, isNotEmpty);
-      });
-
-      test('空のwhyでArgumentError', () async {
-        expect(
-          () => service.createGoal(
-            dreamId: 'dream-1',
-            why: '',
-            whenTarget: '2025年末',
-            whenType: WhenType.date,
-            what: 'テスト',
-            how: 'テスト',
-          ),
-          throwsArgumentError,
-        );
       });
 
       test('空のwhatでArgumentError', () async {
         expect(
           () => service.createGoal(
             dreamId: 'dream-1',
-            why: 'テスト',
             whenTarget: '2025年末',
             whenType: WhenType.date,
             what: '',
@@ -67,7 +50,7 @@ void main() {
         expect(
           () => service.createGoal(
             dreamId: 'dream-1',
-            why: 'テスト',
+
             whenTarget: '2025年末',
             whenType: WhenType.date,
             what: 'テスト',
@@ -81,7 +64,7 @@ void main() {
         expect(
           () => service.createGoal(
             dreamId: 'dream-1',
-            why: 'テスト',
+
             whenTarget: '',
             whenType: WhenType.date,
             what: 'テスト',
@@ -95,7 +78,7 @@ void main() {
         expect(
           () => service.createGoal(
             dreamId: 'dream-1',
-            why: 'テスト',
+
             whenTarget: '   ',
             whenType: WhenType.date,
             what: 'テスト',
@@ -108,7 +91,6 @@ void main() {
       test('色が自動割り当てされる', () async {
         final g1 = await service.createGoal(
           dreamId: 'dream-1',
-          why: 'W1',
           whenTarget: '2025年末',
           whenType: WhenType.period,
           what: 'X1',
@@ -116,7 +98,6 @@ void main() {
         );
         final g2 = await service.createGoal(
           dreamId: 'dream-1',
-          why: 'W2',
           whenTarget: '2026年末',
           whenType: WhenType.period,
           what: 'X2',
@@ -130,7 +111,6 @@ void main() {
       test('全Goal取得', () async {
         await service.createGoal(
           dreamId: 'dream-1',
-          why: 'W1',
           whenTarget: '随時',
           whenType: WhenType.period,
           what: 'X1',
@@ -138,7 +118,6 @@ void main() {
         );
         await service.createGoal(
           dreamId: 'dream-1',
-          why: 'W2',
           whenTarget: '随時',
           whenType: WhenType.period,
           what: 'X2',
@@ -153,7 +132,6 @@ void main() {
       test('IDで取得', () async {
         final created = await service.createGoal(
           dreamId: 'dream-1',
-          why: 'W',
           whenTarget: '随時',
           whenType: WhenType.period,
           what: 'X',
@@ -174,7 +152,6 @@ void main() {
       test('Goalを更新する', () async {
         final created = await service.createGoal(
           dreamId: 'dream-1',
-          why: 'Original',
           whenTarget: '随時',
           whenType: WhenType.period,
           what: 'X',
@@ -183,22 +160,19 @@ void main() {
         final updated = await service.updateGoal(
           goalId: created.id,
           dreamId: 'dream-1',
-          why: 'Updated',
           whenTarget: '2025年',
           whenType: WhenType.date,
           what: 'X2',
           how: 'H2',
         );
         expect(updated, isNotNull);
-        expect(updated!.why, 'Updated');
-        expect(updated.what, 'X2');
+        expect(updated!.what, 'X2');
       });
 
       test('存在しないIDでnull', () async {
         final result = await service.updateGoal(
           goalId: 'nonexistent',
           dreamId: 'dream-1',
-          why: 'W',
           whenTarget: '随時',
           whenType: WhenType.period,
           what: 'X',
@@ -212,7 +186,6 @@ void main() {
       test('Goalとタスクをカスケード削除する', () async {
         final goal = await service.createGoal(
           dreamId: 'dream-1',
-          why: 'W',
           whenTarget: '随時',
           whenType: WhenType.period,
           what: 'X',

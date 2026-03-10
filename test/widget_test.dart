@@ -222,12 +222,12 @@ void main() {
     await tester.tap(find.byIcon(Icons.menu));
     await tester.pumpAndSettle();
 
-    // 「3W1H 目標」をタップ
-    await tester.tap(find.text('3W1H 目標').last);
+    // 「目標」をタップ
+    await tester.tap(find.text('目標').last);
     await tester.pumpAndSettle();
 
-    // AppBarタイトルが「3W1H 目標」に変わることを確認
-    expect(find.text('3W1H 目標'), findsWidgets);
+    // AppBarタイトルが「目標」に変わることを確認
+    expect(find.text('目標'), findsWidgets);
   });
 
   testWidgets('テーマ切替', (WidgetTester tester) async {

@@ -22,11 +22,11 @@ void main() {
 
     expect(find.text('サマリー'), findsOneWidget);
     expect(find.text('自己ベスト'), findsOneWidget);
-    expect(find.text('学習の実施率'), findsOneWidget);
+    expect(find.text('活動の実施率'), findsOneWidget);
     expect(find.text('アクティビティ'), findsOneWidget);
   });
 
-  testWidgets('合計学習時間がサマリーに表示される', (tester) async {
+  testWidgets('合計活動時間がサマリーに表示される', (tester) async {
     final prefs = await getPrefs();
     await tester.pumpWidget(
       wrapWithProviders(const StatsPage(), prefs: prefs, db: setup.db),
@@ -36,7 +36,7 @@ void main() {
     expect(find.text('10.5h'), findsWidgets);
   });
 
-  testWidgets('連続学習がサマリーに表示される', (tester) async {
+  testWidgets('連続活動がサマリーに表示される', (tester) async {
     final prefs = await getPrefs();
     await tester.pumpWidget(
       wrapWithProviders(const StatsPage(), prefs: prefs, db: setup.db),
@@ -63,7 +63,7 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    expect(find.text('1日の最高学習時間'), findsOneWidget);
+    expect(find.text('1日の最高活動時間'), findsOneWidget);
     expect(find.text('2時間'), findsOneWidget);
   });
 
@@ -74,6 +74,6 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    expect(find.text('最近の学習ログ'), findsOneWidget);
+    expect(find.text('最近の活動ログ'), findsOneWidget);
   });
 }

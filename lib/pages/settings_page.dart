@@ -62,7 +62,7 @@ class SettingsPage extends ConsumerWidget {
         Card(
           child: SwitchListTile(
             title: const Text('実績通知'),
-            subtitle: const Text('学習実績達成時に通知を表示'),
+            subtitle: const Text('実績達成時に通知を表示'),
             value: notifAsync.valueOrNull ?? true,
             onChanged: (value) async {
               final service = ref.read(notificationServiceProvider);
@@ -151,7 +151,7 @@ class SettingsPage extends ConsumerWidget {
               const ListTile(
                 leading: Icon(Icons.apps),
                 title: Text('ユメログ'),
-                subtitle: Text('学習計画管理アプリ'),
+                subtitle: Text('夢実現支援アプリ'),
               ),
               const Divider(height: 1),
               const ListTile(

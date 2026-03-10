@@ -37,7 +37,7 @@ void main() {
     setUp(() {
       task = Task(
         goalId: 'goal-1',
-        title: 'Dart基礎学習',
+        title: 'Dart基礎活動',
         startDate: startDate,
         endDate: endDate,
       );
@@ -46,7 +46,7 @@ void main() {
     test('creates with default values', () {
       expect(task.id, isNotEmpty);
       expect(task.goalId, 'goal-1');
-      expect(task.title, 'Dart基礎学習');
+      expect(task.title, 'Dart基礎活動');
       expect(task.startDate, startDate);
       expect(task.endDate, endDate);
       expect(task.status, TaskStatus.notStarted);

@@ -14,6 +14,9 @@ class Dreams extends Table {
   /// 夢の説明.
   TextColumn get description => text().withDefault(const Constant(''))();
 
+  /// なぜこの夢を叶えたいか（動機・理由）.
+  TextColumn get why => text().withDefault(const Constant(''))();
+
   /// 作成日時.
   DateTimeColumn get createdAt => dateTime()();
 

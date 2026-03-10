@@ -27,6 +27,7 @@ void main() {
         final dream = await service.createDream(title: '医者になる');
         expect(dream.title, '医者になる');
         expect(dream.description, '');
+        expect(dream.why, '');
       });
 
       test('説明付きで夢を作成する', () async {
@@ -37,9 +38,25 @@ void main() {
         expect(dream.description, '人の役に立ちたい');
       });
 
+      test('why付きで夢を作成する', () async {
+        final dream = await service.createDream(
+          title: '医者になる',
+          why: '人の命を救いたいから',
+        );
+        expect(dream.why, '人の命を救いたいから');
+      });
+
       test('タイトルの前後空白をトリムする', () async {
         final dream = await service.createDream(title: '  テスト  ');
         expect(dream.title, 'テスト');
+      });
+
+      test('whyの前後空白をトリムする', () async {
+        final dream = await service.createDream(
+          title: 'テスト',
+          why: '  理由  ',
+        );
+        expect(dream.why, '理由');
       });
 
       test('空タイトルでArgumentError', () async {
@@ -87,10 +104,12 @@ void main() {
           dreamId: dream.id,
           title: '更新後',
           description: '新しい説明',
+          why: '新しい理由',
         );
         expect(updated, isNotNull);
         expect(updated!.title, '更新後');
         expect(updated.description, '新しい説明');
+        expect(updated.why, '新しい理由');
       });
 
       test('空タイトルでArgumentError', () async {

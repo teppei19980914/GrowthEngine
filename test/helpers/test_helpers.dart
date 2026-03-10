@@ -164,7 +164,7 @@ class SampleGoalListNotifier extends GoalListNotifier {
           why: 'スキルアップ',
           whenTarget: '2026-12-31',
           whenType: WhenType.date,
-          what: 'Flutter学習',
+          what: 'Flutter活動',
           how: '毎日1時間',
           color: '#cba6f7',
         ),

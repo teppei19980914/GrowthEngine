@@ -1,13 +1,13 @@
-/// 学習ログのデータモデル.
+/// 活動ログのデータモデル.
 library;
 
 import 'package:uuid/uuid.dart';
 
-/// 学習ログモデル.
+/// 活動ログモデル.
 ///
-/// タスクごとの学習記録を表す.
+/// タスクごとの活動記録を表す.
 class StudyLog {
-  /// 学習ログを作成する.
+  /// 活動ログを作成する.
   ///
   /// [durationMinutes]は1以上である必要がある.
   StudyLog({
@@ -22,7 +22,7 @@ class StudyLog {
         createdAt = createdAt ?? DateTime.now() {
     if (durationMinutes <= 0) {
       throw ArgumentError(
-        '学習時間は1分以上で指定してください: $durationMinutes',
+        '活動時間は1分以上で指定してください: $durationMinutes',
       );
     }
   }
@@ -33,10 +33,10 @@ class StudyLog {
   /// 紐づくTaskのID.
   final String taskId;
 
-  /// 学習実施日.
+  /// 活動実施日.
   final DateTime studyDate;
 
-  /// 学習時間（分単位）.
+  /// 活動時間（分単位）.
   final int durationMinutes;
 
   /// メモ.
@@ -48,7 +48,7 @@ class StudyLog {
   /// 作成日時.
   final DateTime createdAt;
 
-  /// 学習時間を時間単位で返す.
+  /// 活動時間を時間単位で返す.
   double get durationHours => durationMinutes / 60.0;
 
   /// フィールドを変更したコピーを返す.

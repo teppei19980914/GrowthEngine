@@ -40,6 +40,7 @@ class DreamService {
   Future<Dream> createDream({
     required String title,
     String description = '',
+    String why = '',
   }) async {
     if (title.trim().isEmpty) {
       throw ArgumentError('タイトルは必須です');
@@ -47,6 +48,7 @@ class DreamService {
     final dream = Dream(
       title: title.trim(),
       description: description.trim(),
+      why: why.trim(),
     );
     await _dreamDao.insertDream(_dreamToCompanion(dream));
     return dream;
@@ -57,6 +59,7 @@ class DreamService {
     required String dreamId,
     required String title,
     String description = '',
+    String why = '',
   }) async {
     if (title.trim().isEmpty) {
       throw ArgumentError('タイトルは必須です');
@@ -67,6 +70,7 @@ class DreamService {
     final updated = _rowToDream(existing).copyWith(
       title: title.trim(),
       description: description.trim(),
+      why: why.trim(),
       updatedAt: DateTime.now(),
     );
     await _dreamDao.updateDream(_dreamToCompanion(updated));
@@ -89,6 +93,7 @@ class DreamService {
       id: row.id,
       title: row.title,
       description: row.description,
+      why: row.why,
       createdAt: row.createdAt,
       updatedAt: row.updatedAt,
     );
@@ -99,6 +104,7 @@ class DreamService {
       id: Value(dream.id),
       title: Value(dream.title),
       description: Value(dream.description),
+      why: Value(dream.why),
       createdAt: Value(dream.createdAt),
       updatedAt: Value(dream.updatedAt),
     );

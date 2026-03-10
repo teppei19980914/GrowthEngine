@@ -1,4 +1,4 @@
-/// TaskDialog内の学習ログ管理ロジック.
+/// TaskDialog内の活動ログ管理ロジック.
 library;
 
 import 'dart:math';
@@ -7,7 +7,7 @@ import '../models/study_log.dart';
 import 'study_log_service.dart';
 import 'study_stats_types.dart';
 
-/// 表示用学習ログエントリ.
+/// 表示用活動ログエントリ.
 class StudyLogDisplayEntry {
   /// StudyLogDisplayEntryを作成する.
   const StudyLogDisplayEntry({
@@ -20,17 +20,17 @@ class StudyLogDisplayEntry {
   /// ログID（削除用）.
   final String logId;
 
-  /// 学習実施日.
+  /// 活動実施日.
   final DateTime studyDate;
 
-  /// 学習時間（分）.
+  /// 活動時間（分）.
   final int durationMinutes;
 
   /// メモ.
   final String memo;
 }
 
-/// TaskDialog内の学習ログビジネスロジック.
+/// TaskDialog内の活動ログビジネスロジック.
 class TaskStudyLogLogic {
   /// TaskStudyLogLogicを初期化する.
   TaskStudyLogLogic({
@@ -46,7 +46,7 @@ class TaskStudyLogLogic {
   final String _taskName;
   final _stopwatch = Stopwatch();
 
-  /// タスクの学習ログ一覧を取得する（日付降順）.
+  /// タスクの活動ログ一覧を取得する（日付降順）.
   Future<List<StudyLogDisplayEntry>> getLogs() async {
     final logs = await _studyLogService.getLogsForTask(_taskId);
     final entries = logs
@@ -63,11 +63,11 @@ class TaskStudyLogLogic {
     return entries;
   }
 
-  /// タスクの学習統計を取得する.
+  /// タスクの活動統計を取得する.
   Future<TaskStudyStats> getStats() =>
       _studyLogService.getTaskStats(_taskId);
 
-  /// 学習ログを追加する.
+  /// 活動ログを追加する.
   Future<StudyLog> addLog({
     required DateTime studyDate,
     required int durationMinutes,
@@ -82,19 +82,19 @@ class TaskStudyLogLogic {
     );
   }
 
-  /// 学習ログを削除する.
+  /// 活動ログを削除する.
   Future<bool> deleteLog(String logId) => _studyLogService.deleteLog(logId);
 
   /// 時間と分から合計分数を計算し検証する.
   static int validateDuration(int hours, int minutes) {
     final total = hours * 60 + minutes;
     if (total <= 0) {
-      throw ArgumentError('学習時間は1分以上で入力してください。');
+      throw ArgumentError('活動時間は1分以上で入力してください。');
     }
     return total;
   }
 
-  /// 学習時間を表示用にフォーマットする.
+  /// 活動時間を表示用にフォーマットする.
   static String formatDuration(int minutes) {
     if (minutes >= 60) {
       final h = minutes ~/ 60;

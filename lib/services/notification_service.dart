@@ -18,14 +18,14 @@ const _streakThresholds = [3, 7, 14, 30, 60, 100];
 
 const _achievementTitles = {
   MilestoneType.totalHours: '累計{value}時間達成！',
-  MilestoneType.studyDays: '学習{value}日目達成！',
-  MilestoneType.streak: '{value}日連続学習達成！',
+  MilestoneType.studyDays: '活動{value}日目達成！',
+  MilestoneType.streak: '{value}日連続活動達成！',
 };
 
 const _achievementMessages = {
-  MilestoneType.totalHours: '累計学習時間が{value}時間に到達しました。素晴らしい継続力です！',
-  MilestoneType.studyDays: '学習日数が{value}日に到達しました。コツコツ積み重ねていますね！',
-  MilestoneType.streak: '{value}日間連続で学習を続けています。この調子で頑張りましょう！',
+  MilestoneType.totalHours: '累計活動時間が{value}時間に到達しました。素晴らしい継続力です！',
+  MilestoneType.studyDays: '活動日数が{value}日に到達しました。コツコツ積み重ねていますね！',
+  MilestoneType.streak: '{value}日間連続で活動を続けています。この調子で頑張りましょう！',
 };
 
 const _thresholdMap = {

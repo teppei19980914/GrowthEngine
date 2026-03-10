@@ -43,7 +43,7 @@ void main() {
         whenTarget: '2026-12-31',
         whenType: WhenType.date,
         what: 'Flutter開発',
-        how: '毎日1時間学習',
+        how: '毎日1時間練習',
       );
     });
 
@@ -53,7 +53,7 @@ void main() {
       expect(goal.whenTarget, '2026-12-31');
       expect(goal.whenType, WhenType.date);
       expect(goal.what, 'Flutter開発');
-      expect(goal.how, '毎日1時間学習');
+      expect(goal.how, '毎日1時間練習');
       expect(goal.color, goalColors[0]);
       expect(goal.createdAt, isNotNull);
       expect(goal.updatedAt, isNotNull);
@@ -66,7 +66,7 @@ void main() {
         why: 'テスト',
         whenTarget: '2026-06-30',
         whenType: WhenType.period,
-        what: 'テスト学習',
+        what: 'テスト目標',
         how: 'テスト方法',
       );
       expect(customGoal.id, 'custom-id');

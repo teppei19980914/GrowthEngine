@@ -69,7 +69,7 @@ class DashboardLayoutNotifier
   }
 }
 
-/// 今日の学習データProvider.
+/// 今日の活動データProvider.
 final todayStudyProvider = FutureProvider<TodayStudyData>((ref) async {
   final logService = ref.watch(studyLogServiceProvider);
   final logs = await logService.getAllLogs();
@@ -90,7 +90,7 @@ final personalRecordProvider = FutureProvider<PersonalRecordData>((ref) async {
   return MotivationCalculator.calculatePersonalRecords(logs);
 });
 
-/// 学習の実施率Provider.
+/// 活動の実施率Provider.
 final consistencyProvider = FutureProvider<ConsistencyData>((ref) async {
   final logService = ref.watch(studyLogServiceProvider);
   final logs = await logService.getAllLogs();

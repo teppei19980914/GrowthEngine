@@ -1,4 +1,4 @@
-/// 学習統計に関するデータクラスと列挙型.
+/// 活動統計に関するデータクラスと列挙型.
 library;
 
 /// アクティビティの集計期間タイプ.
@@ -18,13 +18,13 @@ enum ActivityPeriodType {
 
 /// 実績の種類.
 enum MilestoneType {
-  /// 累計学習時間.
+  /// 累計活動時間.
   totalHours('total_hours'),
 
-  /// 学習日数.
+  /// 活動日数.
   studyDays('study_days'),
 
-  /// 連続学習日数.
+  /// 連続活動日数.
   streak('streak');
 
   const MilestoneType(this.value);
@@ -33,9 +33,9 @@ enum MilestoneType {
   final String value;
 }
 
-/// タスク別学習統計.
+/// タスク別活動統計.
 class TaskStudyStats {
-  /// タスク別学習統計を作成する.
+  /// タスク別活動統計を作成する.
   const TaskStudyStats({
     required this.taskId,
     required this.totalMinutes,
@@ -46,22 +46,22 @@ class TaskStudyStats {
   /// タスクID.
   final String taskId;
 
-  /// 合計学習時間（分）.
+  /// 合計活動時間（分）.
   final int totalMinutes;
 
-  /// 学習日数.
+  /// 活動日数.
   final int studyDays;
 
   /// ログ件数.
   final int logCount;
 
-  /// 合計学習時間（時間）.
+  /// 合計活動時間（時間）.
   double get totalHours => totalMinutes / 60.0;
 }
 
-/// 目標別学習統計.
+/// 目標別活動統計.
 class GoalStudyStats {
-  /// 目標別学習統計を作成する.
+  /// 目標別活動統計を作成する.
   const GoalStudyStats({
     required this.goalId,
     required this.taskStats,
@@ -75,25 +75,25 @@ class GoalStudyStats {
   /// タスク別統計のリスト.
   final List<TaskStudyStats> taskStats;
 
-  /// 合計学習時間（分）.
+  /// 合計活動時間（分）.
   final int totalMinutes;
 
-  /// 合計学習日数（重複排除）.
+  /// 合計活動日数（重複排除）.
   final int totalStudyDays;
 
-  /// 合計学習時間（時間）.
+  /// 合計活動時間（時間）.
   double get totalHours => totalMinutes / 60.0;
 }
 
-/// 日別学習データ.
+/// 日別活動データ.
 class DailyStudyData {
-  /// 日別学習データを作成する.
+  /// 日別活動データを作成する.
   const DailyStudyData({required this.studyDate, required this.totalMinutes});
 
-  /// 学習日.
+  /// 活動日.
   final DateTime studyDate;
 
-  /// 合計学習時間（分）.
+  /// 合計活動時間（分）.
   final int totalMinutes;
 }
 
@@ -107,10 +107,10 @@ class DailyActivityData {
     required this.periodEnd,
   });
 
-  /// 日別学習データのリスト.
+  /// 日別活動データのリスト.
   final List<DailyStudyData> days;
 
-  /// 期間内最大学習時間（分）.
+  /// 期間内最大活動時間（分）.
   final int maxMinutes;
 
   /// 期間開始日.
@@ -133,7 +133,7 @@ class ActivityBucketData {
   /// 表示ラベル.
   final String label;
 
-  /// 合計学習時間（分）.
+  /// 合計活動時間（分）.
   final int totalMinutes;
 
   /// 期間開始日.
@@ -158,7 +158,7 @@ class ActivityChartData {
   /// バケットのリスト.
   final List<ActivityBucketData> buckets;
 
-  /// バケット内最大学習時間（分）.
+  /// バケット内最大活動時間（分）.
   final int maxMinutes;
 }
 
@@ -171,32 +171,32 @@ class StreakData {
     required this.studiedToday,
   });
 
-  /// 現在の連続学習日数.
+  /// 現在の連続活動日数.
   final int currentStreak;
 
-  /// 最長連続学習日数.
+  /// 最長連続活動日数.
   final int longestStreak;
 
-  /// 今日学習したかどうか.
+  /// 今日活動したかどうか.
   final bool studiedToday;
 }
 
-/// 今日の学習データ.
+/// 今日の活動データ.
 class TodayStudyData {
-  /// 今日の学習データを作成する.
+  /// 今日の活動データを作成する.
   const TodayStudyData({
     required this.totalMinutes,
     required this.sessionCount,
     required this.studied,
   });
 
-  /// 合計学習時間（分）.
+  /// 合計活動時間（分）.
   final int totalMinutes;
 
   /// セッション数.
   final int sessionCount;
 
-  /// 学習したかどうか.
+  /// 活動したかどうか.
   final bool studied;
 }
 
@@ -230,13 +230,13 @@ class MilestoneData {
     this.nextMilestone,
   });
 
-  /// 累計学習時間.
+  /// 累計活動時間.
   final double totalHours;
 
-  /// 学習日数.
+  /// 活動日数.
   final int studyDays;
 
-  /// 現在の連続学習日数.
+  /// 現在の連続活動日数.
   final int currentStreak;
 
   /// 達成した実績のリスト.
@@ -259,31 +259,31 @@ class PersonalRecordData {
     required this.totalStudyDays,
   });
 
-  /// 1日最高学習時間（分）.
+  /// 1日最高活動時間（分）.
   final int bestDayMinutes;
 
   /// 1日最高の日付.
   final DateTime? bestDayDate;
 
-  /// 1週間最高学習時間（分）.
+  /// 1週間最高活動時間（分）.
   final int bestWeekMinutes;
 
   /// 1週間最高の開始日.
   final DateTime? bestWeekStart;
 
-  /// 最長連続学習日数.
+  /// 最長連続活動日数.
   final int longestStreak;
 
-  /// 累計学習時間（時間）.
+  /// 累計活動時間（時間）.
   final double totalHours;
 
-  /// 累計学習日数.
+  /// 累計活動日数.
   final int totalStudyDays;
 }
 
-/// 学習の実施率データ.
+/// 活動の実施率データ.
 class ConsistencyData {
-  /// 学習の実施率データを作成する.
+  /// 活動の実施率データを作成する.
   const ConsistencyData({
     required this.thisWeekDays,
     required this.thisWeekTotal,
@@ -296,28 +296,28 @@ class ConsistencyData {
     required this.overallTotalDays,
   });
 
-  /// 今週の学習日数.
+  /// 今週の活動日数.
   final int thisWeekDays;
 
   /// 今週の経過曜日数 (1-7).
   final int thisWeekTotal;
 
-  /// 今週の合計学習時間（分）.
+  /// 今週の合計活動時間（分）.
   final int thisWeekMinutes;
 
-  /// 今月の学習日数.
+  /// 今月の活動日数.
   final int thisMonthDays;
 
   /// 今月の経過日数 (1-31).
   final int thisMonthTotal;
 
-  /// 今月の合計学習時間（分）.
+  /// 今月の合計活動時間（分）.
   final int thisMonthMinutes;
 
   /// 全体の実施率.
   final double overallRate;
 
-  /// 全体の学習日数.
+  /// 全体の活動日数.
   final int overallStudyDays;
 
   /// 全体の対象日数.

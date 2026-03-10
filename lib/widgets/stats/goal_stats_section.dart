@@ -25,7 +25,7 @@ class GoalStatsDisplayData {
   /// カラーコード.
   final String color;
 
-  /// 学習統計.
+  /// 活動統計.
   final GoalStudyStats stats;
 
   /// タスクID→タスク名のマップ.

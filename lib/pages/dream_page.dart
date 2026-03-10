@@ -153,6 +153,7 @@ class DreamPage extends ConsumerWidget {
     final dreamId = await ref.read(dreamListProvider.notifier).createDream(
           title: result.title,
           description: result.description,
+          why: result.why,
         );
 
     // チュートリアル中: 夢IDを記録してステップを進める
@@ -175,6 +176,7 @@ class DreamPage extends ConsumerWidget {
           dreamId: dream.id,
           title: result.title,
           description: result.description,
+          why: result.why,
         );
   }
 
@@ -307,6 +309,30 @@ class _DreamCard extends StatelessWidget {
                         style: theme.textTheme.bodyMedium?.copyWith(
                           color: colors.textSecondary,
                         ),
+                      ),
+                    ],
+
+                    // Why（動機）
+                    if (dream.why.isNotEmpty) ...[
+                      const SizedBox(height: 4),
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Icon(
+                            Icons.favorite_outline,
+                            size: 14,
+                            color: colors.textSecondary,
+                          ),
+                          const SizedBox(width: 4),
+                          Expanded(
+                            child: Text(
+                              dream.why,
+                              style: theme.textTheme.bodySmall?.copyWith(
+                                color: colors.textSecondary,
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                     ],
 

@@ -31,7 +31,7 @@ void main() {
       notification = Notification(
         notificationType: NotificationType.achievement,
         title: '100時間達成！',
-        message: '累計学習時間が100時間に到達しました。',
+        message: '累計活動時間が100時間に到達しました。',
       );
     });
 
@@ -39,7 +39,7 @@ void main() {
       expect(notification.id, isNotEmpty);
       expect(notification.notificationType, NotificationType.achievement);
       expect(notification.title, '100時間達成！');
-      expect(notification.message, '累計学習時間が100時間に到達しました。');
+      expect(notification.message, '累計活動時間が100時間に到達しました。');
       expect(notification.isRead, isFalse);
       expect(notification.createdAt, isNotNull);
       expect(notification.dedupKey, '');

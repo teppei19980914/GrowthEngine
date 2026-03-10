@@ -1,6 +1,6 @@
 /// タスクの追加・編集ダイアログ.
 ///
-/// タスク名、開始日、終了日、進捗、メモ、関連書籍、学習ログを入力させる.
+/// タスク名、開始日、終了日、進捗、メモ、関連書籍、活動ログを入力させる.
 library;
 
 import 'dart:async';
@@ -46,7 +46,7 @@ class TaskDialogResult {
   /// 関連書籍ID.
   final String bookId;
 
-  /// 学習ログが変更されたか.
+  /// 活動ログが変更されたか.
   final bool studyLogsChanged;
 
   /// 削除がリクエストされたか.
@@ -57,7 +57,7 @@ class TaskDialogResult {
 ///
 /// [task]が指定された場合は編集モード、nullの場合は新規作成モード.
 /// [books]が指定された場合、関連書籍ドロップダウンを表示する.
-/// [studyLogService]が指定された場合（編集モード時）、学習ログセクションを表示する.
+/// [studyLogService]が指定された場合（編集モード時）、活動ログセクションを表示する.
 Future<TaskDialogResult?> showTaskDialog(
   BuildContext context, {
   Task? task,
@@ -101,12 +101,12 @@ class _TaskDialogContentState extends State<_TaskDialogContent> {
   String _selectedBookId = '';
   bool _studyLogsChanged = false;
 
-  // 学習ログ
+  // 活動ログ
   TaskStudyLogLogic? _studyLogLogic;
   List<StudyLogDisplayEntry> _studyLogs = [];
   TaskStudyStats? _studyStats;
 
-  // 学習ログ入力
+  // 活動ログ入力
   late DateTime _logDate;
   int _logHours = 0;
   int _logMinutes = 30;
@@ -234,7 +234,7 @@ class _TaskDialogContentState extends State<_TaskDialogContent> {
     );
   }
 
-  // --- 学習ログ関連 ---
+  // --- 活動ログ関連 ---
 
   Future<void> _addStudyLog() async {
     if (_studyLogLogic == null) return;
@@ -268,7 +268,7 @@ class _TaskDialogContentState extends State<_TaskDialogContent> {
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('確認'),
-        content: const Text('この学習記録を削除しますか？'),
+        content: const Text('この活動記録を削除しますか？'),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),
@@ -493,7 +493,7 @@ class _TaskDialogContentState extends State<_TaskDialogContent> {
                   ),
                 ],
 
-                // 学習記録セクション（編集モード + studyLogService提供時のみ）
+                // 活動記録セクション（編集モード + studyLogService提供時のみ）
                 if (_hasStudyLogSection) ...[
                   const SizedBox(height: 20),
                   const Divider(),
@@ -548,7 +548,7 @@ class _TaskDialogContentState extends State<_TaskDialogContent> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('学習記録 ($statsText)', style: theme.textTheme.titleSmall),
+        Text('活動記録 ($statsText)', style: theme.textTheme.titleSmall),
         const SizedBox(height: 8),
 
         // ログ一覧
@@ -600,7 +600,7 @@ class _TaskDialogContentState extends State<_TaskDialogContent> {
                 },
                 child: InputDecorator(
                   decoration: const InputDecoration(
-                    labelText: '学習日',
+                    labelText: '活動日',
                     isDense: true,
                     contentPadding:
                         EdgeInsets.symmetric(horizontal: 8, vertical: 8),

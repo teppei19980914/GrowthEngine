@@ -1,4 +1,4 @@
-/// 3W1H学習目標のデータモデル.
+/// 目標のデータモデル.
 library;
 
 import 'package:uuid/uuid.dart';
@@ -37,21 +37,22 @@ const List<String> goalColors = [
   '#F06595', // Pink
 ];
 
-/// 3W1H学習目標モデル.
+/// 目標モデル.
 class Goal {
-  /// 3W1H学習目標を作成する.
+  /// 目標を作成する.
   Goal({
     required this.dreamId,
-    required this.why,
     required this.whenTarget,
     required this.whenType,
     required this.what,
     required this.how,
     String? id,
+    String? why,
     DateTime? createdAt,
     DateTime? updatedAt,
     String? color,
   })  : id = id ?? const Uuid().v4(),
+        why = why ?? '',
         createdAt = createdAt ?? DateTime.now(),
         updatedAt = updatedAt ?? DateTime.now(),
         color = color ?? goalColors[0];
@@ -62,7 +63,7 @@ class Goal {
   /// 紐づく夢のID.
   final String dreamId;
 
-  /// なぜ学習するのか（動機・理由）.
+  /// レガシーフィールド（夢に移動済み）.
   final String why;
 
   /// いつまでに（目標日付または期間の説明）.
@@ -71,10 +72,10 @@ class Goal {
   /// When指定タイプ（date or period）.
   final WhenType whenType;
 
-  /// 何を学習するのか.
+  /// 何を目標とするか.
   final String what;
 
-  /// どうやって学習するのか.
+  /// どうやって達成するか.
   final String how;
 
   /// 作成日時.
@@ -142,7 +143,7 @@ class Goal {
     return Goal(
       id: data['id'] as String,
       dreamId: data['dream_id'] as String,
-      why: data['why'] as String,
+      why: data['why'] as String? ?? '',
       whenTarget: data['when_target'] as String,
       whenType: WhenType.fromValue(data['when_type'] as String),
       what: data['what'] as String,

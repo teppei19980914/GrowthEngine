@@ -19,7 +19,7 @@ void main() {
   tearDown(() => db.close());
 
   group('ConstellationService', () {
-    test('学習ログがない場合は全星座の星が0個', () async {
+    test('活動ログがない場合は全星座の星が0個', () async {
       final result = await service.getOverallProgress();
       expect(result.constellations.length, 36);
       expect(result.totalLitStars, 0);
@@ -29,7 +29,7 @@ void main() {
       }
     });
 
-    test('学習ログに応じて星が順番に点灯する', () async {
+    test('活動ログに応じて星が順番に点灯する', () async {
       final now = DateTime.now();
 
       // Goal → Task → StudyLog のチェーンを作成
@@ -132,7 +132,7 @@ void main() {
       expect(result.totalStars, expectedTotal);
     });
 
-    test('大量の学習時間でも星の総数を超えない', () {
+    test('大量の活動時間でも星の総数を超えない', () {
       final totalStars =
           constellations.fold<int>(0, (sum, c) => sum + c.starCount);
       final result =

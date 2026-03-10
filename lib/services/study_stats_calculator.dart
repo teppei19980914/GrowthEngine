@@ -1,10 +1,10 @@
-/// 学習統計の計算ロジック.
+/// 活動統計の計算ロジック.
 library;
 
 import '../models/study_log.dart';
 import 'study_stats_types.dart';
 
-/// 学習統計を計算するクラス.
+/// 活動統計を計算するクラス.
 class StudyStatsCalculator {
   /// 日別アクティビティを計算する.
   static DailyActivityData calculateDailyActivity(

@@ -10,10 +10,12 @@ class Dream {
     required this.title,
     String? id,
     String? description,
+    String? why,
     DateTime? createdAt,
     DateTime? updatedAt,
   })  : id = id ?? const Uuid().v4(),
         description = description ?? '',
+        why = why ?? '',
         createdAt = createdAt ?? DateTime.now(),
         updatedAt = updatedAt ?? DateTime.now();
 
@@ -26,6 +28,9 @@ class Dream {
   /// 夢の説明.
   final String description;
 
+  /// なぜこの夢を叶えたいか（動機・理由）.
+  final String why;
+
   /// 作成日時.
   final DateTime createdAt;
 
@@ -37,6 +42,7 @@ class Dream {
     String? id,
     String? title,
     String? description,
+    String? why,
     DateTime? createdAt,
     DateTime? updatedAt,
   }) {
@@ -44,6 +50,7 @@ class Dream {
       id: id ?? this.id,
       title: title ?? this.title,
       description: description ?? this.description,
+      why: why ?? this.why,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
     );
@@ -55,6 +62,7 @@ class Dream {
       'id': id,
       'title': title,
       'description': description,
+      'why': why,
       'created_at': createdAt.toIso8601String(),
       'updated_at': updatedAt.toIso8601String(),
     };
@@ -66,6 +74,7 @@ class Dream {
       id: data['id'] as String,
       title: data['title'] as String,
       description: data['description'] as String? ?? '',
+      why: data['why'] as String? ?? '',
       createdAt: DateTime.parse(data['created_at'] as String),
       updatedAt: DateTime.parse(data['updated_at'] as String),
     );
