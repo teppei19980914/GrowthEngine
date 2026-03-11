@@ -1,0 +1,1027 @@
+# SonarCloud Analysis Report
+Date: 2026-03-11 09:31 UTC
+Commit: 6968122
+Total Issues: 3227
+
+## Metrics
+- coverage: 70.7
+- bugs: 0
+- reliability_rating: 1.0
+- code_smells: 26
+- duplicated_lines_density: 8.2
+- security_rating: 1.0
+- vulnerabilities: 0
+- security_hotspots: 0
+- sqale_rating: 1.0
+
+## Issues
+
+### CRITICAL (291)
+
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Refactor this function to reduce its Cognitive Complexity from 24 to the 15 allowed.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Move this "if" to a new line or add the missing "else".  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Move this "if" to a new line or add the missing "else".  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Move this "if" to a new line or add the missing "else".  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Move this "if" to a new line or add the missing "else".  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Move this "if" to a new line or add the missing "else".  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Refactor this function to reduce its Cognitive Complexity from 18 to the 15 allowed.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Move this "if" to a new line or add the missing "else".  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Move this "if" to a new line or add the missing "else".  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Refactor this function to reduce its Cognitive Complexity from 29 to the 15 allowed.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Move this "if" to a new line or add the missing "else".  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Move this "if" to a new line or add the missing "else".  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Move this "if" to a new line or add the missing "else".  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Refactor this function to reduce its Cognitive Complexity from 27 to the 15 allowed.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Refactor this function to reduce its Cognitive Complexity from 19 to the 15 allowed.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Move this "if" to a new line or add the missing "else".  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Move this "if" to a new line or add the missing "else".  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Move this "if" to a new line or add the missing "else".  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Move this "if" to a new line or add the missing "else".  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Refactor this function to reduce its Cognitive Complexity from 22 to the 15 allowed.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Refactor this function to reduce its Cognitive Complexity from 20 to the 15 allowed.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Refactor this function to reduce its Cognitive Complexity from 16 to the 15 allowed.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Move this "if" to a new line or add the missing "else".  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Move this "if" to a new line or add the missing "else".  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Refactor this function to reduce its Cognitive Complexity from 26 to the 15 allowed.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Move this "if" to a new line or add the missing "else".  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Move this "if" to a new line or add the missing "else".  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Refactor this function to reduce its Cognitive Complexity from 19 to the 15 allowed.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Move this "if" to a new line or add the missing "else".  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Move this "if" to a new line or add the missing "else".  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Move this "if" to a new line or add the missing "else".  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Refactor this function to reduce its Cognitive Complexity from 21 to the 15 allowed.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Move this "if" to a new line or add the missing "else".  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Refactor this function to reduce its Cognitive Complexity from 54 to the 15 allowed.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Move this "if" to a new line or add the missing "else".  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Move this "if" to a new line or add the missing "else".  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Move this "if" to a new line or add the missing "else".  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Move this "if" to a new line or add the missing "else".  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Move this "if" to a new line or add the missing "else".  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Move this "if" to a new line or add the missing "else".  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Move this "if" to a new line or add the missing "else".  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Refactor this function to reduce its Cognitive Complexity from 38 to the 15 allowed.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Move this "if" to a new line or add the missing "else".  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Move this "if" to a new line or add the missing "else".  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Refactor this function to reduce its Cognitive Complexity from 52 to the 15 allowed.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Move this "if" to a new line or add the missing "else".  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [BUG] Unsafe usage of ReturnStatement.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Refactor this function to reduce its Cognitive Complexity from 26 to the 15 allowed.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Move this "if" to a new line or add the missing "else".  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Move this "if" to a new line or add the missing "else".  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Refactor this function to reduce its Cognitive Complexity from 18 to the 15 allowed.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected var, use let or const instead.  
+  File: web/drift_worker.js Line: N/A
+
+### MAJOR (91)
+
+- [VULNERABILITY] Move this read permission from workflow level to job level.  
+  File: .github/workflows/deploy.yml Line: N/A
+- [VULNERABILITY] Move this write permission from workflow level to job level.  
+  File: .github/workflows/deploy.yml Line: N/A
+- [VULNERABILITY] Move this write permission from workflow level to job level.  
+  File: .github/workflows/deploy.yml Line: N/A
+- [CODE_SMELL] This statement will not be executed conditionally; only the first statement will be. The rest will execute unconditionally.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] This statement will not be executed conditionally; only the first statement will be. The rest will execute unconditionally.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Do not assign `this` to `_`.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Do not assign `this` to `_`.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Do not assign `this` to `_`.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Do not assign `this` to `_`.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Do not assign `this` to `_`.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Do not assign `this` to `_`.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Arguments 'b' and 'a' have the same names but not the same order as the function parameters.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Use `Math.trunc` instead of `| 0`.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Use `Math.trunc` instead of `| 0`.  
+  File: web/drift_worker.js Line: N/A
+- [BUG] Expected an assignment or function call and instead saw an expression.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Refactor this function to always return the same type.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Arguments 'd' and 'b' have the same names but not the same order as the function parameters.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Arguments 'b' and 'a' have the same names but not the same order as the function parameters.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Arguments 'b' and 'a' have the same names but not the same order as the function parameters.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Do not assign `this` to `_`.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Do not assign `this` to `_`.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Do not assign `this` to `_`.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Do not assign `this` to `_`.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Do not assign `this` to `_`.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Do not assign `this` to `_`.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Do not assign `this` to `_`.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Do not assign `this` to `_`.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Do not assign `this` to `_`.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Arguments 'b' and 'a' have the same names but not the same order as the function parameters.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Extract the assignment of "b.c" from this expression.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] This statement will not be executed conditionally; only the first statement will be. The rest will execute unconditionally.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Extract the assignment of "a.r" from this expression.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Do not assign `this` to `s`.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] This statement will not be executed conditionally; only the first statement will be. The rest will execute unconditionally.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Do not assign `this` to `s`.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Do not assign `this` to `s`.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Do not assign `this` to `r`.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Do not assign `this` to `r`.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Do not assign `this` to `s`.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Do not assign `this` to `s`.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Do not assign `this` to `s`.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Do not assign `this` to `s`.  
+  File: web/drift_worker.js Line: N/A
+- [BUG] Expected an assignment or function call and instead saw an expression.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Arguments 'e' and 'c' have the same names but not the same order as the function parameters.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Do not assign `this` to `_`.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected use of comma operator.  
+  File: web/drift_worker.js Line: N/A
+- [BUG] Was "!=" meant instead?  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Method 'pb' has too many parameters (9). Maximum allowed is 7.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Do not assign `this` to `_`.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Do not assign `this` to `_`.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Do not assign `this` to `_`.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Do not assign `this` to `_`.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Do not assign `this` to `_`.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Do not assign `this` to `_`.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Do not assign `this` to `_`.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Do not assign `this` to `_`.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Do not assign `this` to `_`.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Do not assign `this` to `_`.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Do not assign `this` to `_`.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Do not assign `this` to `_`.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Do not assign `this` to `_`.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Do not assign `this` to `_`.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Do not assign `this` to `_`.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Do not assign `this` to `_`.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Do not assign `this` to `_`.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Do not assign `this` to `_`.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Do not assign `this` to `_`.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Method 'j3' has too many parameters (15). Maximum allowed is 7.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Do not assign `this` to `_`.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Do not assign `this` to `_`.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Do not assign `this` to `_`.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Method 'jy' has too many parameters (13). Maximum allowed is 7.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Do not assign `this` to `_`.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Do not assign `this` to `_`.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Do not assign `this` to `_`.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Do not assign `this` to `_`.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Do not assign `this` to `_`.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Do not assign `this` to `_`.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Do not assign `this` to `_`.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Do not assign `this` to `_`.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Do not assign `this` to `_`.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] This statement will not be executed conditionally; only the first statement will be. The rest will execute unconditionally.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Use `Math.trunc` instead of `| 0`.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Use `Math.trunc` instead of `| 0`.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Use `Math.trunc` instead of `| 0`.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Use `Math.trunc` instead of `| 0`.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected use of comma operator.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Use `Math.trunc` instead of `| 0`.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] This statement will not be executed conditionally; only the first statement will be. The rest will execute unconditionally.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Use `Math.trunc` instead of `| 0`.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Use `Math.trunc` instead of `| 0`.  
+  File: web/drift_worker.js Line: N/A
+
+### MINOR (118)
+
+- [CODE_SMELL] Use the opposite operator (>=) instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Prefer `String#codePointAt()` over `String#charCodeAt()`.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Redundant double negation.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Prefer `String.fromCodePoint()` over `String.fromCharCode()`.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Pass a message to the `Error` constructor.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Pass a message to the `Error` constructor.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Pass a message to the `Error` constructor.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Pass a message to the `Error` constructor.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Use `new Error()` instead of `Error()`.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected negated condition.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected negated condition.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] '{}' will use Object's default stringification format ('[object Object]') when stringified.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Prefer `String#replaceAll()` over `String#replace()`.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Use a regular expression literal instead of the 'RegExp' constructor.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] `String.raw` should be used to avoid escaping `\`.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Prefer `String#replaceAll()` over `String#replace()`.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Use a regular expression literal instead of the 'RegExp' constructor.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] `String.raw` should be used to avoid escaping `\`.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Prefer `String#replaceAll()` over `String#replace()`.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Use a regular expression literal instead of the 'RegExp' constructor.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] `String.raw` should be used to avoid escaping `\`.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Prefer `String#replaceAll()` over `String#replace()`.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Use a regular expression literal instead of the 'RegExp' constructor.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] `String.raw` should be used to avoid escaping `\`.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Prefer `String#replaceAll()` over `String#replace()`.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Use a regular expression literal instead of the 'RegExp' constructor.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] `String.raw` should be used to avoid escaping `\`.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] The catch parameter `s` should be named `error_`.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected negated condition.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Use `.includes()`, rather than `.indexOf()`, when checking for existence.  
+  File: web/drift_worker.js Line: N/A
+- [BUG] Negated expression is not allowed in equality check.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] The catch parameter `n` should be named `error_`.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Use `.includes()`, rather than `.indexOf()`, when checking for existence.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Prefer `String#replaceAll()` over `String#replace()`.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Prefer `String#replaceAll()` over `String#replace()`.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] `String.raw` should be used to avoid escaping `\`.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Prefer `String#replaceAll()` over `String#replace()`.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Pass a message to the `Error` constructor.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Pass a message to the `Error` constructor.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Pass a message to the `Error` constructor.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Pass a message to the `Error` constructor.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected negated condition.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Use the opposite operator (>=) instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Pass a message to the `Error` constructor.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Pass a message to the `Error` constructor.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Pass a message to the `Error` constructor.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Pass a message to the `Error` constructor.  
+  File: web/drift_worker.js Line: N/A
+- [BUG] Negated expression is not allowed in equality check.  
+  File: web/drift_worker.js Line: N/A
+- [BUG] Negated expression is not allowed in equality check.  
+  File: web/drift_worker.js Line: N/A
+- [BUG] Negated expression is not allowed in equality check.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Pass a message to the `Error` constructor.  
+  File: web/drift_worker.js Line: N/A
+- [BUG] Negated expression is not allowed in equality check.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Pass a message to the `Error` constructor.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Pass a message to the `Error` constructor.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Pass a message to the `Error` constructor.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Pass a message to the `Error` constructor.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Pass a message to the `Error` constructor.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Pass a message to the `Error` constructor.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Pass a message to the `Error` constructor.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Pass a message to the `Error` constructor.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Pass a message to the `Error` constructor.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Pass a message to the `Error` constructor.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Pass a message to the `Error` constructor.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Use the opposite operator (<) instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Replace this "switch" statement by "if" statements to increase readability.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Prefer `globalThis` over `self`.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Prefer `globalThis` over `self`.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Prefer `globalThis` over `self`.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Prefer `globalThis` over `self`.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Prefer `globalThis` over `self`.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Prefer `globalThis` over `self`.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Prefer `globalThis` over `self`.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Prefer `globalThis` over `self`.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Prefer `globalThis` over `self`.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Prefer `Math.max()` to simplify ternary expressions.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Remove the declaration of the unused 'q' variable.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] The catch parameter `q` should be named `error_`.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Remove the declaration of the unused 'l' variable.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] The catch parameter `l` should be named `error_`.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected negated condition.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected negated condition.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected negated condition.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected negated condition.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Remove the declaration of the unused 'q' variable.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] The catch parameter `q` should be named `error_`.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected negated condition.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Remove the declaration of the unused 'p' variable.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] The catch parameter `p` should be named `error_`.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected negated condition.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected negated condition.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected negated condition.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected negated condition.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Unexpected negated condition.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Prefer `Math.max()` to simplify ternary expressions.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Remove the declaration of the unused 'r' variable.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Use the opposite operator (>=) instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Prefer `String#codePointAt()` over `String#charCodeAt()`.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Prefer `String#codePointAt()` over `String#charCodeAt()`.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Use the opposite operator (>=) instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Use the opposite operator (>=) instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Use the opposite operator (>=) instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Prefer `Number.isNaN` over `isNaN`.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Use the opposite operator (>=) instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Use the opposite operator (>=) instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Use the opposite operator (>=) instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Use the opposite operator (>=) instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Use the opposite operator (>=) instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Use the opposite operator (>=) instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Use the opposite operator (>=) instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Use the opposite operator (>=) instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Use the opposite operator (>=) instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Use the opposite operator (>=) instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Use the opposite operator (>=) instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Use the opposite operator (>=) instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Use the opposite operator (>=) instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Use the opposite operator (>=) instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Use the opposite operator (>=) instead.  
+  File: web/drift_worker.js Line: N/A
+- [CODE_SMELL] Use the opposite operator (>=) instead.  
+  File: web/drift_worker.js Line: N/A
+
