@@ -1,0 +1,17 @@
+# Integration Test Report
+Date: 2026-03-12 09:29 UTC
+Commit: f18be51
+Status: UNKNOWN
+Passed: 
+Failed: 1017
+
+## Raw Output
+
+```
+More than one device connected; please specify a device with the '-d <deviceId>' flag, or use '-d all' to act on all devices.
+
+Linux (desktop) • linux  • linux-x64      • Ubuntu 24.04.3 LTS 6.14.0-1017-azure
+Chrome (web)    • chrome • web-javascript • Google Chrome 145.0.7632.116
+No devices are connected. Ensure that `flutter doctor` shows at least one connected device
+```
+
