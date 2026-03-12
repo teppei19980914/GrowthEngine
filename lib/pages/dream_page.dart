@@ -6,7 +6,6 @@ library;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:intl/intl.dart';
 
 import '../dialogs/dream_dialog.dart';
 import '../dialogs/trial_limit_dialog.dart';
@@ -231,6 +230,7 @@ class _DreamCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colors = theme.appColors;
+    final primary = theme.colorScheme.primary;
 
     return Card(
       clipBehavior: Clip.antiAlias,
@@ -238,72 +238,90 @@ class _DreamCard extends StatelessWidget {
         child: Row(
           children: [
             // カラーバー
-            Container(width: 6, color: theme.colorScheme.primary),
+            Container(width: 6, color: primary),
 
             // コンテンツ
             Expanded(
               child: Padding(
-                padding: const EdgeInsets.all(16),
+                padding: const EdgeInsets.fromLTRB(16, 14, 8, 14),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     // タイトル行
                     Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        Icon(
-                          Icons.auto_awesome,
-                          size: 20,
-                          color: theme.colorScheme.primary,
-                        ),
+                        Icon(Icons.auto_awesome, size: 18, color: primary),
                         const SizedBox(width: 8),
                         Expanded(
                           child: Text(
                             dream.title,
-                            style: theme.textTheme.titleMedium,
+                            style: theme.textTheme.titleMedium?.copyWith(
+                              fontWeight: FontWeight.w700,
+                            ),
                           ),
                         ),
                         // 目標数バッジ
                         Container(
                           padding: const EdgeInsets.symmetric(
                             horizontal: 8,
-                            vertical: 4,
+                            vertical: 3,
                           ),
                           decoration: BoxDecoration(
-                            color:
-                                theme.colorScheme.primary.withAlpha(20),
+                            color: primary.withAlpha(20),
                             borderRadius: BorderRadius.circular(12),
                           ),
                           child: Text(
-                            '目標: $goalCount件',
+                            '目標 $goalCount',
                             style: theme.textTheme.labelSmall?.copyWith(
-                              color: theme.colorScheme.primary,
+                              color: primary,
                               fontWeight: FontWeight.w600,
                             ),
                           ),
                         ),
-                        const SizedBox(width: 8),
-                        IconButton(
-                          icon: const Icon(Icons.edit_outlined, size: 18),
-                          onPressed: onEdit,
-                          tooltip: '編集',
-                          visualDensity: VisualDensity.compact,
-                        ),
-                        IconButton(
+                        // ポップアップメニュー
+                        PopupMenuButton<String>(
                           icon: Icon(
-                            Icons.delete_outline,
+                            Icons.more_vert,
                             size: 18,
-                            color: colors.error,
+                            color: colors.textMuted,
                           ),
-                          onPressed: onDelete,
-                          tooltip: '削除',
-                          visualDensity: VisualDensity.compact,
+                          padding: EdgeInsets.zero,
+                          itemBuilder: (_) => [
+                            const PopupMenuItem(
+                              value: 'edit',
+                              child: Row(
+                                children: [
+                                  Icon(Icons.edit_outlined, size: 16),
+                                  SizedBox(width: 8),
+                                  Text('編集'),
+                                ],
+                              ),
+                            ),
+                            PopupMenuItem(
+                              value: 'delete',
+                              child: Row(
+                                children: [
+                                  Icon(Icons.delete_outline,
+                                      size: 16, color: colors.error),
+                                  const SizedBox(width: 8),
+                                  Text('削除',
+                                      style: TextStyle(color: colors.error)),
+                                ],
+                              ),
+                            ),
+                          ],
+                          onSelected: (value) {
+                            if (value == 'edit') onEdit();
+                            if (value == 'delete') onDelete();
+                          },
                         ),
                       ],
                     ),
 
                     // 説明
                     if (dream.description.isNotEmpty) ...[
-                      const SizedBox(height: 8),
+                      const SizedBox(height: 6),
                       Text(
                         dream.description,
                         style: theme.textTheme.bodyMedium?.copyWith(
@@ -312,35 +330,40 @@ class _DreamCard extends StatelessWidget {
                       ),
                     ],
 
-                    // Why（動機）
+                    // Why（動機）— 強調表示
                     if (dream.why.isNotEmpty) ...[
-                      const SizedBox(height: 4),
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Icon(
-                            Icons.favorite_outline,
-                            size: 14,
-                            color: colors.textSecondary,
-                          ),
-                          const SizedBox(width: 4),
-                          Expanded(
-                            child: Text(
-                              dream.why,
-                              style: theme.textTheme.bodySmall?.copyWith(
-                                color: colors.textSecondary,
+                      const SizedBox(height: 8),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 10,
+                          vertical: 6,
+                        ),
+                        decoration: BoxDecoration(
+                          color: primary.withAlpha(12),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Icon(
+                              Icons.favorite,
+                              size: 13,
+                              color: primary.withAlpha(180),
+                            ),
+                            const SizedBox(width: 6),
+                            Expanded(
+                              child: Text(
+                                dream.why,
+                                style: theme.textTheme.bodySmall?.copyWith(
+                                  color: colors.textSecondary,
+                                  fontStyle: FontStyle.italic,
+                                ),
                               ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ],
-
-                    const SizedBox(height: 8),
-                    Text(
-                      '作成: ${DateFormat('yyyy/MM/dd').format(dream.createdAt)}',
-                      style: theme.textTheme.labelSmall,
-                    ),
                   ],
                 ),
               ),

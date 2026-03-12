@@ -231,6 +231,36 @@ class AppTheme {
         contentPadding: const EdgeInsets.symmetric(horizontal: 16),
       ),
 
+      // NavigationBar (Bottom)
+      navigationBarTheme: NavigationBarThemeData(
+        backgroundColor: colors.bgSecondary,
+        surfaceTintColor: Colors.transparent,
+        indicatorColor: colors.accent.withAlpha(30),
+        labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
+        labelTextStyle: WidgetStateProperty.resolveWith((states) {
+          if (states.contains(WidgetState.selected)) {
+            return TextStyle(
+              color: colors.accent,
+              fontWeight: FontWeight.w600,
+              fontSize: 11,
+            );
+          }
+          return TextStyle(
+            color: colors.textMuted,
+            fontWeight: FontWeight.w500,
+            fontSize: 11,
+          );
+        }),
+        iconTheme: WidgetStateProperty.resolveWith((states) {
+          if (states.contains(WidgetState.selected)) {
+            return IconThemeData(color: colors.accent, size: 22);
+          }
+          return IconThemeData(color: colors.textMuted, size: 22);
+        }),
+        elevation: 0,
+        shadowColor: Colors.transparent,
+      ),
+
       // NavigationDrawer
       navigationDrawerTheme: NavigationDrawerThemeData(
         backgroundColor: colors.bgSecondary,

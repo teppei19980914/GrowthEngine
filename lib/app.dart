@@ -44,6 +44,7 @@ final _router = GoRouter(
       builder: (context, state, child) {
         return _AppShell(
           title: _pageTitles[state.uri.path] ?? '',
+          currentPath: state.uri.path,
           child: child,
         );
       },
@@ -85,11 +86,39 @@ class YumeLogApp extends ConsumerWidget {
   }
 }
 
-/// アプリケーションシェル（Scaffold + AppBar + Drawer）.
+/// ボトムナビゲーションの定義.
+const _bottomNavItems = [
+  (path: '/', icon: Icons.home_outlined, activeIcon: Icons.home, label: 'ホーム'),
+  (
+    path: '/dreams',
+    icon: Icons.auto_awesome_outlined,
+    activeIcon: Icons.auto_awesome,
+    label: '夢',
+  ),
+  (
+    path: '/goals',
+    icon: Icons.flag_outlined,
+    activeIcon: Icons.flag,
+    label: '目標',
+  ),
+  (
+    path: '/stats',
+    icon: Icons.bar_chart_outlined,
+    activeIcon: Icons.bar_chart,
+    label: '統計',
+  ),
+];
+
+/// アプリケーションシェル（Scaffold + AppBar + Drawer + BottomNav）.
 class _AppShell extends ConsumerStatefulWidget {
-  const _AppShell({required this.title, required this.child});
+  const _AppShell({
+    required this.title,
+    required this.currentPath,
+    required this.child,
+  });
 
   final String title;
+  final String currentPath;
   final Widget child;
 
   @override
@@ -115,6 +144,10 @@ class _AppShellState extends ConsumerState<_AppShell> {
       }
     }
 
+    final selectedIndex = _bottomNavItems
+        .indexWhere((item) => item.path == widget.currentPath);
+    final hasBottomNav = selectedIndex >= 0;
+
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.title),
@@ -137,6 +170,21 @@ class _AppShellState extends ConsumerState<_AppShell> {
           Expanded(child: widget.child),
         ],
       ),
+      bottomNavigationBar: hasBottomNav
+          ? NavigationBar(
+              selectedIndex: selectedIndex,
+              onDestinationSelected: (index) =>
+                  context.go(_bottomNavItems[index].path),
+              destinations: [
+                for (final item in _bottomNavItems)
+                  NavigationDestination(
+                    icon: Icon(item.icon),
+                    selectedIcon: Icon(item.activeIcon),
+                    label: item.label,
+                  ),
+              ],
+            )
+          : null,
     );
   }
 }

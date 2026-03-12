@@ -5,7 +5,7 @@ library;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:intl/intl.dart';
+import 'package:intl/intl.dart' show DateFormat;
 
 import '../dialogs/goal_dialog.dart';
 import '../dialogs/trial_limit_dialog.dart';
@@ -265,36 +265,59 @@ class _GoalCard extends StatelessWidget {
             // コンテンツ
             Expanded(
               child: Padding(
-                padding: const EdgeInsets.all(16),
+                padding: const EdgeInsets.fromLTRB(16, 14, 8, 14),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     // タイトル行
                     Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         Expanded(
                           child: Text(
                             goal.what,
-                            style: theme.textTheme.titleMedium,
+                            style: theme.textTheme.titleMedium?.copyWith(
+                              fontWeight: FontWeight.w700,
+                            ),
                           ),
                         ),
                         _WhenBadge(goal: goal),
-                        const SizedBox(width: 8),
-                        IconButton(
-                          icon: const Icon(Icons.edit_outlined, size: 18),
-                          onPressed: onEdit,
-                          tooltip: '編集',
-                          visualDensity: VisualDensity.compact,
-                        ),
-                        IconButton(
+                        // ポップアップメニュー
+                        PopupMenuButton<String>(
                           icon: Icon(
-                            Icons.delete_outline,
+                            Icons.more_vert,
                             size: 18,
-                            color: colors.error,
+                            color: colors.textMuted,
                           ),
-                          onPressed: onDelete,
-                          tooltip: '削除',
-                          visualDensity: VisualDensity.compact,
+                          padding: EdgeInsets.zero,
+                          itemBuilder: (_) => [
+                            const PopupMenuItem(
+                              value: 'edit',
+                              child: Row(
+                                children: [
+                                  Icon(Icons.edit_outlined, size: 16),
+                                  SizedBox(width: 8),
+                                  Text('編集'),
+                                ],
+                              ),
+                            ),
+                            PopupMenuItem(
+                              value: 'delete',
+                              child: Row(
+                                children: [
+                                  Icon(Icons.delete_outline,
+                                      size: 16, color: colors.error),
+                                  const SizedBox(width: 8),
+                                  Text('削除',
+                                      style: TextStyle(color: colors.error)),
+                                ],
+                              ),
+                            ),
+                          ],
+                          onSelected: (value) {
+                            if (value == 'edit') onEdit();
+                            if (value == 'delete') onDelete();
+                          },
                         ),
                       ],
                     ),
@@ -305,7 +328,7 @@ class _GoalCard extends StatelessWidget {
                       children: [
                         Icon(
                           Icons.auto_awesome,
-                          size: 14,
+                          size: 13,
                           color: theme.colorScheme.primary,
                         ),
                         const SizedBox(width: 4),
@@ -326,13 +349,6 @@ class _GoalCard extends StatelessWidget {
                       label: 'How',
                       value: goal.how,
                       color: colors.textSecondary,
-                    ),
-                    const SizedBox(height: 8),
-
-                    // フッター
-                    Text(
-                      '作成: ${DateFormat('yyyy/MM/dd').format(goal.createdAt)}',
-                      style: theme.textTheme.labelSmall,
                     ),
                   ],
                 ),

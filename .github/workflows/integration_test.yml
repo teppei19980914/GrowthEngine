@@ -1,0 +1,92 @@
+name: Integration Test
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  integration_test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+
+      - run: flutter pub get
+
+      - name: Run integration tests
+        id: run_tests
+        run: |
+          flutter test integration_test/ 2>&1 | tee /tmp/integration_test_output.txt
+          echo "exit_code=${PIPESTATUS[0]}" >> "$GITHUB_OUTPUT"
+        continue-on-error: true
+
+      - name: Generate integration test report
+        run: |
+          mkdir -p integration_test_reports
+
+          DATE=$(date -u +"%Y-%m-%d %H:%M UTC")
+          COMMIT_SHA="${GITHUB_SHA:0:7}"
+          RAW_OUTPUT=$(cat /tmp/integration_test_output.txt)
+
+          # 合否判定
+          if echo "$RAW_OUTPUT" | grep -q "All tests passed"; then
+            STATUS="PASSED"
+          elif echo "$RAW_OUTPUT" | grep -q "Some tests failed\|failed\|Error"; then
+            STATUS="FAILED"
+          else
+            STATUS="UNKNOWN"
+          fi
+
+          # テスト数を抽出
+          PASS_COUNT=$(echo "$RAW_OUTPUT" | grep -oP '\+\K[0-9]+' | tail -1 || echo "0")
+          FAIL_COUNT=$(echo "$RAW_OUTPUT" | grep -oP '\-\K[0-9]+' | tail -1 || echo "0")
+
+          {
+            echo "# Integration Test Report"
+            echo "Date: ${DATE}"
+            echo "Commit: ${COMMIT_SHA}"
+            echo "Status: ${STATUS}"
+            echo "Passed: ${PASS_COUNT}"
+            echo "Failed: ${FAIL_COUNT}"
+            echo ""
+            echo "## Raw Output"
+            echo ""
+            echo '```'
+            echo "$RAW_OUTPUT"
+            echo '```'
+            echo ""
+
+            # 失敗テストの詳細を抽出
+            if [ "$STATUS" = "FAILED" ]; then
+              echo "## Failed Tests"
+              echo ""
+              echo "$RAW_OUTPUT" | grep -A 20 "FAILED\|Expected\|Actual\|Which:" || true
+            fi
+          } > integration_test_reports/latest-report.txt
+
+          # 日付別バックアップ
+          cp integration_test_reports/latest-report.txt \
+            "integration_test_reports/report-$(date -u +%Y%m%d-%H%M).txt"
+
+      - name: Commit report
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add integration_test_reports/
+          if git diff --cached --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "Integration test report [skip ci]"
+            git push
+          fi
+
+      - name: Fail job if tests failed
+        if: steps.run_tests.outputs.exit_code != '0'
+        run: exit 1

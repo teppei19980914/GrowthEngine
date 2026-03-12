@@ -13,6 +13,7 @@ import '../dialogs/upgrade_dialog.dart';
 import '../providers/service_providers.dart';
 import '../providers/theme_provider.dart';
 import '../services/feedback_service.dart';
+import '../services/trial_limit_service.dart' show isTrialMode;
 import '../theme/app_theme.dart';
 import '../widgets/tutorial/tutorial_banner.dart';
 import '../widgets/web/web_trial_banner.dart';
@@ -260,6 +261,25 @@ class SettingsPage extends ConsumerWidget {
   }
 
   Future<void> _importData(BuildContext context, WidgetRef ref) async {
+    if (isTrialMode) {
+      await showDialog<void>(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text('インポート不可'),
+          content: const Text(
+            'Web体験版ではデータのインポートはご利用いただけません。\n'
+            'ネイティブアプリをダウンロードしてご利用ください。',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text('OK'),
+            ),
+          ],
+        ),
+      );
+      return;
+    }
     final controller = TextEditingController();
     final confirmed = await showDialog<bool>(
       context: context,

@@ -1,25 +1,27 @@
 /// ネイティブ環境でのファイル保存/読込.
 library;
 
+import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:file_picker/file_picker.dart';
 
 /// ファイルを保存する（Native版）.
 ///
-/// file_pickerで保存先を選択して保存する.
+/// file_pickerで保存先ダイアログを表示し、dart:io で明示的に書き込む.
 Future<bool> saveFile({
   required Uint8List bytes,
   required String fileName,
 }) async {
-  final result = await FilePicker.platform.saveFile(
+  final path = await FilePicker.platform.saveFile(
     dialogTitle: 'ファイルの保存先を選択',
     fileName: fileName,
     type: FileType.custom,
     allowedExtensions: ['xlsx'],
-    bytes: bytes,
   );
-  return result != null;
+  if (path == null) return false;
+  await File(path).writeAsBytes(bytes, flush: true);
+  return true;
 }
 
 /// ファイルを読み込む（Native版）.

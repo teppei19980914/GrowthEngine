@@ -229,6 +229,9 @@ class GanttExcelExportService {
       headerCell.cellStyle = dateHeaderStyle;
     }
 
+    // GoalIDごとのバースタイルを事前生成（再利用でスタイル数を削減）
+    final barStyleCache = <String, (CellStyle, CellStyle)>{};
+
     // タスク行
     for (var i = 0; i < sortedTasks.length; i++) {
       final task = sortedTasks[i];
@@ -249,12 +252,20 @@ class GanttExcelExportService {
       progressCell.value = IntCellValue(task.progress);
       progressCell.cellStyle = _progressStyle(task.progress);
 
-      // ガントバー: 日付セルに色を塗る
-      final goalColor = _goalHexColor(task.goalId, goalMap);
-      final barColor = ExcelColor.fromHexString(goalColor);
-      final barLightColor = ExcelColor.fromHexString(
-        _lightenHex(goalColor),
-      );
+      // ガントバー: 日付セルに色を塗る（スタイルを再利用）
+      final goalHex = _goalHexColor(task.goalId, goalMap);
+      final styles = barStyleCache.putIfAbsent(task.goalId, () {
+        final barStyle = CellStyle(
+          backgroundColorHex: ExcelColor.fromHexString('#$goalHex'),
+        );
+        final lightStyle = CellStyle(
+          backgroundColorHex:
+              ExcelColor.fromHexString('#${_lightenHex(goalHex)}'),
+        );
+        return (barStyle, lightStyle);
+      });
+      final barStyle = styles.$1;
+      final barLightStyle = styles.$2;
 
       final taskStartDay = task.startDate.difference(earliest).inDays;
       final taskEndDay = task.endDate.difference(earliest).inDays;
@@ -266,11 +277,8 @@ class GanttExcelExportService {
         final cell = sheet.cell(
           CellIndex.indexByColumnRow(columnIndex: col, rowIndex: row),
         );
-
-        final isProgressPart = (d - taskStartDay) < progressDays;
-        cell.cellStyle = CellStyle(
-          backgroundColorHex: isProgressPart ? barColor : barLightColor,
-        );
+        cell.cellStyle =
+            (d - taskStartDay) < progressDays ? barStyle : barLightStyle;
       }
     }
 

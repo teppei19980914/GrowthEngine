@@ -11,6 +11,7 @@ import '../dialogs/task_dialog.dart';
 import '../dialogs/trial_limit_dialog.dart';
 import '../models/goal.dart';
 import '../models/task.dart';
+import '../services/book_gantt_service.dart' show bookGanttColor;
 import '../providers/gantt_providers.dart';
 import '../providers/goal_providers.dart';
 import '../providers/service_providers.dart';
@@ -20,6 +21,7 @@ import '../services/trial_limit_service.dart';
 import '../services/tutorial_service.dart';
 import '../theme/app_theme.dart';
 import '../widgets/gantt/gantt_chart.dart';
+import '../widgets/premium/premium_gate.dart';
 import '../widgets/tutorial/tutorial_banner.dart';
 
 /// ガントチャートページ.
@@ -29,6 +31,20 @@ class GanttPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    // プレミアム機能: Web体験版ではゲートを表示
+    if (!canUseGanttChart) {
+      return const PremiumGate(
+        featureName: 'ガントチャート',
+        featureIcon: Icons.view_timeline_outlined,
+        premiumPoints: [
+          'タスクの日程をタイムラインでビジュアル管理',
+          'Excelエクスポートでさらに活用・共有',
+          '読書スケジュールをガントで一元管理',
+          '目標別・書籍別のフィルタリング表示',
+        ],
+      );
+    }
+
     final viewState = ref.watch(ganttViewStateProvider);
     final tasksAsync = ref.watch(ganttTasksProvider);
     final goalsAsync = ref.watch(ganttGoalListProvider);
@@ -159,6 +175,8 @@ class GanttPage extends ConsumerWidget {
                 for (final goal in goalsData) {
                   goalColors[goal.id] = _parseColor(goal.color);
                 }
+                // 書籍タスク用カラーを追加
+                goalColors[bookGanttGoalId] = _parseColor(bookGanttColor);
 
                 return GanttChart(
                   tasks: tasks,

@@ -83,13 +83,14 @@ class _WebTrialBannerState extends State<WebTrialBanner> {
                 const SizedBox(height: 4),
                 Text(
                   isUnlimited
-                      ? '制限は完全に解除されています。'
+                      ? '基本機能の制限は完全に解除されています。'
+                          'ガントチャート等のプレミアム機能はネイティブアプリをご利用ください。'
                       : '夢${maxDreams(level)}個・'
                           '目標${maxGoalsPerDream(level)}個/夢・'
                           'タスク${maxTasksPerGoal(level)}個/目標・'
                           '書籍${maxBooks(level)}冊まで'
                           '（レベル$level / $feedbackMaxLevel）。'
-                          'デスクトップ版なら無制限です。',
+                          'ガントチャート等のプレミアム機能はネイティブアプリをご利用ください。',
                   style: theme.textTheme.bodySmall,
                 ),
               ],
@@ -196,8 +197,8 @@ Future<void> _showTrialDialog(
           ),
           const SizedBox(height: 16),
           const Text(
-            'デスクトップ版をインストールすると、全機能を制限なく'
-            'ご利用いただけます。',
+            'ネイティブアプリをインストールすると、ガントチャート・'
+            '高度な統計等のプレミアム機能も含め全機能を制限なくご利用いただけます。',
             style: TextStyle(fontWeight: FontWeight.w500),
           ),
           const SizedBox(height: 8),

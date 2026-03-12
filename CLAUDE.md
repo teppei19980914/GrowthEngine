@@ -13,7 +13,9 @@
 
 ### Claude Code が担当 (ステップ 1)
 
-1. **プログラム修正**: `sonarcloud-reports/latest-report.txt` の指摘内容を読み込み、セキュリティを考慮したうえでソースコード修正。対応するテストコードも必ず追加・修正する
+1. **プログラム修正**: 以下のレポートを読み込み、問題を特定してソースコード修正。対応するテストコードも必ず追加・修正する
+   - **静的解析**: `sonarcloud-reports/latest-report.txt` の指摘内容を読み込み、セキュリティを考慮して修正
+   - **UIテスト失敗時**: `integration_test_reports/latest-report.txt` を読み込み、Failed Tests セクションを確認して該当ウィジェット/ページを修正
    - コミット & プッシュはユーザーが手動で実施（GitHub Actions の無料枠節約のため）
 
 ### ユーザーが手動で実施 (ステップ 2, 3)
@@ -25,11 +27,12 @@
 
 4. **テスト & デプロイ** (deploy.yml): push をトリガーに `flutter analyze` → `flutter test --coverage` → `flutter build web` → GitHub Pages デプロイ を自動実行
 5. **SonarCloud 静的解析** (sonarcloud.yml): push をトリガーにテスト → SonarCloud Dart 解析 → レポートを `sonarcloud-reports/` に自動コミット
-6. **公開**: デプロイ成功後、GitHub Pages に自動反映
+6. **UIインテグレーションテスト** (integration_test.yml): push をトリガーに `flutter test integration_test/` → レポートを `integration_test_reports/latest-report.txt` に自動コミット
+7. **公開**: デプロイ成功後、GitHub Pages に自動反映
 
-### ユーザーが手動で実施 (ステップ 7)
+### ユーザーが手動で実施 (ステップ 8)
 
-7. **Web 動作確認**: ブラウザで体験版アプリの動作確認
+8. **Web 動作確認**: ブラウザで体験版アプリの動作確認（UIテストで自動検証済みの場合は省略可）
 
 ## コミットルール
 
@@ -61,9 +64,11 @@ flutter build web --release --base-href "/GrowthEngine/"
 
 - **deploy.yml**: main push 時 → テスト（カバレッジ付き） → GitHub Pages デプロイ
 - **sonarcloud.yml**: main push 時 → テスト → SonarCloud 解析 → レポート自動コミット
+- **integration_test.yml**: main push 時 → UIインテグレーションテスト → レポート自動コミット
 - **test.yml**: PR 時 → テスト（カバレッジ付き）のみ実行
 - カバレッジレポートは各ワークフロー実行の Summary タブに出力される
 - SonarCloud レポートは `sonarcloud-reports/latest-report.txt` に自動保存される
+- UIテストレポートは `integration_test_reports/latest-report.txt` に自動保存される
 
 ## 技術スタック
 

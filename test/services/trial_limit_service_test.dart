@@ -8,6 +8,18 @@ void main() {
       expect(isTrialMode, isFalse);
     });
 
+    test('isPremium はテスト環境で true（非Web=ネイティブ）', () {
+      expect(isPremium, isTrue);
+    });
+
+    test('非Web環境ではガントチャート利用可能', () {
+      expect(canUseGanttChart, isTrue);
+    });
+
+    test('非Web環境では高度な統計利用可能', () {
+      expect(canUseAdvancedStats, isTrue);
+    });
+
     test('非Web環境では夢の追加制限がない', () {
       expect(canAddDream(currentCount: 100), isTrue);
     });
@@ -26,43 +38,43 @@ void main() {
   });
 
   group('制限値の定義', () {
-    test('レベル0の夢の上限は2', () {
-      expect(trialMaxDreams, 2);
-      expect(maxDreams(0), 2);
+    test('レベル0の夢の上限は1', () {
+      expect(trialMaxDreams, 1);
+      expect(maxDreams(0), 1);
     });
 
-    test('レベル0の目標の上限は各夢3', () {
-      expect(trialMaxGoalsPerDream, 3);
-      expect(maxGoalsPerDream(0), 3);
+    test('レベル0の目標の上限は各夢2', () {
+      expect(trialMaxGoalsPerDream, 2);
+      expect(maxGoalsPerDream(0), 2);
     });
 
-    test('レベル0のタスクの上限は各目標5', () {
-      expect(trialMaxTasksPerGoal, 5);
-      expect(maxTasksPerGoal(0), 5);
+    test('レベル0のタスクの上限は各目標3', () {
+      expect(trialMaxTasksPerGoal, 3);
+      expect(maxTasksPerGoal(0), 3);
     });
 
-    test('レベル0の書籍の上限は5', () {
-      expect(trialMaxBooks, 5);
-      expect(maxBooks(0), 5);
+    test('レベル0の書籍の上限は3', () {
+      expect(trialMaxBooks, 3);
+      expect(maxBooks(0), 3);
     });
   });
 
   group('段階的解除', () {
     test('レベル1で制限が緩和される', () {
-      expect(maxDreams(1), 4);
-      expect(maxGoalsPerDream(1), 5);
-      expect(maxTasksPerGoal(1), 8);
-      expect(maxBooks(1), 8);
+      expect(maxDreams(1), 2);
+      expect(maxGoalsPerDream(1), 3);
+      expect(maxTasksPerGoal(1), 5);
+      expect(maxBooks(1), 5);
     });
 
     test('レベル2でさらに緩和される', () {
-      expect(maxDreams(2), 6);
-      expect(maxGoalsPerDream(2), 8);
-      expect(maxTasksPerGoal(2), 12);
-      expect(maxBooks(2), 12);
+      expect(maxDreams(2), 3);
+      expect(maxGoalsPerDream(2), 5);
+      expect(maxTasksPerGoal(2), 8);
+      expect(maxBooks(2), 8);
     });
 
-    test('レベル3で実質無制限', () {
+    test('レベル3で実質無制限（基本機能）', () {
       expect(maxDreams(3), 999);
       expect(maxGoalsPerDream(3), 999);
       expect(maxTasksPerGoal(3), 999);
@@ -73,9 +85,9 @@ void main() {
   group('trialLimitDescription', () {
     test('レベル0の制限情報が含まれる', () {
       final desc = trialLimitDescription();
+      expect(desc, contains('1'));
       expect(desc, contains('2'));
       expect(desc, contains('3'));
-      expect(desc, contains('5'));
       expect(desc, contains('レベル0'));
     });
 

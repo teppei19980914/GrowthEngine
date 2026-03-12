@@ -68,11 +68,11 @@ void main() {
     await tester.pumpAndSettle();
 
     // 編集ボタンをタップ
-    await tester.tap(find.byIcon(Icons.edit_outlined));
+    await tester.tap(find.byIcon(Icons.tune_outlined));
     await tester.pumpAndSettle();
 
     // 完了ボタンが表示される
-    expect(find.byIcon(Icons.check), findsOneWidget);
+    expect(find.byIcon(Icons.check_circle_outline), findsOneWidget);
     // リセットボタンが表示される
     expect(find.text('リセット'), findsOneWidget);
   });

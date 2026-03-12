@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../models/goal.dart';
 import '../models/task.dart';
+import '../services/book_gantt_service.dart' show bookGanttGoalId;
 import 'service_providers.dart';
 
 /// ガントチャートの表示モード.
@@ -79,17 +80,21 @@ class GanttViewStateNotifier extends Notifier<GanttViewState> {
 final ganttTasksProvider = FutureProvider<List<Task>>((ref) async {
   final viewState = ref.watch(ganttViewStateProvider);
   final taskService = ref.watch(taskServiceProvider);
+  final bookGanttService = ref.watch(bookGanttServiceProvider);
 
   switch (viewState.mode) {
     case GanttViewMode.allTasks:
       final tasks = await taskService.getAllTasks();
-      return tasks.where((t) => t.goalId != bookGanttGoalId).toList();
+      final scheduledBooks = await bookGanttService.getScheduledBooks();
+      final bookTasks = bookGanttService.booksToTasks(scheduledBooks);
+      return [...tasks, ...bookTasks];
     case GanttViewMode.byGoal:
       final goalId = viewState.selectedGoalId;
       if (goalId == null) return [];
       return taskService.getTasksForGoal(goalId);
     case GanttViewMode.allBooks:
-      return taskService.getTasksForGoal(bookGanttGoalId);
+      final scheduledBooks = await bookGanttService.getScheduledBooks();
+      return bookGanttService.booksToTasks(scheduledBooks);
   }
 });
 

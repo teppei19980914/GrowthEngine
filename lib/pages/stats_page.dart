@@ -15,6 +15,8 @@ import '../services/study_stats_calculator.dart';
 import '../services/study_stats_types.dart';
 import '../theme/app_theme.dart';
 
+import '../services/trial_limit_service.dart' show isTrialMode;
+import '../widgets/premium/premium_gate.dart';
 import '../widgets/stats/goal_stats_section.dart';
 
 /// 全ログProvider（統計ページ用）.
@@ -61,12 +63,12 @@ class StatsPage extends ConsumerWidget {
           _ConsistencySection(colors: colors),
           const SizedBox(height: 16),
 
-          // 目標別統計
-          const GoalStatsSection(),
+          // 目標別統計（プレミアム機能）
+          const _GoalStatsPremiumSection(),
           const SizedBox(height: 16),
 
-          // アクティビティチャート
-          _ActivityChartSection(colors: colors),
+          // アクティビティチャート（プレミアム機能）
+          const _ActivityChartPremiumSection(),
           const SizedBox(height: 16),
 
           // 最近の活動ログ
@@ -458,6 +460,50 @@ class _PeriodCard extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+}
+
+/// 目標別統計のプレミアムラッパー.
+class _GoalStatsPremiumSection extends ConsumerWidget {
+  const _GoalStatsPremiumSection();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    if (!isTrialMode) {
+      return const GoalStatsSection();
+    }
+    return const PremiumSectionGate(
+      featureName: '目標別統計',
+      featureIcon: Icons.bar_chart,
+      premiumPoints: [
+        '目標ごとの活動時間・日数を詳細分析',
+        'タスク単位の時間内訳を確認',
+        '読書ごとの進捗・時間を管理',
+      ],
+    );
+  }
+}
+
+/// アクティビティチャートのプレミアムラッパー.
+class _ActivityChartPremiumSection extends ConsumerWidget {
+  const _ActivityChartPremiumSection();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final theme = Theme.of(context);
+    final colors = theme.appColors;
+    if (!isTrialMode) {
+      return _ActivityChartSection(colors: colors);
+    }
+    return const PremiumSectionGate(
+      featureName: 'アクティビティチャート',
+      featureIcon: Icons.show_chart,
+      premiumPoints: [
+        '日・週・月・年単位の活動推移をグラフ表示',
+        '活動の継続パターンを可視化',
+        'モチベーション管理に最適',
+      ],
     );
   }
 }

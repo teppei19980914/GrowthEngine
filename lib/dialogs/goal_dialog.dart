@@ -123,7 +123,7 @@ class _GoalDialogContentState extends State<_GoalDialogContent> {
       context: context,
       initialDate: _selectedDate ?? now,
       firstDate: now.subtract(const Duration(days: 365)),
-      lastDate: now.add(const Duration(days: 365 * 10)),
+      lastDate: now.add(const Duration(days: 365 * 25)),
     );
     if (picked != null) {
       setState(() {

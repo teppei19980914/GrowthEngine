@@ -124,7 +124,7 @@ class _BookScheduleDialogContentState
       context: context,
       initialDate: _startDate,
       firstDate: DateTime(2020),
-      lastDate: DateTime(2040),
+      lastDate: DateTime(2050),
     );
     if (picked != null) {
       setState(() {
@@ -143,7 +143,7 @@ class _BookScheduleDialogContentState
       context: context,
       initialDate: _endDate,
       firstDate: _startDate,
-      lastDate: DateTime(2040),
+      lastDate: DateTime(2050),
     );
     if (picked != null) {
       setState(() {

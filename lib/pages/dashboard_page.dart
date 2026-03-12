@@ -55,14 +55,8 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
         children: [
           // Web体験版バナー
           WebTrialBanner(prefs: prefs),
-          // 編集モードバー
-          _EditModeBar(
-            editMode: _editMode,
-            onToggle: () => setState(() => _editMode = !_editMode),
-            onReset: () =>
-                ref.read(dashboardLayoutProvider.notifier).resetToDefault(),
-            colors: colors,
-          ),
+          // 挨拶ヘッダー + 編集ボタン
+          _GreetingBar(editMode: _editMode, onToggle: () => setState(() => _editMode = !_editMode), onReset: () => ref.read(dashboardLayoutProvider.notifier).resetToDefault(), colors: colors),
           // ウィジェットグリッド
           Expanded(
             child: _editMode
@@ -182,9 +176,9 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
   }
 }
 
-/// 編集モードバー.
-class _EditModeBar extends StatelessWidget {
-  const _EditModeBar({
+/// 挨拶バー（時間帯別あいさつ + ダッシュボード編集ボタン）.
+class _GreetingBar extends StatelessWidget {
+  const _GreetingBar({
     required this.editMode,
     required this.onToggle,
     required this.onReset,
@@ -196,29 +190,48 @@ class _EditModeBar extends StatelessWidget {
   final VoidCallback onReset;
   final AppColors colors;
 
+  String _greeting() {
+    final hour = DateTime.now().hour;
+    if (hour < 5) return 'お疲れさまです';
+    if (hour < 12) return 'おはようございます';
+    if (hour < 18) return 'こんにちは';
+    return 'こんばんは';
+  }
+
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+      padding: const EdgeInsets.fromLTRB(16, 10, 8, 0),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.end,
         children: [
+          if (!editMode) ...[
+            Text(
+              _greeting(),
+              style: theme.textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.w700,
+                color: colors.textPrimary,
+              ),
+            ),
+          ],
+          const Spacer(),
           if (editMode)
             TextButton.icon(
               onPressed: onReset,
-              icon: Icon(Icons.restore, size: 18, color: colors.warning),
+              icon: Icon(Icons.restore, size: 16, color: colors.warning),
               label: Text(
                 'リセット',
-                style: TextStyle(color: colors.warning),
+                style: TextStyle(color: colors.warning, fontSize: 13),
               ),
             ),
           IconButton(
             icon: Icon(
-              editMode ? Icons.check : Icons.edit_outlined,
+              editMode ? Icons.check_circle_outline : Icons.tune_outlined,
               size: 20,
+              color: editMode ? colors.success : colors.textMuted,
             ),
             onPressed: onToggle,
-            tooltip: editMode ? '完了' : '編集',
+            tooltip: editMode ? '完了' : 'ウィジェット編集',
           ),
         ],
       ),

@@ -137,6 +137,21 @@ void main() {
     expect(find.text('削除する'), findsOneWidget);
   });
 
+  testWidgets('インポートをタップするとインポートダイアログが表示される（非体験版）', (tester) async {
+    // テスト環境では kIsWeb=false のため isTrialMode=false となり通常のインポートダイアログが表示される
+    final prefs = await getPrefs();
+    await tester.pumpWidget(
+      wrapWithProviders(const SettingsPage(), prefs: prefs, db: setup.db),
+    );
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('データをインポート'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('データをインポート'), findsWidgets);
+    expect(find.text('インポート'), findsOneWidget);
+  });
+
   testWidgets('フィードバックセクションが表示される', (tester) async {
     final prefs = await getPrefs();
     await tester.pumpWidget(
