@@ -126,16 +126,17 @@ Future<void> showWebTrialDialog(
 /// Web体験版の初回ダイアログを表示する.
 ///
 /// 初回のみ表示し、以降はSharedPreferencesで制御する.
-Future<void> showWebTrialDialogIfNeeded(
+/// ダイアログが表示された場合は`true`を返す.
+Future<bool> showWebTrialDialogIfNeeded(
   BuildContext context,
   SharedPreferences prefs,
 ) async {
-  if (!kIsWeb) return;
-  if (prefs.getBool(_webDialogShownKey) ?? false) return;
+  if (!kIsWeb) return false;
+  if (prefs.getBool(_webDialogShownKey) ?? false) return false;
 
   await prefs.setBool(_webDialogShownKey, true);
 
-  if (!context.mounted) return;
+  if (!context.mounted) return false;
 
   final level = FeedbackService(prefs).unlockLevel;
   await _showTrialDialog(
@@ -143,6 +144,7 @@ Future<void> showWebTrialDialogIfNeeded(
     unlockLevel: level,
     barrierDismissible: false,
   );
+  return true;
 }
 
 Future<void> _showTrialDialog(

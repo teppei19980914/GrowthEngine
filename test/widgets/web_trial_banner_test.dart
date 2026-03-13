@@ -34,9 +34,10 @@ void main() {
         ),
       );
 
-      await showWebTrialDialogIfNeeded(savedContext, prefs);
+      final shown = await showWebTrialDialogIfNeeded(savedContext, prefs);
       await tester.pumpAndSettle();
 
+      expect(shown, isFalse);
       expect(find.text('Web体験版について'), findsNothing);
     });
   });

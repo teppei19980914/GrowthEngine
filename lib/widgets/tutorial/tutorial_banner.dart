@@ -248,6 +248,24 @@ class _CompletedBanner extends ConsumerWidget {
               color: theme.colorScheme.onPrimary.withAlpha(200),
             ),
           ),
+          const SizedBox(height: 6),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                Icons.info_outline,
+                size: 14,
+                color: theme.colorScheme.onPrimary.withAlpha(160),
+              ),
+              const SizedBox(width: 4),
+              Text(
+                '設定画面からいつでもチュートリアルを再実行できます',
+                style: theme.textTheme.labelSmall?.copyWith(
+                  color: theme.colorScheme.onPrimary.withAlpha(160),
+                ),
+              ),
+            ],
+          ),
           const SizedBox(height: 12),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,

@@ -13,6 +13,7 @@ import '../providers/constellation_providers.dart';
 import '../providers/dashboard_providers.dart';
 import '../providers/theme_provider.dart';
 import '../widgets/constellation/constellation_painter.dart';
+import '../widgets/tutorial/tutorial_banner.dart';
 import '../widgets/web/web_trial_banner.dart';
 import '../providers/service_providers.dart';
 import '../services/dashboard_layout_service.dart';
@@ -40,12 +41,17 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
     final colors = theme.appColors;
     final prefs = ref.watch(sharedPreferencesProvider);
 
-    // Web体験版の初回ダイアログ表示
+    // Web体験版の初回ダイアログ表示 → チュートリアル自動開始
     if (!_webDialogChecked) {
       _webDialogChecked = true;
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (mounted) {
-          showWebTrialDialogIfNeeded(context, prefs);
+      WidgetsBinding.instance.addPostFrameCallback((_) async {
+        if (!mounted) return;
+        final shown = await showWebTrialDialogIfNeeded(context, prefs);
+        if (!shown || !mounted) return;
+        // 初回表示後、チュートリアルを自動開始
+        final tutorialState = ref.read(tutorialStateProvider);
+        if (!tutorialState.isActive) {
+          await ref.read(tutorialStateProvider.notifier).start();
         }
       });
     }
