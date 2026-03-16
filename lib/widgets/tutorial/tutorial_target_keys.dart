@@ -22,6 +22,9 @@ class TutorialTargetKeys {
   /// 「目標を追加」ボタン.
   static final addGoalButton = GlobalKey(debugLabel: 'tutorial_add_goal');
 
+  /// ボトムナビ「ガントチャート」タブ.
+  static final ganttTab = GlobalKey(debugLabel: 'tutorial_gantt_tab');
+
   /// ハンバーガーメニューボタン.
   static final menuButton = GlobalKey(debugLabel: 'tutorial_menu');
 

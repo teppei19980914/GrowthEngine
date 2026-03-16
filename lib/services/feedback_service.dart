@@ -12,7 +12,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 /// Google Apps Script のウェブアプリURL.
 const feedbackEndpointUrl =
-    'https://script.google.com/macros/s/AKfycby_LUvrzEkm-Yh6DuwAHOsTopLoHjyb525-3krxjQWiEn57WXw7htbMij6YfWccmgLmBw/exec';
+    'https://script.google.com/macros/s/AKfycbzeY7ViQhVK8otyuq5ldsDFzTZ5sfbVwMYT0uIfcmzCnbQ0Bdf-hX_x7IBytfUI4DlfHQ/exec';
 
 /// フィードバックカテゴリ.
 enum FeedbackCategory {
@@ -20,10 +20,7 @@ enum FeedbackCategory {
   improvement('改善要望'),
 
   /// 不具合報告.
-  bugReport('不具合報告'),
-
-  /// 使いやすさ.
-  usability('使いやすさ'),
+  bugReport('不具合'),
 
   /// その他.
   other('その他');

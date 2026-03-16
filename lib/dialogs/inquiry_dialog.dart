@@ -1,70 +1,69 @@
-/// フィードバック送信ダイアログ.
+/// お問い合わせ送信ダイアログ.
 ///
-/// カテゴリ選択、テキスト入力（100文字以上）、
-/// バリデーション付きのフィードバックフォームを提供する.
+/// カテゴリ選択、メールアドレス入力、テキスト入力の
+/// お問い合わせフォームを提供する.
 library;
 
 import 'package:flutter/material.dart';
 
-import '../services/feedback_service.dart';
+import '../services/inquiry_service.dart';
 
-/// フィードバックダイアログを表示する.
+/// お問い合わせダイアログを表示する.
 ///
 /// 送信成功時は true を返す.
-/// [userKey] はリモート設定のユーザーキー（任意）.
-Future<bool> showFeedbackDialog(
+Future<bool> showInquiryDialog(
   BuildContext context,
-  FeedbackService feedbackService, {
+  InquiryService inquiryService, {
   String? userKey,
 }) async {
   final result = await showDialog<bool>(
     context: context,
     barrierDismissible: false,
-    builder: (context) => _FeedbackDialog(
-      feedbackService: feedbackService,
+    builder: (context) => _InquiryDialog(
+      inquiryService: inquiryService,
       userKey: userKey,
     ),
   );
   return result ?? false;
 }
 
-class _FeedbackDialog extends StatefulWidget {
-  const _FeedbackDialog({required this.feedbackService, this.userKey});
+class _InquiryDialog extends StatefulWidget {
+  const _InquiryDialog({required this.inquiryService, this.userKey});
 
-  final FeedbackService feedbackService;
+  final InquiryService inquiryService;
   final String? userKey;
 
   @override
-  State<_FeedbackDialog> createState() => _FeedbackDialogState();
+  State<_InquiryDialog> createState() => _InquiryDialogState();
 }
 
-class _FeedbackDialogState extends State<_FeedbackDialog> {
-  final _controller = TextEditingController();
-  FeedbackCategory? _category;
+class _InquiryDialogState extends State<_InquiryDialog> {
+  final _emailController = TextEditingController();
+  final _textController = TextEditingController();
+  InquiryCategory? _category;
   bool _submitting = false;
   String? _errorMessage;
 
   @override
   void dispose() {
-    _controller.dispose();
+    _emailController.dispose();
+    _textController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final textLength = _controller.text.trim().length;
-    final remaining = feedbackMinLength - textLength;
-    final currentLevel = widget.feedbackService.unlockLevel;
-    final nextLevel = (currentLevel + 1).clamp(0, feedbackMaxLevel);
+    final textLength = _textController.text.trim().length;
+    final remaining = inquiryMinLength - textLength;
 
     return AlertDialog(
       title: Row(
         children: [
-          Icon(Icons.rate_review_outlined,
+          Icon(Icons.mail_outlined,
               size: 24, color: theme.colorScheme.primary),
           const SizedBox(width: 8),
-          const Expanded(child: Text('フィードバックを送信')),
+          const Expanded(child: Text('お問い合わせ')),
         ],
       ),
       content: ConstrainedBox(
@@ -74,7 +73,7 @@ class _FeedbackDialogState extends State<_FeedbackDialog> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // 解除レベル情報
+              // 説明
               Container(
                 width: double.infinity,
                 padding: const EdgeInsets.all(12),
@@ -87,21 +86,13 @@ class _FeedbackDialogState extends State<_FeedbackDialog> {
                 ),
                 child: Row(
                   children: [
-                    Icon(
-                      currentLevel >= feedbackUnlockableLevel
-                          ? Icons.favorite
-                          : Icons.lock_open,
-                      size: 20,
-                      color: theme.colorScheme.primary,
-                    ),
+                    Icon(Icons.business_center_outlined,
+                        size: 20, color: theme.colorScheme.primary),
                     const SizedBox(width: 8),
                     Expanded(
                       child: Text(
-                        currentLevel >= feedbackUnlockableLevel
-                            ? 'いつもご利用ありがとうございます。'
-                                '引き続きご意見をお聞かせください'
-                            : '送信すると制限がレベル$nextLevelに解除されます'
-                                '（現在: レベル$currentLevel / $feedbackMaxLevel）',
+                        '追加開発や案件のご相談など、'
+                        'お気軽にお問い合わせください',
                         style: theme.textTheme.bodySmall?.copyWith(
                           color: theme.colorScheme.primary,
                           fontWeight: FontWeight.w500,
@@ -116,13 +107,13 @@ class _FeedbackDialogState extends State<_FeedbackDialog> {
               // カテゴリ選択
               Text('カテゴリ *', style: theme.textTheme.labelLarge),
               const SizedBox(height: 8),
-              DropdownButtonFormField<FeedbackCategory>(
+              DropdownButtonFormField<InquiryCategory>(
                 initialValue: _category,
                 decoration: const InputDecoration(
                   border: OutlineInputBorder(),
                   hintText: 'カテゴリを選択してください',
                 ),
-                items: FeedbackCategory.values
+                items: InquiryCategory.values
                     .map((c) => DropdownMenuItem(
                           value: c,
                           child: Text(c.label),
@@ -132,15 +123,28 @@ class _FeedbackDialogState extends State<_FeedbackDialog> {
               ),
               const SizedBox(height: 16),
 
+              // メールアドレス
+              Text('メールアドレス *', style: theme.textTheme.labelLarge),
+              const SizedBox(height: 8),
+              TextField(
+                controller: _emailController,
+                keyboardType: TextInputType.emailAddress,
+                decoration: const InputDecoration(
+                  border: OutlineInputBorder(),
+                  hintText: 'example@mail.com',
+                ),
+                onChanged: (_) => setState(() => _errorMessage = null),
+              ),
+              const SizedBox(height: 16),
+
               // テキスト入力
               Row(
                 children: [
-                  Text('ご意見・ご感想 *', style: theme.textTheme.labelLarge),
+                  Text('お問い合わせ内容 *',
+                      style: theme.textTheme.labelLarge),
                   const Spacer(),
                   Text(
-                    remaining > 0
-                        ? 'あと$remaining文字'
-                        : '$textLength文字',
+                    remaining > 0 ? 'あと$remaining文字' : '$textLength文字',
                     style: theme.textTheme.bodySmall?.copyWith(
                       color: remaining > 0
                           ? theme.colorScheme.error
@@ -153,20 +157,20 @@ class _FeedbackDialogState extends State<_FeedbackDialog> {
               ),
               const SizedBox(height: 8),
               TextField(
-                controller: _controller,
-                maxLines: 8,
+                controller: _textController,
+                maxLines: 6,
                 decoration: const InputDecoration(
                   border: OutlineInputBorder(),
-                  hintText: 'アプリの改善点や使いにくい部分、\n'
-                      '欲しい機能などをお聞かせください。\n\n'
-                      '具体的なご意見は開発の参考になります。',
+                  hintText: 'ご相談内容をご記入ください。\n\n'
+                      '開発の規模感・ご予算・スケジュール等を\n'
+                      'お伝えいただけるとスムーズです。',
                   alignLabelWithHint: true,
                 ),
                 onChanged: (_) => setState(() => _errorMessage = null),
               ),
               const SizedBox(height: 8),
 
-              // 匿名性の注記
+              // 注記
               Row(
                 children: [
                   Icon(Icons.shield_outlined,
@@ -174,8 +178,8 @@ class _FeedbackDialogState extends State<_FeedbackDialog> {
                   const SizedBox(width: 4),
                   Expanded(
                     child: Text(
-                      'フィードバックは匿名で送信されます。'
-                      '個人を特定する情報は含まれません。',
+                      'メールアドレスはご返信のみに使用し、'
+                      '第三者に提供することはありません。',
                       style: theme.textTheme.labelSmall?.copyWith(
                         color: theme.hintColor,
                       ),
@@ -189,11 +193,11 @@ class _FeedbackDialogState extends State<_FeedbackDialog> {
               ClipRRect(
                 borderRadius: BorderRadius.circular(4),
                 child: LinearProgressIndicator(
-                  value: (textLength / feedbackMinLength).clamp(0.0, 1.0),
+                  value: (textLength / inquiryMinLength).clamp(0.0, 1.0),
                   minHeight: 4,
                   backgroundColor: theme.colorScheme.surfaceContainerHighest,
                   valueColor: AlwaysStoppedAnimation(
-                    textLength >= feedbackMinLength
+                    textLength >= inquiryMinLength
                         ? theme.colorScheme.primary
                         : theme.colorScheme.error,
                   ),
@@ -216,7 +220,8 @@ class _FeedbackDialogState extends State<_FeedbackDialog> {
       ),
       actions: [
         TextButton(
-          onPressed: _submitting ? null : () => Navigator.of(context).pop(false),
+          onPressed:
+              _submitting ? null : () => Navigator.of(context).pop(false),
           child: const Text('キャンセル'),
         ),
         FilledButton.icon(
@@ -240,18 +245,26 @@ class _FeedbackDialogState extends State<_FeedbackDialog> {
       return;
     }
 
-    final validation =
-        widget.feedbackService.validateFeedback(_controller.text);
-    if (!validation.isValid) {
-      setState(() => _errorMessage = validation.errorMessage);
+    final emailError =
+        widget.inquiryService.validateEmail(_emailController.text);
+    if (emailError != null) {
+      setState(() => _errorMessage = emailError);
+      return;
+    }
+
+    final textError =
+        widget.inquiryService.validateText(_textController.text);
+    if (textError != null) {
+      setState(() => _errorMessage = textError);
       return;
     }
 
     setState(() => _submitting = true);
 
-    final result = await widget.feedbackService.submitFeedback(
+    final result = await widget.inquiryService.submit(
       category: _category!,
-      text: _controller.text,
+      email: _emailController.text,
+      text: _textController.text,
       userKey: widget.userKey,
     );
 
@@ -260,14 +273,8 @@ class _FeedbackDialogState extends State<_FeedbackDialog> {
     if (result.success) {
       Navigator.of(context).pop(true);
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            widget.feedbackService.isFeedbackMaxLevel
-                ? 'フィードバックを送信しました。ありがとうございます！'
-                : result.newLevel >= feedbackMaxLevel
-                    ? 'ありがとうございます！制限が完全に解除されました'
-                    : 'ありがとうございます！制限がレベル${result.newLevel}に解除されました',
-          ),
+        const SnackBar(
+          content: Text('お問い合わせを送信しました。ご連絡をお待ちください。'),
         ),
       );
     } else {

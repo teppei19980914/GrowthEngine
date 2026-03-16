@@ -103,8 +103,8 @@ class _BookReviewDialogContentState extends State<_BookReviewDialogContent> {
 
     return AlertDialog(
       title: Text('読了レビュー: ${widget.bookTitle}'),
-      content: SizedBox(
-        width: 480,
+      content: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 480),
         child: SingleChildScrollView(
           child: Column(
             mainAxisSize: MainAxisSize.min,

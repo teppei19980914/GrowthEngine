@@ -33,7 +33,9 @@ import 'package:yume_log/providers/theme_provider.dart'
 import 'package:yume_log/services/remote_config_service.dart';
 import 'package:yume_log/services/study_stats_types.dart';
 import 'package:yume_log/services/feedback_service.dart'
-    show FeedbackCategory;
+    show FeedbackCategory, feedbackUnlockableLevel;
+import 'package:yume_log/services/inquiry_service.dart'
+    show InquiryCategory;
 import 'package:yume_log/services/trial_limit_service.dart'
     show setTrialModeForTest;
 import 'package:yume_log/widgets/notification/notification_button.dart'
@@ -421,7 +423,7 @@ void main() {
   // ヘルパー: ボトムナビゲーションタブをインデックスでタップする.
   // AppDrawerにも同じアイコンが存在するため、アイコン検索ではなく
   // NavigationDestination のインデックスでタップする.
-  // 0=ホーム, 1=夢, 2=目標, 3=統計
+  // 0=ホーム, 1=夢, 2=目標, 3=ガントチャート
   // ─────────────────────────────────────────────────────────────────────────
   Future<void> tapBottomNav(WidgetTester tester, int index) async {
     await tester.tap(find.byType(NavigationDestination).at(index));
@@ -463,7 +465,7 @@ void main() {
     expect(findNavBarIcon(Icons.home), findsOneWidget); // active home
     expect(findNavBarIcon(Icons.auto_awesome_outlined), findsOneWidget);
     expect(findNavBarIcon(Icons.flag_outlined), findsOneWidget);
-    expect(findNavBarIcon(Icons.bar_chart_outlined), findsOneWidget);
+    expect(findNavBarIcon(Icons.view_timeline_outlined), findsOneWidget);
 
     // 今日の活動バナーが表示される
     expect(find.text('今日は活動済み!'), findsOneWidget);
@@ -491,9 +493,9 @@ void main() {
     // 目標を追加ボタンが表示される
     expect(find.text('目標を追加'), findsOneWidget);
 
-    // ─── 統計ページ ──────────────────────────────────
+    // ─── ガントチャートページ ──────────────────────────
     await tapBottomNav(tester, 3);
-    expect(find.text('統計'), findsOneWidget);
+    expect(find.text('ガントチャート'), findsOneWidget);
 
     // ─── ホームへ戻る ────────────────────────────────
     await tapBottomNav(tester, 0);
@@ -640,8 +642,8 @@ void main() {
     await tester.pumpWidget(await buildApp());
     await tester.pumpAndSettle();
 
-    // 統計ページへ移動
-    await tapBottomNav(tester, 3);
+    // 統計ページへ移動（ドロワー経由）
+    await navigateViaDrawer(tester, '統計');
 
     // アクティビティセクションまでスクロール
     await tester.scrollUntilVisible(
@@ -1152,5 +1154,278 @@ void main() {
 
     // タスクが削除されて空状態が表示される
     expect(find.text('タスクがありません'), findsOneWidget);
+  });
+
+  // ─────────────────────────────────────────────────────────────────────────
+  // ボトムナビ: ガントチャートタブ
+  // ─────────────────────────────────────────────────────────────────────────
+
+  testWidgets('ボトムナビからガントチャートページに遷移できる', (tester) async {
+    await tester.pumpWidget(await buildApp());
+    await tester.pumpAndSettle();
+
+    // ガントチャートタブ（index=3）をタップ
+    await tapBottomNav(tester, 3);
+
+    // ガントチャートページが表示される
+    expect(find.text('ガントチャート'), findsOneWidget);
+    // ボトムナビにガントチャートアイコンがアクティブ
+    expect(findNavBarIcon(Icons.view_timeline), findsOneWidget);
+  });
+
+  // ─────────────────────────────────────────────────────────────────────────
+  // 夢カード: 目標0件バッジ非表示
+  // ─────────────────────────────────────────────────────────────────────────
+
+  testWidgets('夢カードに目標0件の場合はバッジが表示されない', (tester) async {
+    await tester.pumpWidget(await buildRealApp());
+    await tester.pumpAndSettle();
+
+    // 夢ページへ移動して夢を追加
+    await tapBottomNav(tester, 1);
+    await addDream(tester, '目標なし夢');
+
+    // 夢カードが表示される
+    expect(find.text('目標なし夢'), findsOneWidget);
+    // 目標バッジ（目標 0）が非表示
+    expect(find.text('目標 0'), findsNothing);
+  });
+
+  testWidgets('夢カードに目標が紐づく場合はバッジが表示される', (tester) async {
+    await tester.pumpWidget(await buildAppWithData());
+    await tester.pumpAndSettle();
+
+    // 夢ページへ移動
+    await tapBottomNav(tester, 1);
+
+    // 夢カードが表示される
+    expect(find.text('テスト夢'), findsOneWidget);
+    // 目標バッジ（目標 1）が表示される
+    expect(find.text('目標 1'), findsOneWidget);
+  });
+
+  // ─────────────────────────────────────────────────────────────────────────
+  // 設定画面: お問い合わせ・フィードバック
+  // ─────────────────────────────────────────────────────────────────────────
+
+  testWidgets('設定画面にお問い合わせセクションが表示される', (tester) async {
+    await tester.pumpWidget(await buildApp());
+    await tester.pumpAndSettle();
+
+    // 設定画面へ移動
+    await navigateViaDrawer(tester, '設定');
+
+    // お問い合わせセクションまでスクロール
+    await tester.scrollUntilVisible(
+      find.text('追加開発・案件のご相談など'),
+      300,
+      scrollable: find.byType(Scrollable).first,
+    );
+    await tester.pumpAndSettle();
+
+    // お問い合わせカードが表示される
+    expect(find.text('お問い合わせ'), findsWidgets);
+    expect(find.text('追加開発・案件のご相談など'), findsOneWidget);
+  });
+
+  testWidgets('お問い合わせダイアログが開きカテゴリが表示される', (tester) async {
+    await tester.pumpWidget(await buildApp());
+    await tester.pumpAndSettle();
+
+    await navigateViaDrawer(tester, '設定');
+
+    // お問い合わせカードまでスクロールしてタップ
+    await tester.scrollUntilVisible(
+      find.text('追加開発・案件のご相談など'),
+      300,
+      scrollable: find.byType(Scrollable).first,
+    );
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('追加開発・案件のご相談など'));
+    await tester.pumpAndSettle();
+
+    // お問い合わせダイアログが開く
+    expect(find.text('お問い合わせ'), findsWidgets);
+    expect(find.text('メールアドレス *'), findsOneWidget);
+    expect(find.text('お問い合わせ内容 *'), findsOneWidget);
+
+    // カテゴリドロップダウンを開く
+    await tester.tap(find.byType(DropdownButtonFormField<InquiryCategory>));
+    await tester.pumpAndSettle();
+
+    // 3つのカテゴリが表示される
+    expect(find.text('追加開発の相談'), findsOneWidget);
+    expect(find.text('案件のご依頼'), findsOneWidget);
+    expect(find.text('その他のお問い合わせ'), findsOneWidget);
+
+    // キャンセルで閉じる
+    await tester.tap(find.text('キャンセル'));
+    await tester.pumpAndSettle();
+  });
+
+  testWidgets('フィードバック送信ボタンがレベル上限後も表示される', (tester) async {
+    addTearDown(() => setTrialModeForTest(enabled: false));
+    setTrialModeForTest(enabled: true);
+
+    // レベル2（フィードバック上限）の状態で起動
+    SharedPreferences.setMockInitialValues({
+      'feedback_unlock_level': feedbackUnlockableLevel,
+    });
+    final prefs = await SharedPreferences.getInstance();
+
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          sharedPreferencesProvider.overrideWithValue(prefs),
+          databaseProvider.overrideWithValue(db),
+          remoteConfigProvider.overrideWithValue(UserConfig.defaultConfig),
+          dreamListProvider.overrideWith(() => _ImmediateDreamListNotifier()),
+          goalListProvider.overrideWith(() => _ImmediateGoalListNotifier()),
+          bookListProvider.overrideWith(() => _ImmediateBookListNotifier()),
+          dashboardLayoutProvider
+              .overrideWith(() => _ImmediateDashboardLayoutNotifier()),
+          todayStudyProvider.overrideWith(
+            (ref) async => const TodayStudyData(
+              totalMinutes: 0,
+              sessionCount: 0,
+              studied: false,
+            ),
+          ),
+          streakProvider.overrideWith(
+            (ref) async => const StreakData(
+              currentStreak: 0,
+              longestStreak: 0,
+              studiedToday: false,
+            ),
+          ),
+          personalRecordProvider.overrideWith(
+            (ref) async => const PersonalRecordData(
+              bestDayMinutes: 0,
+              bestWeekMinutes: 0,
+              longestStreak: 0,
+              totalHours: 0,
+              totalStudyDays: 0,
+            ),
+          ),
+          consistencyProvider.overrideWith(
+            (ref) async => const ConsistencyData(
+              thisWeekDays: 0,
+              thisWeekTotal: 7,
+              thisWeekMinutes: 0,
+              thisMonthDays: 0,
+              thisMonthTotal: 30,
+              thisMonthMinutes: 0,
+              overallRate: 0,
+              overallStudyDays: 0,
+              overallTotalDays: 0,
+            ),
+          ),
+          bookshelfProvider.overrideWith(
+            (ref) async => const BookshelfData(
+              totalCount: 0,
+              completedCount: 0,
+              readingCount: 0,
+              recentCompleted: [],
+            ),
+          ),
+          dreamCountProvider.overrideWith((ref) async => 0),
+          goalCountProvider.overrideWith((ref) async => 0),
+          unreadCountProvider.overrideWith((ref) async => 0),
+          allNotificationsProvider.overrideWith((ref) async => []),
+          dailyActivityProvider.overrideWith(
+            (ref) async => DailyActivityData(
+              days: const [],
+              maxMinutes: 0,
+              periodStart: DateTime(2026),
+              periodEnd: DateTime(2026),
+            ),
+          ),
+          allLogsProvider.overrideWith((ref) async => []),
+          ganttTasksProvider.overrideWith((ref) async => <Task>[]),
+          ganttGoalListProvider.overrideWith((ref) async => <Goal>[]),
+          goalStatsProvider
+              .overrideWith((ref) async => <GoalStatsDisplayData>[]),
+          bookStatsProvider
+              .overrideWith((ref) async => <GoalStatsDisplayData>[]),
+          milestoneDataProvider.overrideWith(
+            (ref) async => const MilestoneData(
+              totalHours: 0,
+              studyDays: 0,
+              currentStreak: 0,
+              achieved: [],
+            ),
+          ),
+          constellationProgressProvider.overrideWith(
+            (ref) async => const ConstellationOverallProgress(
+              constellations: [],
+              totalMinutes: 0,
+              totalLitStars: 0,
+              totalStars: 0,
+            ),
+          ),
+          activityChartProvider.overrideWith(
+            (ref) async => ActivityChartData(
+              buckets: const [],
+              maxMinutes: 0,
+              periodType: ActivityPeriodType.monthly,
+            ),
+          ),
+        ],
+        child: const YumeLogApp(),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    // 設定画面へ移動
+    await navigateViaDrawer(tester, '設定');
+
+    // フィードバックセクションまでスクロール
+    await tester.scrollUntilVisible(
+      find.text('フィードバックを送信'),
+      300,
+      scrollable: find.byType(Scrollable).first,
+    );
+    await tester.pumpAndSettle();
+
+    // レベル上限後もフィードバック送信ボタンが表示される
+    expect(find.text('フィードバックを送信'), findsOneWidget);
+    expect(find.text('ご意見・ご要望をお聞かせください'), findsOneWidget);
+
+    // 無制限プランの案内も併記される
+    expect(find.text('無制限プランのご案内'), findsOneWidget);
+  });
+
+  testWidgets('フィードバックダイアログのカテゴリが3種類である', (tester) async {
+    await tester.pumpWidget(await buildApp());
+    await tester.pumpAndSettle();
+
+    await navigateViaDrawer(tester, '設定');
+
+    // フィードバック送信までスクロールしてタップ
+    await tester.scrollUntilVisible(
+      find.text('フィードバックを送信'),
+      300,
+      scrollable: find.byType(Scrollable).first,
+    );
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('フィードバックを送信'));
+    await tester.pumpAndSettle();
+
+    // カテゴリドロップダウンを開く
+    await tester.tap(find.byType(DropdownButtonFormField<FeedbackCategory>));
+    await tester.pumpAndSettle();
+
+    // 3つのカテゴリが表示される
+    expect(find.text('改善要望'), findsOneWidget);
+    expect(find.text('不具合'), findsOneWidget);
+    expect(find.text('その他'), findsOneWidget);
+    // 旧カテゴリは表示されない
+    expect(find.text('使いやすさ'), findsNothing);
+
+    // キャンセルで閉じる
+    await tester.tap(find.text('キャンセル'));
+    await tester.pumpAndSettle();
   });
 }

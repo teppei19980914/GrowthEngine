@@ -133,10 +133,11 @@ class DreamPage extends ConsumerWidget {
 
     // チュートリアル中は制限をバイパス
     if (!isTutorial) {
-      final currentCount =
-          ref.read(dreamListProvider).valueOrNull?.length ?? 0;
+      final dreams = await ref.read(dreamListProvider.future);
+      final currentCount = dreams.length;
       final level = ref.read(unlockLevelProvider);
       if (!canAddDream(currentCount: currentCount, unlockLevel: level)) {
+        if (!context.mounted) return;
         await showTrialLimitDialog(
           context,
           itemName: '夢',
@@ -149,6 +150,7 @@ class DreamPage extends ConsumerWidget {
       }
     }
 
+    if (!context.mounted) return;
     final result = await showDreamDialog(context);
     if (result == null) return;
 
@@ -264,24 +266,25 @@ class _DreamCard extends StatelessWidget {
                             ),
                           ),
                         ),
-                        // 目標数バッジ
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 8,
-                            vertical: 3,
-                          ),
-                          decoration: BoxDecoration(
-                            color: primary.withAlpha(20),
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: Text(
-                            '目標 $goalCount',
-                            style: theme.textTheme.labelSmall?.copyWith(
-                              color: primary,
-                              fontWeight: FontWeight.w600,
+                        // 目標数バッジ（1件以上の場合のみ表示）
+                        if (goalCount > 0)
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 8,
+                              vertical: 3,
+                            ),
+                            decoration: BoxDecoration(
+                              color: primary.withAlpha(20),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Text(
+                              '目標 $goalCount',
+                              style: theme.textTheme.labelSmall?.copyWith(
+                                color: primary,
+                                fontWeight: FontWeight.w600,
+                              ),
                             ),
                           ),
-                        ),
                         // ポップアップメニュー
                         PopupMenuButton<String>(
                           icon: Icon(

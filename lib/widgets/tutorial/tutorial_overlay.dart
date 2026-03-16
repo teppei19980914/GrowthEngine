@@ -171,23 +171,26 @@ class _TutorialOverlayState extends ConsumerState<TutorialOverlay> {
                     Icon(Icons.info_outline,
                         size: 14, color: theme.hintColor),
                     const SizedBox(width: 4),
-                    Text(
-                      '設定画面からいつでもチュートリアルを再実行できます',
-                      style: theme.textTheme.labelSmall?.copyWith(
-                        color: theme.hintColor,
+                    Flexible(
+                      child: Text(
+                        '設定画面からいつでもチュートリアルを再実行できます',
+                        style: theme.textTheme.labelSmall?.copyWith(
+                          color: theme.hintColor,
+                        ),
                       ),
                     ),
                   ],
                 ),
                 const SizedBox(height: 16),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
+                Wrap(
+                  alignment: WrapAlignment.center,
+                  spacing: 12,
+                  runSpacing: 8,
                   children: [
                     OutlinedButton(
                       onPressed: () => _stopTutorial(ref),
                       child: const Text('データを削除'),
                     ),
-                    const SizedBox(width: 12),
                     FilledButton(
                       onPressed: () async {
                         final tutorialService =
@@ -286,12 +289,16 @@ class _TutorialSpotlightState extends ConsumerState<TutorialSpotlight>
     // ターゲットが未マウント → スポットライトなしで吹き出しのみ表示
     if (targetRect == null) {
       if (_pulseController.isAnimating) _pulseController.stop();
+      // ガントチャート制限時（addTask でターゲットなし）は完了ステップに進める
+      final onClose = state.step == TutorialStep.addTask
+          ? _finishTutorial
+          : _stopTutorial;
       return Stack(
         children: [
           _FloatingBubble(
             step: state.step,
             screenSize: screenSize,
-            onClose: _stopTutorial,
+            onClose: onClose,
             instruction: _getInstruction(state.step, targetKey),
             hint: _getHint(state.step, targetKey),
           ),
@@ -338,7 +345,6 @@ class _TutorialSpotlightState extends ConsumerState<TutorialSpotlight>
   bool _isDynamicStep(TutorialStep step) {
     return step == TutorialStep.addDream ||
         step == TutorialStep.addGoal ||
-        step == TutorialStep.goToGantt ||
         step == TutorialStep.addTask;
   }
 
@@ -398,11 +404,7 @@ class _TutorialSpotlightState extends ConsumerState<TutorialSpotlight>
       case TutorialStep.addGoal:
         return TutorialTargetKeys.addGoalButton;
       case TutorialStep.goToGantt:
-        // ドロワーが開いていればガントチャート項目、閉じていればメニューボタン
-        if (TutorialTargetKeys.ganttDrawerItem.currentContext != null) {
-          return TutorialTargetKeys.ganttDrawerItem;
-        }
-        return TutorialTargetKeys.menuButton;
+        return TutorialTargetKeys.ganttTab;
       case TutorialStep.addTask:
         if (TutorialTargetKeys.addTaskButton.currentContext != null) {
           return TutorialTargetKeys.addTaskButton;
@@ -415,11 +417,6 @@ class _TutorialSpotlightState extends ConsumerState<TutorialSpotlight>
 
   /// ステップとターゲットに応じた指示テキストを返す.
   String _getInstruction(TutorialStep step, GlobalKey? targetKey) {
-    // ドロワーが開いている時
-    if (step == TutorialStep.goToGantt &&
-        targetKey == TutorialTargetKeys.ganttDrawerItem) {
-      return '「ガントチャート」をタップしてください';
-    }
     // ガントチャート画面でターゲットが見つからない（Web体験版等）
     if (step == TutorialStep.addTask &&
         _findTargetRectFromKey(targetKey) == null) {
@@ -430,10 +427,6 @@ class _TutorialSpotlightState extends ConsumerState<TutorialSpotlight>
 
   /// ステップとターゲットに応じたヒントテキストを返す.
   String _getHint(TutorialStep step, GlobalKey? targetKey) {
-    if (step == TutorialStep.goToGantt &&
-        targetKey == TutorialTargetKeys.ganttDrawerItem) {
-      return 'リストに表示されている「ガントチャート」を選択します';
-    }
     if (step == TutorialStep.addTask &&
         _findTargetRectFromKey(targetKey) == null) {
       return 'サブスクWebアプリまたはネイティブアプリで'
@@ -442,6 +435,7 @@ class _TutorialSpotlightState extends ConsumerState<TutorialSpotlight>
     return step.hint;
   }
 
+  /// チュートリアルを中断し、データを削除する.
   Future<void> _stopTutorial() async {
     final tutorialService = ref.read(tutorialServiceProvider);
     final dreamId = tutorialService.tutorialDreamId;
@@ -452,6 +446,11 @@ class _TutorialSpotlightState extends ConsumerState<TutorialSpotlight>
 
     await tutorialService.finish();
     ref.read(tutorialStateProvider.notifier).reset();
+  }
+
+  /// チュートリアルを完了ステップに進め、保持/削除ダイアログを表示する.
+  Future<void> _finishTutorial() async {
+    await ref.read(tutorialStateProvider.notifier).advanceStep();
   }
 }
 
@@ -823,7 +822,7 @@ class _DialogBubble extends StatelessWidget {
 
     return Positioned(
       left: bubbleLeft,
-      bottom: bubbleMargin,
+      top: bubbleMargin,
       child: Stack(
         clipBehavior: Clip.none,
         children: [

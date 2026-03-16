@@ -9,7 +9,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../dialogs/feedback_dialog.dart';
+import '../dialogs/inquiry_dialog.dart';
 import '../dialogs/upgrade_dialog.dart';
+import '../services/inquiry_service.dart';
 import '../providers/service_providers.dart';
 import '../providers/theme_provider.dart';
 import '../services/feedback_service.dart';
@@ -119,6 +121,12 @@ class SettingsPage extends ConsumerWidget {
         _SectionHeader(
             title: 'フィードバック', icon: Icons.rate_review_outlined),
         _FeedbackCard(ref: ref, colors: colors),
+        const SizedBox(height: 24),
+
+        // お問い合わせ
+        _SectionHeader(
+            title: 'お問い合わせ', icon: Icons.mail_outlined),
+        _InquiryCard(ref: ref, colors: colors),
         const SizedBox(height: 24),
 
         // ヘルプ
@@ -399,13 +407,21 @@ class _FeedbackCard extends StatelessWidget {
       child: Column(
         children: [
           // フィードバック送信ボタン
-          if (!isFeedbackMax)
+          if (isMax)
+            ListTile(
+              leading: Icon(Icons.lock_open, color: colors.success),
+              title: const Text('無制限プラン利用中'),
+              subtitle: const Text('制限は完全に解除されています'),
+            )
+          else ...[
             ListTile(
               leading: Icon(Icons.rate_review_outlined, color: colors.accent),
               title: const Text('フィードバックを送信'),
               subtitle: Text(
-                'ご意見を送信すると制限が解除されます'
-                '（レベル$level / $feedbackUnlockableLevel）',
+                isFeedbackMax
+                    ? 'ご意見・ご要望をお聞かせください'
+                    : 'ご意見を送信すると制限が解除されます'
+                        '（レベル$level / $feedbackUnlockableLevel）',
               ),
               onTap: () {
                 final userKey = ref.read(remoteConfigProvider).name;
@@ -415,23 +431,19 @@ class _FeedbackCard extends StatelessWidget {
                   userKey: userKey.isNotEmpty ? userKey : null,
                 );
               },
-            )
-          else if (isMax)
-            ListTile(
-              leading: Icon(Icons.lock_open, color: colors.success),
-              title: const Text('無制限プラン利用中'),
-              subtitle: const Text('制限は完全に解除されています'),
-            )
-          else
-            ListTile(
-              leading: Icon(Icons.star, color: colors.accent),
-              title: const Text('無制限プランのご案内'),
-              subtitle: const Text(
-                'フィードバックによる解除は上限に達しました。\n'
-                '無制限プランで全機能をご利用いただけます。',
-              ),
-              onTap: () => showUpgradeDialog(context),
             ),
+            if (isFeedbackMax) ...[
+              const Divider(height: 1),
+              ListTile(
+                leading: Icon(Icons.star, color: colors.accent),
+                title: const Text('無制限プランのご案内'),
+                subtitle: const Text(
+                  '全機能を制限なくご利用いただけます。',
+                ),
+                onTap: () => showUpgradeDialog(context),
+              ),
+            ],
+          ],
           // プログレスバー
           if (!isMax) ...[
             const Divider(height: 1),
@@ -465,6 +477,33 @@ class _FeedbackCard extends StatelessWidget {
             ),
           ],
         ],
+      ),
+    );
+  }
+}
+
+/// お問い合わせカード.
+class _InquiryCard extends StatelessWidget {
+  const _InquiryCard({required this.ref, required this.colors});
+
+  final WidgetRef ref;
+  final AppColors colors;
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      child: ListTile(
+        leading: Icon(Icons.mail_outlined, color: colors.accent),
+        title: const Text('お問い合わせ'),
+        subtitle: const Text('追加開発・案件のご相談など'),
+        onTap: () {
+          final userKey = ref.read(remoteConfigProvider).name;
+          showInquiryDialog(
+            context,
+            InquiryService(),
+            userKey: userKey.isNotEmpty ? userKey : null,
+          );
+        },
       ),
     );
   }

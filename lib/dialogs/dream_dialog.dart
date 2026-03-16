@@ -90,8 +90,8 @@ class _DreamDialogContentState extends State<_DreamDialogContent> {
 
     return AlertDialog(
       title: Text(_isEdit ? '夢を編集' : '新しい夢を追加'),
-      content: SizedBox(
-        width: 480,
+      content: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 480),
         child: Form(
           key: _formKey,
           child: SingleChildScrollView(

@@ -200,8 +200,8 @@ class _BookScheduleDialogContentState
 
     return AlertDialog(
       title: Text(_isEdit ? '読書スケジュールを編集' : '読書スケジュールを追加'),
-      content: SizedBox(
-        width: 480,
+      content: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 480),
         child: Form(
           key: _formKey,
           child: SingleChildScrollView(

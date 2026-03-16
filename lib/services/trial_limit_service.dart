@@ -136,6 +136,5 @@ String trialLimitDescription({int unlockLevel = 0}) {
   return '現在の制限（レベル$unlockLevel / $feedbackMaxLevel）:\n'
       '- 夢: ${config.dreams}個まで\n'
       '- 目標: 各夢${config.goalsPerDream}個まで\n'
-      '- タスク: 各目標${config.tasksPerGoal}個まで\n'
       '- 書籍: ${config.books}冊まで';
 }

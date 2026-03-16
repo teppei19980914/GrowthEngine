@@ -141,10 +141,11 @@ class GoalPage extends ConsumerWidget {
 
     // チュートリアル中は制限をバイパス
     if (!isTutorial) {
-      final goals = ref.read(goalListProvider).valueOrNull ?? [];
+      final goals = await ref.read(goalListProvider.future);
       final level = ref.read(unlockLevelProvider);
       final totalMax = maxDreams(level) * maxGoalsPerDream(level);
       if (goals.length >= totalMax) {
+        if (!context.mounted) return;
         await showTrialLimitDialog(
           context,
           itemName: '目標',
@@ -157,6 +158,7 @@ class GoalPage extends ConsumerWidget {
       }
     }
 
+    if (!context.mounted) return;
     final result = await showGoalDialog(context, dreams: dreams);
     if (result == null) return;
 

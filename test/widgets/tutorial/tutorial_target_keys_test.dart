@@ -8,6 +8,7 @@ void main() {
       final keys = <GlobalKey>[
         TutorialTargetKeys.dreamTab,
         TutorialTargetKeys.goalTab,
+        TutorialTargetKeys.ganttTab,
         TutorialTargetKeys.addDreamButton,
         TutorialTargetKeys.addGoalButton,
         TutorialTargetKeys.menuButton,
@@ -27,6 +28,7 @@ void main() {
       final keys = <GlobalKey>[
         TutorialTargetKeys.dreamTab,
         TutorialTargetKeys.goalTab,
+        TutorialTargetKeys.ganttTab,
         TutorialTargetKeys.addDreamButton,
         TutorialTargetKeys.addGoalButton,
         TutorialTargetKeys.menuButton,
@@ -45,6 +47,7 @@ void main() {
       final keys = <GlobalKey>[
         TutorialTargetKeys.dreamTab,
         TutorialTargetKeys.goalTab,
+        TutorialTargetKeys.ganttTab,
         TutorialTargetKeys.addDreamButton,
         TutorialTargetKeys.addGoalButton,
         TutorialTargetKeys.menuButton,

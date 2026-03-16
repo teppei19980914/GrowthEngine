@@ -113,10 +113,10 @@ const _bottomNavItems = [
     label: '目標',
   ),
   (
-    path: '/stats',
-    icon: Icons.bar_chart_outlined,
-    activeIcon: Icons.bar_chart,
-    label: '統計',
+    path: '/gantt',
+    icon: Icons.view_timeline_outlined,
+    activeIcon: Icons.view_timeline,
+    label: 'ガントチャート',
   ),
 ];
 
@@ -189,6 +189,7 @@ class _AppShellState extends ConsumerState<_AppShell> {
     final navKeyMap = <String, GlobalKey>{
       '/dreams': TutorialTargetKeys.dreamTab,
       '/goals': TutorialTargetKeys.goalTab,
+      '/gantt': TutorialTargetKeys.ganttTab,
     };
 
     return Stack(

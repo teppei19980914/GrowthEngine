@@ -39,10 +39,11 @@ class _BookPageState extends ConsumerState<BookPage> {
     final title = _titleController.text.trim();
     if (title.isEmpty) return;
 
-    final currentCount =
-        ref.read(bookListProvider).valueOrNull?.length ?? 0;
+    final books = await ref.read(bookListProvider.future);
+    final currentCount = books.length;
     final level = ref.read(unlockLevelProvider);
     if (!canAddBook(currentCount: currentCount, unlockLevel: level)) {
+      if (!mounted) return;
       await showTrialLimitDialog(
         context,
         itemName: '書籍',

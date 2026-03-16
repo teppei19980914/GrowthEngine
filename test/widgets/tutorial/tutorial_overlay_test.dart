@@ -292,6 +292,30 @@ void main() {
       );
     });
 
+    testWidgets('addTaskステップの×ボタンで完了ダイアログが表示される',
+        (tester) async {
+      SharedPreferences.setMockInitialValues({
+        'tutorial_active': true,
+        'tutorial_step': 5, // addTask (ターゲットなし)
+      });
+      prefs = await SharedPreferences.getInstance();
+
+      await tester.pumpWidget(_buildApp(
+        prefs: prefs,
+        body: const Center(child: Text('ガントチャート')),
+      ));
+      await tester.pump();
+      await tester.pump();
+
+      // ×ボタンタップで完了ダイアログに遷移
+      await tester.tap(find.byIcon(Icons.close));
+      await tester.pump();
+
+      expect(find.text('チュートリアル完了！'), findsOneWidget);
+      expect(find.text('データを削除'), findsOneWidget);
+      expect(find.text('データを保持'), findsOneWidget);
+    });
+
     testWidgets('フローティング吹き出しの×ボタンでチュートリアルが中断される',
         (tester) async {
       SharedPreferences.setMockInitialValues({

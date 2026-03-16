@@ -93,8 +93,11 @@ class _GoalDialogContentState extends State<_GoalDialogContent> {
     _whatController = TextEditingController(text: goal?.what ?? '');
     _howController = TextEditingController(text: goal?.how ?? '');
     _whenType = goal?.whenType ?? WhenType.date;
-    _selectedDreamId =
-        goal?.dreamId ?? widget.initialDreamId ?? widget.dreams.firstOrNull?.id;
+    final dreamIds = widget.dreams.map((d) => d.id).toSet();
+    final candidateId = goal?.dreamId ?? widget.initialDreamId;
+    _selectedDreamId = (candidateId != null && dreamIds.contains(candidateId))
+        ? candidateId
+        : widget.dreams.firstOrNull?.id;
 
     if (goal != null && goal.whenType == WhenType.date) {
       _selectedDate = goal.getTargetDate();
@@ -154,8 +157,8 @@ class _GoalDialogContentState extends State<_GoalDialogContent> {
 
     return AlertDialog(
       title: Text(_isEdit ? '目標を編集' : '新しい目標を追加'),
-      content: SizedBox(
-        width: 480,
+      content: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 480),
         child: Form(
           key: _formKey,
           child: SingleChildScrollView(

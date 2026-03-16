@@ -87,7 +87,6 @@ class _WebTrialBannerState extends State<WebTrialBanner> {
                           'ガントチャート等のプレミアム機能はネイティブアプリをご利用ください。'
                       : '夢${maxDreams(level)}個・'
                           '目標${maxGoalsPerDream(level)}個/夢・'
-                          'タスク${maxTasksPerGoal(level)}個/目標・'
                           '書籍${maxBooks(level)}冊まで'
                           '（レベル$level / $feedbackMaxLevel）。'
                           'ガントチャート等のプレミアム機能はネイティブアプリをご利用ください。',
@@ -203,7 +202,6 @@ Future<void> _showTrialDialog(
                 : '体験版の登録上限（レベル$unlockLevel / $feedbackMaxLevel）: '
                     '夢${maxDreams(unlockLevel)}個、'
                     '目標${maxGoalsPerDream(unlockLevel)}個/夢、'
-                    'タスク${maxTasksPerGoal(unlockLevel)}個/目標、'
                     '書籍${maxBooks(unlockLevel)}冊',
           ),
           const SizedBox(height: 16),
