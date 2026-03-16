@@ -10,7 +10,6 @@ import 'package:intl/intl.dart';
 
 import '../models/study_log.dart';
 import '../providers/dashboard_providers.dart';
-import '../providers/service_providers.dart';
 import '../services/study_stats_calculator.dart';
 import '../services/study_stats_types.dart';
 import '../theme/app_theme.dart';
@@ -18,12 +17,6 @@ import '../theme/app_theme.dart';
 import '../services/trial_limit_service.dart' show isTrialMode;
 import '../widgets/premium/premium_gate.dart';
 import '../widgets/stats/goal_stats_section.dart';
-
-/// 全ログProvider（統計ページ用）.
-final allLogsProvider = FutureProvider<List<StudyLog>>((ref) async {
-  final service = ref.watch(studyLogServiceProvider);
-  return service.getAllLogs();
-});
 
 /// アクティビティ期間Provider.
 final activityPeriodProvider =

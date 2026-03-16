@@ -12,59 +12,78 @@ import 'providers/theme_provider.dart';
 import 'services/remote_config_service.dart';
 
 /// アプリケーションのエントリポイント.
+///
+/// SharedPreferencesの初期化のみを同期的に待ち、
+/// リモート設定は非同期で取得してアプリを即座に起動する.
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   final prefs = await SharedPreferences.getInstance();
 
-  // リモートユーザー設定を取得
-  final userConfig = await _initRemoteConfig(prefs);
+  // URLキーの保存は同期的に実施（軽量なSharedPreferences操作のみ）
+  _saveUrlKeyIfPresent(prefs);
 
+  // リモート設定をバックグラウンドで取得
+  // デフォルト設定で即座にアプリを起動し、取得完了後にプロバイダを更新する
+  final container = ProviderContainer(
+    overrides: [
+      sharedPreferencesProvider.overrideWithValue(prefs),
+      remoteConfigProvider.overrideWithValue(UserConfig.defaultConfig),
+    ],
+  );
+
+  // アプリを即座に表示
   runApp(
-    ProviderScope(
-      overrides: [
-        sharedPreferencesProvider.overrideWithValue(prefs),
-        remoteConfigProvider.overrideWithValue(userConfig),
-      ],
+    UncontrolledProviderScope(
+      container: container,
       child: const YumeLogApp(),
     ),
   );
+
+  // リモート設定を非同期で取得してプロバイダを更新
+  _initRemoteConfigAsync(prefs, container);
 }
 
-/// リモート設定の初期化.
-///
-/// URLパラメータからキーを取得し、Gistから設定を取得する.
-/// resetOnAccessが有効な場合はSharedPreferencesをクリアする.
-Future<UserConfig> _initRemoteConfig(SharedPreferences prefs) async {
-  if (!kIsWeb) return UserConfig.defaultConfig;
-
-  final service = RemoteConfigService(prefs);
-
-  // URLパラメータからキーを取得（Web限定）
+/// URLキーをSharedPreferencesに保存する（同期的）.
+void _saveUrlKeyIfPresent(SharedPreferences prefs) {
+  if (!kIsWeb) return;
   final urlKey = _getUrlKey();
   if (urlKey != null && urlKey.isNotEmpty) {
-    await service.saveUserKey(urlKey);
+    RemoteConfigService(prefs).saveUserKey(urlKey);
   }
+}
 
-  // 保存済みキーがなければデフォルト
-  if (service.savedUserKey == null) return UserConfig.defaultConfig;
+/// リモート設定を非同期で取得し、プロバイダを更新する.
+Future<void> _initRemoteConfigAsync(
+  SharedPreferences prefs,
+  ProviderContainer container,
+) async {
+  if (!kIsWeb) return;
 
-  // Gistから設定を取得
-  final config = await service.fetchAndApply();
+  final service = RemoteConfigService(prefs);
+  if (service.savedUserKey == null) return;
 
-  // resetOnAccess: アクセス時にデータをリセット
-  if (config.resetOnAccess) {
-    await service.clearPreferencesExceptKey();
-    // データベースリセットのフラグを設定（アプリ起動後に実行）
-    await prefs.setBool(resetPendingKey, true);
+  try {
+    final config = await service.fetchAndApply();
+
+    // プロバイダを更新（UIが自動的に再構築される）
+    container.updateOverrides([
+      sharedPreferencesProvider.overrideWithValue(prefs),
+      remoteConfigProvider.overrideWithValue(config),
+    ]);
+
+    // resetOnAccess: アクセス時にデータをリセット
+    if (config.resetOnAccess) {
+      await service.clearPreferencesExceptKey();
+      await prefs.setBool(resetPendingKey, true);
+    }
+  } on Exception {
+    // リモート設定取得失敗時はデフォルト設定のまま動作する
   }
-
-  return config;
 }
 
 /// URLのクエリパラメータからキーを取得する.
 String? _getUrlKey() {
   try {
-    // Uri.base はFlutter Webで現在のURLを返す
     return Uri.base.queryParameters['key'];
   } on Exception {
     return null;

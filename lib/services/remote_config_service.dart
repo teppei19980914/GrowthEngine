@@ -135,7 +135,7 @@ class RemoteConfigService {
         Uri.parse('https://api.github.com/gists/$remoteConfigGistId');
     final response = await _httpClient.get(url, headers: {
       'Accept': 'application/vnd.github.v3+json',
-    });
+    }).timeout(const Duration(seconds: 5));
 
     if (response.statusCode != 200) {
       throw Exception('Gist取得失敗: ${response.statusCode}');

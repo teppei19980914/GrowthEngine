@@ -158,7 +158,7 @@ void main() {
       );
 
       expect(sentBody, isNotNull);
-      expect(sentBody!['category'], '不具合報告');
+      expect(sentBody!['category'], '不具合');
       expect(sentBody!['text'], text);
       expect(sentBody!['userKey'], 'test-user');
     });
