@@ -9,6 +9,7 @@ import '../services/dashboard_layout_service.dart';
 import '../services/data_export_service.dart';
 import '../services/dream_service.dart';
 import '../services/feedback_service.dart';
+import '../services/invite_service.dart';
 import '../services/gantt_excel_export_service.dart';
 import '../services/gantt_excel_import_service.dart';
 import '../services/goal_service.dart';
@@ -99,11 +100,27 @@ final remoteConfigProvider = Provider<UserConfig>((ref) {
   return UserConfig.defaultConfig;
 });
 
+/// InviteServiceのProvider.
+final inviteServiceProvider = Provider<InviteService>((ref) {
+  final prefs = ref.watch(sharedPreferencesProvider);
+  return InviteService(prefs);
+});
+
+/// 招待コードの有効状態Provider.
+final inviteStatusProvider = Provider<InviteStatus>((ref) {
+  final inviteService = ref.watch(inviteServiceProvider);
+  return inviteService.getStatus();
+});
+
 /// 現在の解除レベルのProvider.
 ///
+/// 招待コードが有効な場合はfeedbackMaxLevelを返す.
 /// リモート設定でunlimitedの場合はfeedbackMaxLevelを返す.
 /// それ以外はリモート設定のunlockLevelとフィードバックの大きい方を返す.
 final unlockLevelProvider = Provider<int>((ref) {
+  final inviteStatus = ref.watch(inviteStatusProvider);
+  if (inviteStatus.isActive) return feedbackMaxLevel;
+
   final remoteConfig = ref.watch(remoteConfigProvider);
   if (remoteConfig.unlimited) return feedbackMaxLevel;
 

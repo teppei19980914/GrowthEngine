@@ -9,6 +9,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'app.dart';
 import 'providers/service_providers.dart';
 import 'providers/theme_provider.dart';
+import 'services/invite_service.dart';
 import 'services/remote_config_service.dart';
 
 /// アプリケーションのエントリポイント.
@@ -39,8 +40,9 @@ Future<void> main() async {
     ),
   );
 
-  // リモート設定を非同期で取得してプロバイダを更新
+  // リモート設定と招待コードを非同期で処理
   _initRemoteConfigAsync(prefs, container);
+  _initInviteCodeAsync(prefs);
 }
 
 /// URLキーをSharedPreferencesに保存する（同期的）.
@@ -81,11 +83,35 @@ Future<void> _initRemoteConfigAsync(
   }
 }
 
-/// URLのクエリパラメータからキーを取得する.
-String? _getUrlKey() {
+/// 招待コードを非同期で処理する.
+///
+/// URLパラメータ `?invite=CODE` から招待コードを取得し、
+/// Gistで有効性を検証してからブラウザに保存する.
+Future<void> _initInviteCodeAsync(SharedPreferences prefs) async {
+  if (!kIsWeb) return;
+
+  final inviteCode = _getUrlParam('invite');
+  if (inviteCode == null || inviteCode.isEmpty) return;
+
+  final inviteService = InviteService(prefs);
+  // 既に同じコードで有効化済みならスキップ
+  if (inviteService.savedCode == inviteCode) return;
+
+  final configService = RemoteConfigService(prefs);
+  final inviteConfig = await configService.fetchInviteConfig(inviteCode);
+  if (inviteConfig == null) return;
+
+  await inviteService.activate(inviteCode, inviteConfig);
+}
+
+/// URLのクエリパラメータを取得する.
+String? _getUrlParam(String name) {
   try {
-    return Uri.base.queryParameters['key'];
+    return Uri.base.queryParameters[name];
   } on Exception {
     return null;
   }
 }
+
+/// URLのクエリパラメータからキーを取得する.
+String? _getUrlKey() => _getUrlParam('key');

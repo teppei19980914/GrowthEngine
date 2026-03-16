@@ -117,6 +117,9 @@ class SettingsPage extends ConsumerWidget {
         ),
         const SizedBox(height: 24),
 
+        // 招待プラン
+        _InviteStatusCard(ref: ref, colors: colors),
+
         // フィードバック・制限解除
         _SectionHeader(
             title: 'フィードバック', icon: Icons.rate_review_outlined),
@@ -478,6 +481,74 @@ class _FeedbackCard extends StatelessWidget {
           ],
         ],
       ),
+    );
+  }
+}
+
+/// 招待プラン状態カード.
+///
+/// 招待コードが有効な場合のみ表示する.
+class _InviteStatusCard extends StatelessWidget {
+  const _InviteStatusCard({required this.ref, required this.colors});
+
+  final WidgetRef ref;
+  final AppColors colors;
+
+  @override
+  Widget build(BuildContext context) {
+    final inviteStatus = ref.watch(inviteStatusProvider);
+    if (!inviteStatus.isActive && inviteStatus.expiredAt == null) {
+      return const SizedBox.shrink();
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _SectionHeader(
+          title: '招待プラン',
+          icon: Icons.card_giftcard_outlined,
+        ),
+        Card(
+          child: ListTile(
+            leading: Icon(
+              inviteStatus.isActive ? Icons.verified : Icons.timer_off,
+              color: inviteStatus.isActive ? colors.success : colors.error,
+            ),
+            title: Text(
+              inviteStatus.isActive ? '招待プラン利用中' : '招待プラン期限切れ',
+            ),
+            subtitle: Text(
+              inviteStatus.isActive
+                  ? '${inviteStatus.name ?? ""}　'
+                      '残り${inviteStatus.remainingDays}日（全機能利用可能）'
+                  : '有効期限が終了しました。'
+                      '引き続きご利用いただくにはお問い合わせください。',
+            ),
+          ),
+        ),
+        SizedBox(height: inviteStatus.isActive ? 24 : 8),
+        if (inviteStatus.isActive) ...[
+          // 有効時はフィードバック前にスペースを入れる
+        ] else ...[
+          // 期限切れ時はお問い合わせを案内
+          Card(
+            child: ListTile(
+              leading: Icon(Icons.mail_outlined, color: colors.accent),
+              title: const Text('プラン延長のお問い合わせ'),
+              subtitle: const Text('引き続き全機能をご利用いただけます'),
+              onTap: () {
+                final userKey = ref.read(remoteConfigProvider).name;
+                showInquiryDialog(
+                  context,
+                  InquiryService(),
+                  userKey: userKey.isNotEmpty ? userKey : null,
+                );
+              },
+            ),
+          ),
+          const SizedBox(height: 24),
+        ],
+      ],
     );
   }
 }

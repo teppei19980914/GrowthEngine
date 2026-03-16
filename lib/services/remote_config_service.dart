@@ -10,6 +10,8 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'invite_service.dart' show InviteConfig;
+
 /// Gist ID（Secret Gist作成後に設定する）.
 ///
 /// 空文字の場合、リモート設定機能は無効.
@@ -167,6 +169,51 @@ class RemoteConfigService {
     }
 
     return UserConfig.fromJson(users[userKey] as Map<String, dynamic>);
+  }
+
+  /// Gist から招待コードの設定を取得する.
+  ///
+  /// 招待コードが見つからない場合はnullを返す.
+  Future<InviteConfig?> fetchInviteConfig(String inviteCode) async {
+    if (remoteConfigGistId.isEmpty) return null;
+
+    try {
+      final content = await _fetchGistContent();
+      if (content == null) return null;
+
+      final configJson = jsonDecode(content) as Map<String, dynamic>;
+      final invites = configJson['invites'] as Map<String, dynamic>?;
+      if (invites == null || !invites.containsKey(inviteCode)) return null;
+
+      return InviteConfig.fromJson(
+        invites[inviteCode] as Map<String, dynamic>,
+      );
+    } on Exception {
+      return null;
+    }
+  }
+
+  /// Gist からJSONファイルの内容を取得する.
+  Future<String?> _fetchGistContent() async {
+    final url =
+        Uri.parse('https://api.github.com/gists/$remoteConfigGistId');
+    final response = await _httpClient.get(url, headers: {
+      'Accept': 'application/vnd.github.v3+json',
+    }).timeout(const Duration(seconds: 5));
+
+    if (response.statusCode != 200) return null;
+
+    final gistJson = jsonDecode(response.body) as Map<String, dynamic>;
+    final files = gistJson['files'] as Map<String, dynamic>;
+
+    for (final file in files.values) {
+      final fileMap = file as Map<String, dynamic>;
+      final filename = fileMap['filename'] as String? ?? '';
+      if (filename.endsWith('.json')) {
+        return fileMap['content'] as String?;
+      }
+    }
+    return null;
   }
 
   /// キャッシュから設定を取得する（有効期間内のみ）.

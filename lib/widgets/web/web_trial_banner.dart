@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../services/feedback_service.dart';
+import '../../services/invite_service.dart';
 import '../../services/trial_limit_service.dart';
 
 const _webBannerDismissedKey = 'web_trial_banner_dismissed';
@@ -41,6 +42,7 @@ class _WebTrialBannerState extends State<WebTrialBanner> {
 
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
+    final inviteStatus = InviteService(widget.prefs).getStatus();
     final level = FeedbackService(widget.prefs).unlockLevel;
     final isUnlimited = level >= feedbackMaxLevel;
 
@@ -75,21 +77,26 @@ class _WebTrialBannerState extends State<WebTrialBanner> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Web体験版をご利用中です',
+                  inviteStatus.isActive
+                      ? '招待プラン利用中です'
+                      : 'Web体験版をご利用中です',
                   style: theme.textTheme.titleSmall?.copyWith(
                     fontWeight: FontWeight.bold,
                   ),
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  isUnlimited
-                      ? '基本機能の制限は完全に解除されています。'
-                          'ガントチャート等のプレミアム機能はネイティブアプリをご利用ください。'
-                      : '夢${maxDreams(level)}個・'
-                          '目標${maxGoalsPerDream(level)}個/夢・'
-                          '書籍${maxBooks(level)}冊まで'
-                          '（レベル$level / $feedbackMaxLevel）。'
-                          'ガントチャート等のプレミアム機能はネイティブアプリをご利用ください。',
+                  inviteStatus.isActive
+                      ? '全機能をご利用いただけます。'
+                          '残り${inviteStatus.remainingDays}日'
+                      : isUnlimited
+                          ? '基本機能の制限は完全に解除されています。'
+                              'ガントチャート等のプレミアム機能はネイティブアプリをご利用ください。'
+                          : '夢${maxDreams(level)}個・'
+                              '目標${maxGoalsPerDream(level)}個/夢・'
+                              '書籍${maxBooks(level)}冊まで'
+                              '（レベル$level / $feedbackMaxLevel）。'
+                              'ガントチャート等のプレミアム機能はネイティブアプリをご利用ください。',
                   style: theme.textTheme.bodySmall,
                 ),
               ],

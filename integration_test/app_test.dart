@@ -419,17 +419,6 @@ void main() {
     );
   }
 
-  // ─────────────────────────────────────────────────────────────────────────
-  // ヘルパー: ボトムナビゲーションタブをインデックスでタップする.
-  // AppDrawerにも同じアイコンが存在するため、アイコン検索ではなく
-  // NavigationDestination のインデックスでタップする.
-  // 0=ホーム, 1=夢, 2=目標, 3=ガントチャート
-  // ─────────────────────────────────────────────────────────────────────────
-  Future<void> tapBottomNav(WidgetTester tester, int index) async {
-    await tester.tap(find.byType(NavigationDestination).at(index));
-    await tester.pumpAndSettle();
-  }
-
   /// ドロワー経由でページに移動するヘルパー.
   ///
   /// GoRouterシングルトンの状態に依存せず、どのページからでも遷移できる.
@@ -441,6 +430,21 @@ void main() {
       of: find.byType(Drawer),
       matching: find.text(label),
     ));
+    await tester.pumpAndSettle();
+  }
+
+  // ─────────────────────────────────────────────────────────────────────────
+  // ヘルパー: ボトムナビゲーションタブをインデックスでタップする.
+  // AppDrawerにも同じアイコンが存在するため、アイコン検索ではなく
+  // NavigationDestination のインデックスでタップする.
+  // 0=ホーム, 1=夢, 2=目標, 3=ガントチャート
+  // ─────────────────────────────────────────────────────────────────────────
+  Future<void> tapBottomNav(WidgetTester tester, int index) async {
+    // GoRouterシングルトンの状態でボトムナビがない場合、ドロワー経由でホームに戻る
+    if (find.byType(NavigationDestination).evaluate().isEmpty) {
+      await navigateViaDrawer(tester, 'ダッシュボード');
+    }
+    await tester.tap(find.byType(NavigationDestination).at(index));
     await tester.pumpAndSettle();
   }
 
@@ -495,7 +499,8 @@ void main() {
 
     // ─── ガントチャートページ ──────────────────────────
     await tapBottomNav(tester, 3);
-    expect(find.text('ガントチャート'), findsOneWidget);
+    // AppBarタイトル + ボトムナビラベルの2件が表示される
+    expect(find.text('ガントチャート'), findsWidgets);
 
     // ─── ホームへ戻る ────────────────────────────────
     await tapBottomNav(tester, 0);
@@ -511,7 +516,8 @@ void main() {
     await tester.pumpAndSettle();
 
     // ドロワーが開く（Drawer内のナビゲーション項目が表示される）
-    expect(find.text('ガントチャート'), findsOneWidget);
+    // 「ガントチャート」はドロワー + ボトムナビの2件
+    expect(find.text('ガントチャート'), findsWidgets);
     expect(find.text('書籍'), findsOneWidget);
     expect(find.text('設定'), findsOneWidget);
   });
@@ -888,8 +894,8 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      // 夢ページへ移動
-      await tapBottomNav(tester, 1);
+      // 夢ページへ移動（GoRouterシングルトンの状態に依存しないようドロワー経由）
+      await navigateViaDrawer(tester, '夢');
       expect(find.text('夢がまだありません'), findsOneWidget);
 
       // ── 初期状態（レベル0: 夢1個まで）──────────────────────────────────
@@ -1167,8 +1173,8 @@ void main() {
     // ガントチャートタブ（index=3）をタップ
     await tapBottomNav(tester, 3);
 
-    // ガントチャートページが表示される
-    expect(find.text('ガントチャート'), findsOneWidget);
+    // ガントチャートページが表示される（AppBarタイトル + ボトムナビラベル）
+    expect(find.text('ガントチャート'), findsWidgets);
     // ボトムナビにガントチャートアイコンがアクティブ
     expect(findNavBarIcon(Icons.view_timeline), findsOneWidget);
   });

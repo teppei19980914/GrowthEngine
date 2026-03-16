@@ -18,6 +18,7 @@ import 'pages/stats_page.dart';
 import 'providers/service_providers.dart';
 import 'providers/theme_provider.dart';
 import 'services/remote_config_service.dart';
+import 'services/trial_limit_service.dart' show setInvitePremium;
 import 'theme/app_theme.dart';
 import 'widgets/navigation/app_drawer.dart';
 import 'widgets/milestone/milestone_button.dart';
@@ -77,6 +78,10 @@ class YumeLogApp extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final themeType = ref.watch(themeProvider);
+
+    // 招待コードの有効状態をグローバルフラグに同期
+    final inviteStatus = ref.watch(inviteStatusProvider);
+    setInvitePremium(enabled: inviteStatus.isActive);
 
     return MaterialApp.router(
       title: 'ユメログ - 夢実現支援',
