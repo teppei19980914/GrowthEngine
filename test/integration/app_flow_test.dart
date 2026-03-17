@@ -33,66 +33,31 @@ void main() {
     expect(find.text('ダッシュボード'), findsWidgets);
 
     // 夢ページ
-    await tester.tap(find.byIcon(Icons.menu));
-    await tester.pumpAndSettle();
-    await tester.tap(find.text('夢').last);
-    await tester.pumpAndSettle();
+    await navigateViaDrawerInTest(tester, '夢');
     expect(find.text('夢'), findsWidgets);
 
     // 目標ページ
-    await tester.tap(find.byIcon(Icons.menu));
-    await tester.pumpAndSettle();
-    await tester.tap(find.text('目標').last);
-    await tester.pumpAndSettle();
+    await navigateViaDrawerInTest(tester, '目標');
     expect(find.text('目標'), findsWidgets);
 
     // ガントチャートページ
-    await tester.tap(find.byIcon(Icons.menu));
-    await tester.pumpAndSettle();
-    await tester.tap(find.text('ガントチャート').last);
-    await tester.pumpAndSettle();
+    await navigateViaDrawerInTest(tester, 'ガントチャート');
     expect(find.text('ガントチャート'), findsWidgets);
 
     // 書籍ページ
-    await tester.tap(find.byIcon(Icons.menu));
-    await tester.pumpAndSettle();
-    await tester.tap(find.text('書籍').last);
-    await tester.pumpAndSettle();
+    await navigateViaDrawerInTest(tester, '書籍');
     expect(find.text('書籍'), findsWidgets);
 
     // 星座ページ
-    await tester.tap(find.byIcon(Icons.menu));
-    await tester.pumpAndSettle();
-    await tester.tap(find.text('星座').last);
-    await tester.pumpAndSettle();
+    await navigateViaDrawerInTest(tester, '星座');
     expect(find.text('星座'), findsWidgets);
 
-    // 統計ページ（ドロワー内でスクロールが必要な場合がある）
-    await tester.tap(find.byIcon(Icons.menu));
-    await tester.pumpAndSettle();
-    final drawerListView = find.descendant(
-      of: find.byType(Drawer),
-      matching: find.byType(ListView),
-    );
-    await tester.scrollUntilVisible(
-      find.descendant(of: drawerListView, matching: find.text('統計')),
-      100,
-      scrollable: find.descendant(
-        of: find.byType(Drawer),
-        matching: find.byType(Scrollable),
-      ),
-    );
-    await tester.tap(
-      find.descendant(of: drawerListView, matching: find.text('統計')),
-    );
-    await tester.pumpAndSettle();
+    // 統計ページ
+    await navigateViaDrawerInTest(tester, '統計');
     expect(find.text('統計'), findsWidgets);
 
     // 設定ページ
-    await tester.tap(find.byIcon(Icons.menu));
-    await tester.pumpAndSettle();
-    await tester.tap(find.text('設定').last);
-    await tester.pumpAndSettle();
+    await navigateViaDrawerInTest(tester, '設定');
     expect(find.text('設定'), findsWidgets);
   });
 
@@ -101,10 +66,7 @@ void main() {
     await tester.pumpAndSettle();
 
     // 目標ページに遷移
-    await tester.tap(find.byIcon(Icons.menu));
-    await tester.pumpAndSettle();
-    await tester.tap(find.text('目標').last);
-    await tester.pumpAndSettle();
+    await navigateViaDrawerInTest(tester, '目標');
 
     // 追加ボタンをタップ（夢がないのでSnackBarが表示される）
     await tester.tap(find.byIcon(Icons.add));
@@ -118,10 +80,7 @@ void main() {
     await tester.pumpAndSettle();
 
     // 設定ページに遷移
-    await tester.tap(find.byIcon(Icons.menu));
-    await tester.pumpAndSettle();
-    await tester.tap(find.text('設定').last);
-    await tester.pumpAndSettle();
+    await navigateViaDrawerInTest(tester, '設定');
 
     // ダークモード（初期状態）
     expect(find.text('Catppuccin Mocha'), findsOneWidget);
@@ -143,25 +102,8 @@ void main() {
     await tester.pumpWidget(await buildApp());
     await tester.pumpAndSettle();
 
-    // 統計ページに遷移（ドロワー内でスクロールが必要な場合がある）
-    await tester.tap(find.byIcon(Icons.menu));
-    await tester.pumpAndSettle();
-    final drawerListView = find.descendant(
-      of: find.byType(Drawer),
-      matching: find.byType(ListView),
-    );
-    await tester.scrollUntilVisible(
-      find.descendant(of: drawerListView, matching: find.text('統計')),
-      100,
-      scrollable: find.descendant(
-        of: find.byType(Drawer),
-        matching: find.byType(Scrollable),
-      ),
-    );
-    await tester.tap(
-      find.descendant(of: drawerListView, matching: find.text('統計')),
-    );
-    await tester.pumpAndSettle();
+    // 統計ページに遷移
+    await navigateViaDrawerInTest(tester, '統計');
 
     expect(find.text('統計'), findsWidgets);
     expect(find.text('サマリー'), findsOneWidget);
@@ -172,10 +114,7 @@ void main() {
     await tester.pumpAndSettle();
 
     // 書籍ページに遷移
-    await tester.tap(find.byIcon(Icons.menu));
-    await tester.pumpAndSettle();
-    await tester.tap(find.text('書籍').last);
-    await tester.pumpAndSettle();
+    await navigateViaDrawerInTest(tester, '書籍');
 
     expect(find.text('書籍'), findsWidgets);
   });

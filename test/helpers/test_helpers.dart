@@ -7,6 +7,7 @@ import 'package:drift/drift.dart';
 import 'package:drift/native.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:yume_log/database/app_database.dart' hide Book, Dream, Goal, Task;
 import 'package:yume_log/models/dream.dart';
@@ -227,6 +228,50 @@ Widget wrapWithProviders(
     ),
     child: MaterialApp(home: Scaffold(body: child)),
   );
+}
+
+/// ドロワー経由でページに遷移するテストヘルパー.
+///
+/// ドロワーを開き、スクロールして対象のラベルをタップする.
+/// ListView内の項目を優先的に検索し、見つからない場合はDrawer全体から検索する.
+/// これにより固定領域のウィジェットとの重なりを回避できる.
+Future<void> navigateViaDrawerInTest(
+  WidgetTester tester,
+  String label,
+) async {
+  await tester.tap(find.byIcon(Icons.menu));
+  await tester.pumpAndSettle();
+
+  // まずListView内から探す（スクロール対応）
+  final drawerListView = find.descendant(
+    of: find.byType(Drawer),
+    matching: find.byType(ListView),
+  );
+  final listViewTarget = find.descendant(
+    of: drawerListView,
+    matching: find.text(label),
+  );
+
+  if (listViewTarget.evaluate().isNotEmpty) {
+    // ListView内にある場合はスクロールしてタップ
+    await tester.scrollUntilVisible(
+      listViewTarget,
+      100,
+      scrollable: find.descendant(
+        of: find.byType(Drawer),
+        matching: find.byType(Scrollable),
+      ),
+    );
+    await tester.tap(listViewTarget);
+  } else {
+    // ListView外（設定など固定領域）の場合はDrawer内から直接タップ
+    final drawerTarget = find.descendant(
+      of: find.byType(Drawer),
+      matching: find.text(label),
+    );
+    await tester.tap(drawerTarget);
+  }
+  await tester.pumpAndSettle();
 }
 
 /// テスト用のDB/SharedPreferencesセットアップ.
