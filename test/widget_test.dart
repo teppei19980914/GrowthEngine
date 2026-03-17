@@ -171,7 +171,7 @@ void main() {
 
   testWidgets('App smoke test - ダッシュボードが表示される',
       (WidgetTester tester) async {
-    SharedPreferences.setMockInitialValues({});
+    SharedPreferences.setMockInitialValues({'onboarding_completed': true});
     final prefs = await SharedPreferences.getInstance();
 
     await tester.pumpWidget(
@@ -186,7 +186,7 @@ void main() {
   });
 
   testWidgets('ドロワーから夢ページに遷移', (WidgetTester tester) async {
-    SharedPreferences.setMockInitialValues({});
+    SharedPreferences.setMockInitialValues({'onboarding_completed': true});
     final prefs = await SharedPreferences.getInstance();
 
     await tester.pumpWidget(
@@ -207,7 +207,7 @@ void main() {
   });
 
   testWidgets('ドロワーからページ遷移', (WidgetTester tester) async {
-    SharedPreferences.setMockInitialValues({});
+    SharedPreferences.setMockInitialValues({'onboarding_completed': true});
     final prefs = await SharedPreferences.getInstance();
 
     await tester.pumpWidget(
@@ -231,7 +231,7 @@ void main() {
   });
 
   testWidgets('テーマ切替', (WidgetTester tester) async {
-    SharedPreferences.setMockInitialValues({});
+    SharedPreferences.setMockInitialValues({'onboarding_completed': true});
     final prefs = await SharedPreferences.getInstance();
 
     await tester.pumpWidget(
