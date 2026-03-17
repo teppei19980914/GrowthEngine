@@ -67,9 +67,17 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('星座'), findsWidgets);
 
-    // 統計ページ
+    // 統計ページ（ドロワー内でスクロールが必要な場合がある）
     await tester.tap(find.byIcon(Icons.menu));
     await tester.pumpAndSettle();
+    await tester.scrollUntilVisible(
+      find.text('統計').last,
+      100,
+      scrollable: find.descendant(
+        of: find.byType(Drawer),
+        matching: find.byType(Scrollable),
+      ),
+    );
     await tester.tap(find.text('統計').last);
     await tester.pumpAndSettle();
     expect(find.text('統計'), findsWidgets);
@@ -129,9 +137,17 @@ void main() {
     await tester.pumpWidget(await buildApp());
     await tester.pumpAndSettle();
 
-    // 統計ページに遷移
+    // 統計ページに遷移（ドロワー内でスクロールが必要な場合がある）
     await tester.tap(find.byIcon(Icons.menu));
     await tester.pumpAndSettle();
+    await tester.scrollUntilVisible(
+      find.text('統計').last,
+      100,
+      scrollable: find.descendant(
+        of: find.byType(Drawer),
+        matching: find.byType(Scrollable),
+      ),
+    );
     await tester.tap(find.text('統計').last);
     await tester.pumpAndSettle();
 
