@@ -125,21 +125,21 @@ class AppDrawer extends StatelessWidget {
                     selected: currentPath == item.path,
                     onTap: () => _navigate(context, item.path, currentPath),
                   ),
+                // 使い方 & FAQ
+                const Divider(indent: 16, endIndent: 16),
+                Padding(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 2),
+                  child: ListTile(
+                    leading: const Icon(Icons.help_outline),
+                    title: const Text('使い方'),
+                    onTap: () {
+                      Navigator.of(context).pop();
+                      showAppGuideDialog(context, isPremium: isPremium);
+                    },
+                  ),
+                ),
               ],
-            ),
-          ),
-
-          // 使い方 & FAQ
-          const Divider(indent: 16, endIndent: 16),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 2),
-            child: ListTile(
-              leading: const Icon(Icons.help_outline),
-              title: const Text('使い方'),
-              onTap: () {
-                Navigator.of(context).pop();
-                showAppGuideDialog(context, isPremium: isPremium);
-              },
             ),
           ),
 
