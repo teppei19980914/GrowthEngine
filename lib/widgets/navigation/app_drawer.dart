@@ -114,7 +114,7 @@ class AppDrawer extends StatelessWidget {
           // メインナビゲーション（スクロール可能）
           Expanded(
             child: ListView(
-              padding: EdgeInsets.zero,
+              padding: const EdgeInsets.only(bottom: 8),
               children: [
                 for (final item in navItems)
                   _NavTile(

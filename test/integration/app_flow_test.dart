@@ -70,15 +70,21 @@ void main() {
     // 統計ページ（ドロワー内でスクロールが必要な場合がある）
     await tester.tap(find.byIcon(Icons.menu));
     await tester.pumpAndSettle();
+    final drawerListView = find.descendant(
+      of: find.byType(Drawer),
+      matching: find.byType(ListView),
+    );
     await tester.scrollUntilVisible(
-      find.text('統計').last,
+      find.descendant(of: drawerListView, matching: find.text('統計')),
       100,
       scrollable: find.descendant(
         of: find.byType(Drawer),
         matching: find.byType(Scrollable),
       ),
     );
-    await tester.tap(find.text('統計').last);
+    await tester.tap(
+      find.descendant(of: drawerListView, matching: find.text('統計')),
+    );
     await tester.pumpAndSettle();
     expect(find.text('統計'), findsWidgets);
 
@@ -140,15 +146,21 @@ void main() {
     // 統計ページに遷移（ドロワー内でスクロールが必要な場合がある）
     await tester.tap(find.byIcon(Icons.menu));
     await tester.pumpAndSettle();
+    final drawerListView = find.descendant(
+      of: find.byType(Drawer),
+      matching: find.byType(ListView),
+    );
     await tester.scrollUntilVisible(
-      find.text('統計').last,
+      find.descendant(of: drawerListView, matching: find.text('統計')),
       100,
       scrollable: find.descendant(
         of: find.byType(Drawer),
         matching: find.byType(Scrollable),
       ),
     );
-    await tester.tap(find.text('統計').last);
+    await tester.tap(
+      find.descendant(of: drawerListView, matching: find.text('統計')),
+    );
     await tester.pumpAndSettle();
 
     expect(find.text('統計'), findsWidgets);
