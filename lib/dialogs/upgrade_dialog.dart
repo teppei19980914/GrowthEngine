@@ -58,35 +58,28 @@ class _UpgradeDialogState extends State<_UpgradeDialog> {
     }
   }
 
-  Future<void> _startTrialOrSubscribe() async {
+  Future<void> _startTrial() async {
     final prefs = await SharedPreferences.getInstance();
     final stripeService = StripeService(prefs);
-
-    // トライアル未開始 → トライアル開始
-    if (!stripeService.isTrialStarted) {
-      await stripeService.startTrial();
-      setTrialPremium(enabled: true);
-      if (mounted) {
-        Navigator.of(context).pop();
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              '無料トライアルを開始しました（残り$trialDurationDays日間）',
-            ),
+    await stripeService.startTrial();
+    setTrialPremium(enabled: true);
+    if (mounted) {
+      Navigator.of(context).pop();
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            '無料トライアルを開始しました（残り$trialDurationDays日間）',
           ),
-        );
-      }
-      return;
+        ),
+      );
     }
-
-    // トライアル済み → Stripe決済
-    await _subscribe(prefs);
   }
 
-  Future<void> _subscribe(SharedPreferences prefs) async {
+  Future<void> _subscribe(SharedPreferences? prefsArg) async {
     setState(() => _isLoading = true);
 
     try {
+      final prefs = prefsArg ?? await SharedPreferences.getInstance();
       final stripeService = StripeService(prefs);
       final userKey = RemoteConfigService(prefs).savedUserKey;
       final checkoutUrl = await stripeService.createCheckoutUrl(
@@ -238,30 +231,56 @@ class _UpgradeDialogState extends State<_UpgradeDialog> {
                       ],
                     ),
                     const SizedBox(height: 16),
-                    SizedBox(
-                      width: double.infinity,
-                      child: FilledButton.icon(
-                        onPressed:
-                            _isLoading ? null : _startTrialOrSubscribe,
-                        icon: _isLoading
-                            ? const SizedBox(
-                                width: 16,
-                                height: 16,
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2,
-                                  color: Colors.white,
-                                ),
-                              )
-                            : const Icon(Icons.rocket_launch),
-                        label: Text(
-                          _isLoading
-                              ? '処理中...'
-                              : _isTrialAvailable
-                                  ? '7日間無料で試してみる'
-                                  : 'プレミアムプランに申し込む（¥480/月）',
+                    if (_isTrialAvailable) ...[
+                      SizedBox(
+                        width: double.infinity,
+                        child: FilledButton.icon(
+                          onPressed: _isLoading ? null : _startTrial,
+                          icon: const Icon(Icons.rocket_launch),
+                          label: const Text('7日間無料で試してみる'),
                         ),
                       ),
-                    ),
+                      const SizedBox(height: 8),
+                      SizedBox(
+                        width: double.infinity,
+                        child: OutlinedButton.icon(
+                          onPressed: _isLoading ? null : () => _subscribe(null),
+                          icon: _isLoading
+                              ? const SizedBox(
+                                  width: 16,
+                                  height: 16,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                  ),
+                                )
+                              : const Icon(Icons.payment),
+                          label: Text(
+                            _isLoading ? '処理中...' : 'すぐに申し込む（¥480/月）',
+                          ),
+                        ),
+                      ),
+                    ] else
+                      SizedBox(
+                        width: double.infinity,
+                        child: FilledButton.icon(
+                          onPressed: _isLoading ? null : () => _subscribe(null),
+                          icon: _isLoading
+                              ? const SizedBox(
+                                  width: 16,
+                                  height: 16,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                    color: Colors.white,
+                                  ),
+                                )
+                              : const Icon(Icons.payment),
+                          label: Text(
+                            _isLoading
+                                ? '処理中...'
+                                : 'プレミアムプランに申し込む（¥480/月）',
+                          ),
+                        ),
+                      ),
                   ],
                 ),
               ),

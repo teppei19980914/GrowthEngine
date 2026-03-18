@@ -38,12 +38,13 @@ void main() {
     expect(find.text('¥480/月'), findsOneWidget);
   });
 
-  testWidgets('トライアル未開始時は無料トライアルボタンが表示される', (tester) async {
+  testWidgets('トライアル未開始時は両方のボタンが表示される', (tester) async {
     await tester.pumpWidget(buildApp());
     await tester.tap(find.text('Open'));
     await tester.pumpAndSettle();
 
     expect(find.text('7日間無料で試してみる'), findsOneWidget);
+    expect(find.textContaining('すぐに申し込む'), findsOneWidget);
   });
 
   testWidgets('価値訴求の機能一覧が表示される', (tester) async {

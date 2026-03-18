@@ -10,6 +10,7 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../dialogs/dream_discovery_dialog.dart';
 import '../dialogs/feedback_dialog.dart';
@@ -23,7 +24,7 @@ import '../services/inquiry_service.dart';
 import '../providers/service_providers.dart';
 import '../providers/theme_provider.dart';
 import '../services/feedback_service.dart';
-import '../services/trial_limit_service.dart' show isTrialMode;
+import '../services/trial_limit_service.dart' show isTrialMode, isPremium;
 import '../theme/app_theme.dart';
 import '../widgets/tutorial/tutorial_banner.dart';
 import '../widgets/web/web_trial_banner.dart';
@@ -128,6 +129,23 @@ class SettingsPage extends ConsumerWidget {
         // 招待プラン
         _InviteStatusCard(ref: ref, colors: colors),
 
+        // アップグレード（体験版かつサブスク・トライアル未加入時のみ）
+        if (isTrialMode && !isPremium) ...[
+          _SectionHeader(
+              title: 'プランのアップグレード', icon: Icons.rocket_launch),
+          Card(
+            child: ListTile(
+              leading: Icon(Icons.star, color: colors.accent),
+              title: const Text('もっと自由に、もっと先へ'),
+              subtitle: const Text('ワンコインで全機能を利用可能'),
+              trailing: Icon(Icons.arrow_forward_ios,
+                  size: 16, color: colors.textMuted),
+              onTap: () => showUpgradeDialog(context),
+            ),
+          ),
+          const SizedBox(height: 24),
+        ],
+
         // フィードバック・制限解除
         _SectionHeader(
             title: 'フィードバック', icon: Icons.rate_review_outlined),
@@ -195,6 +213,16 @@ class SettingsPage extends ConsumerWidget {
                   Icons.check_circle,
                   color: colors.success,
                   size: 20,
+                ),
+              ),
+              const Divider(height: 1),
+              ListTile(
+                leading: const Icon(Icons.description_outlined),
+                title: const Text('特定商取引法に基づく表記'),
+                onTap: () => launchUrl(
+                  Uri.parse(
+                    'https://teppei19980914.github.io/GrowthEngine/tokushoho.html',
+                  ),
                 ),
               ),
             ],
