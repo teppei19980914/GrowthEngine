@@ -14,12 +14,12 @@ import 'package:web/web.dart' as web;
 Future<bool> saveFile({
   required Uint8List bytes,
   required String fileName,
+  String mimeType = 'application/octet-stream',
+  List<String> allowedExtensions = const ['xlsx'],
 }) async {
   final blob = web.Blob(
     [bytes.toJS].toJS,
-    web.BlobPropertyBag(
-      type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-    ),
+    web.BlobPropertyBag(type: mimeType),
   );
   final url = web.URL.createObjectURL(blob);
   final anchor =

@@ -20,7 +20,7 @@ class GoalListNotifier extends AsyncNotifier<List<Goal>> {
 
   /// Goalを作成し、作成されたGoalのIDを返す.
   Future<String> createGoal({
-    required String dreamId,
+    String dreamId = '',
     required String whenTarget,
     required WhenType whenType,
     required String what,
@@ -41,7 +41,7 @@ class GoalListNotifier extends AsyncNotifier<List<Goal>> {
   /// Goalを更新する.
   Future<void> updateGoal({
     required String goalId,
-    required String dreamId,
+    String dreamId = '',
     required String whenTarget,
     required WhenType whenType,
     required String what,

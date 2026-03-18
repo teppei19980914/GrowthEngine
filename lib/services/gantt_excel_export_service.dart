@@ -313,6 +313,7 @@ class GanttExcelExportService {
   /// GoalIDから目標名を取得する.
   String _goalName(String goalId, Map<String, Goal> goalMap) {
     if (goalId == bookGanttGoalId) return '書籍';
+    if (goalId.isEmpty) return '独立タスク';
     return goalMap[goalId]?.what ?? '不明';
   }
 

@@ -72,10 +72,10 @@ void main() {
       expect(find.textContaining('累計10時間達成'), findsOneWidget);
       expect(find.textContaining('30日活動達成'), findsOneWidget);
       // 未達成メッセージは表示されない
-      expect(find.text('まだ実績はありません'), findsNothing);
+      expect(find.text('最初の実績を目指そう'), findsNothing);
     });
 
-    testWidgets('実績がないとき「まだ実績はありません」が表示される',
+    testWidgets('実績がないとき「最初の実績を目指そう」が表示される',
         (tester) async {
       final data = MilestoneData(
         totalHours: 0.5,
@@ -86,7 +86,7 @@ void main() {
 
       await _openDialog(tester, data);
 
-      expect(find.text('まだ実績はありません'), findsOneWidget);
+      expect(find.text('最初の実績を目指そう'), findsOneWidget);
     });
 
     testWidgets('次の目標が表示される', (tester) async {

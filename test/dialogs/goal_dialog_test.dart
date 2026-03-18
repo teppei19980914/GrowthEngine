@@ -33,7 +33,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('新しい目標を追加'), findsOneWidget);
-    expect(find.text('紐づく夢'), findsOneWidget);
+    expect(find.text('紐づく夢（任意）'), findsOneWidget);
     expect(find.text('What（何を目標とするか）'), findsOneWidget);
     expect(find.text('When（いつまでに達成するか）'), findsOneWidget);
     expect(find.text('How（どうやって達成するか）'), findsOneWidget);

@@ -43,27 +43,30 @@ void main() {
     testWidgets('初回アクセスでオンボーディングが表示される', (tester) async {
       await pumpDialog(tester);
 
-      expect(find.text('あなたには、\n叶えたい夢がありますか？'), findsOneWidget);
+      expect(find.text('あなたには、\n「やりたいこと」がありますか？'), findsOneWidget);
     });
 
     testWidgets('次へボタンでページが進む', (tester) async {
       await pumpDialog(tester);
 
       // ページ1
-      expect(find.text('あなたには、\n叶えたい夢がありますか？'), findsOneWidget);
+      expect(find.text('あなたには、\n「やりたいこと」がありますか？'), findsOneWidget);
 
       // ページ2へ
       await tester.tap(find.text('次へ'));
       await tester.pumpAndSettle();
       expect(
-        find.text('夢は、心の中に\n閉じ込めたままでは叶いません。'),
+        find.text('書き出すことで、\n実現に向けて動き出します。'),
         findsOneWidget,
       );
 
       // ページ3へ
       await tester.tap(find.text('次へ'));
       await tester.pumpAndSettle();
-      expect(find.text('人は「慣性」で生きています。'), findsOneWidget);
+      expect(
+        find.text('一歩踏み出せば、\n自然と前に進めます。'),
+        findsOneWidget,
+      );
 
       // ページ4へ
       await tester.tap(find.text('次へ'));
@@ -87,7 +90,7 @@ void main() {
       // ページ1に戻る
       await tester.tap(find.text('戻る'));
       await tester.pumpAndSettle();
-      expect(find.text('あなたには、\n叶えたい夢がありますか？'), findsOneWidget);
+      expect(find.text('あなたには、\n「やりたいこと」がありますか？'), findsOneWidget);
     });
 
     testWidgets('最終ページではじめるボタンで完了する', (tester) async {
@@ -133,7 +136,7 @@ void main() {
 
       // オンボーディングは表示されない
       expect(
-        find.text('あなたには、\n叶えたい夢がありますか？'),
+        find.text('あなたには、\n「やりたいこと」がありますか？'),
         findsNothing,
       );
     });

@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../dialogs/dream_dialog.dart';
+import '../dialogs/dream_discovery_dialog.dart';
 import '../dialogs/trial_limit_dialog.dart';
 import '../models/dream.dart';
 import '../providers/dream_providers.dart';
@@ -47,7 +48,13 @@ class DreamPage extends ConsumerWidget {
                   ),
                 ),
               ),
-              const SizedBox(width: 16),
+              const SizedBox(width: 8),
+              OutlinedButton.icon(
+                onPressed: () => _openDiscoveryGuide(context, ref),
+                icon: const Icon(Icons.explore, size: 18),
+                label: const Text('発見ガイド'),
+              ),
+              const SizedBox(width: 8),
               ElevatedButton.icon(
                 key: TutorialTargetKeys.addDreamButton,
                 onPressed: () => _addDream(context, ref),
@@ -111,19 +118,35 @@ class DreamPage extends ConsumerWidget {
           Icon(Icons.auto_awesome_outlined, size: 64, color: colors.textMuted),
           const SizedBox(height: 16),
           Text(
-            '夢がまだありません',
+            'やりたいことを見つけよう',
             style: theme.textTheme.titleMedium?.copyWith(
               color: colors.textMuted,
             ),
           ),
           const SizedBox(height: 8),
           Text(
-            '「夢を追加」ボタンから新しい夢を設定しましょう',
+            '「夢を追加」ボタンから直接追加するか、\n'
+            '「発見ガイド」でやりたいことを見つけましょう',
             style: theme.textTheme.bodySmall,
+            textAlign: TextAlign.center,
           ),
         ],
       ),
     );
+  }
+
+  Future<void> _openDiscoveryGuide(
+    BuildContext context,
+    WidgetRef ref,
+  ) async {
+    final result = await showDreamDiscoveryDialog(context);
+    if (result == null || !context.mounted) return;
+
+    await ref.read(dreamListProvider.notifier).createDream(
+          title: result.title,
+          description: result.description,
+          why: result.why,
+        );
   }
 
   Future<void> _addDream(BuildContext context, WidgetRef ref) async {

@@ -9,10 +9,12 @@ import 'package:intl/intl.dart';
 
 import '../dialogs/book_review_dialog.dart';
 import '../dialogs/book_schedule_dialog.dart';
+import '../dialogs/reading_log_dialog.dart';
 import '../dialogs/trial_limit_dialog.dart';
 import '../models/book.dart';
 import '../providers/book_providers.dart';
 import '../providers/service_providers.dart';
+import '../services/task_study_log_logic.dart';
 import '../services/trial_limit_service.dart';
 import '../theme/app_theme.dart';
 
@@ -124,14 +126,14 @@ class _BookPageState extends ConsumerState<BookPage> {
           Icon(Icons.menu_book_outlined, size: 64, color: colors.textMuted),
           const SizedBox(height: 16),
           Text(
-            '書籍がまだありません',
+            '最初の一冊を登録しよう',
             style: theme.textTheme.titleMedium?.copyWith(
               color: colors.textMuted,
             ),
           ),
           const SizedBox(height: 8),
           Text(
-            '上のフォームから書籍を追加しましょう',
+            '上のフォームから書籍を登録できます',
             style: theme.textTheme.bodySmall,
           ),
         ],
@@ -228,6 +230,14 @@ class _BookListItem extends ConsumerWidget {
 
     actions.add(
       IconButton(
+        icon: const Icon(Icons.timer_outlined, size: 20),
+        onPressed: () => _openReadingLog(context, ref, book),
+        tooltip: '読書時間',
+      ),
+    );
+
+    actions.add(
+      IconButton(
         icon: const Icon(Icons.calendar_month_outlined, size: 20),
         onPressed: () => _openSchedule(context, ref, book),
         tooltip: 'スケジュール',
@@ -243,6 +253,25 @@ class _BookListItem extends ConsumerWidget {
     );
 
     return actions;
+  }
+
+  Future<void> _openReadingLog(
+    BuildContext context,
+    WidgetRef ref,
+    Book book,
+  ) async {
+    final studyLogService = ref.read(studyLogServiceProvider);
+    final logic = TaskStudyLogLogic(
+      studyLogService: studyLogService,
+      taskId: bookLogTaskId(book.id),
+      taskName: '📖 ${book.title}',
+    );
+    if (!context.mounted) return;
+    await showReadingLogDialog(
+      context,
+      logic: logic,
+      bookTitle: book.title,
+    );
   }
 
   Future<void> _completeBook(

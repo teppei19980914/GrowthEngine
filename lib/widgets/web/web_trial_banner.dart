@@ -160,10 +160,16 @@ Future<void> _showTrialDialog(
 }) async {
   final isUnlimited = unlockLevel >= feedbackMaxLevel;
 
-  await showDialog<void>(
+  await showGeneralDialog<void>(
     context: context,
     barrierDismissible: barrierDismissible,
-    builder: (context) => AlertDialog(
+    barrierColor: Colors.black54,
+    barrierLabel: 'WebTrial',
+    transitionDuration: const Duration(milliseconds: 500),
+    transitionBuilder: (context, animation, secondaryAnimation, child) {
+      return FadeTransition(opacity: animation, child: child);
+    },
+    pageBuilder: (context, animation, secondaryAnimation) => AlertDialog(
       title: const Row(
         children: [
           Icon(Icons.language, size: 24),

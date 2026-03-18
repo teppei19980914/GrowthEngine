@@ -69,7 +69,7 @@ class MilestonePopup extends StatelessWidget {
               )
             else
               Text(
-                'まだ実績はありません',
+                '最初の実績を目指そう',
                 style: TextStyle(color: colors.textMuted),
               ),
             if (data.nextMilestone != null) ...[

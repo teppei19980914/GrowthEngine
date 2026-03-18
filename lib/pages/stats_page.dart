@@ -719,7 +719,7 @@ class _RecentLogsSection extends ConsumerWidget {
                     padding: const EdgeInsets.symmetric(vertical: 24),
                     child: Center(
                       child: Text(
-                        '活動ログがありません',
+                        '活動を始めるとログが表示されます',
                         style: TextStyle(color: colors.textMuted),
                       ),
                     ),

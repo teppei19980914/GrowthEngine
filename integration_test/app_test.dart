@@ -500,13 +500,13 @@ void main() {
 
     // ─── 夢ページ ───────────────────────────────────
     await tapBottomNav(tester, 1);
-    expect(find.text('夢がまだありません'), findsOneWidget);
+    expect(find.text('やりたいことを見つけよう'), findsOneWidget);
     // 夢を追加ボタンが表示される
     expect(find.text('夢を追加'), findsOneWidget);
 
     // ─── 目標ページ ──────────────────────────────────
     await tapBottomNav(tester, 2);
-    expect(find.text('目標がまだありません'), findsOneWidget);
+    expect(find.text('最初の目標を設定しよう'), findsOneWidget);
     // 目標を追加ボタンが表示される
     expect(find.text('目標を追加'), findsOneWidget);
 
@@ -909,7 +909,7 @@ void main() {
 
       // 夢ページへ移動（GoRouterシングルトンの状態に依存しないようドロワー経由）
       await navigateViaDrawer(tester, '夢');
-      expect(find.text('夢がまだありません'), findsOneWidget);
+      expect(find.text('やりたいことを見つけよう'), findsOneWidget);
 
       // ── 初期状態（レベル0: 夢1個まで）──────────────────────────────────
       // 夢1個目を追加（制限内）
@@ -1057,7 +1057,7 @@ void main() {
 
     // 目標が削除されて空状態が表示される
     expect(find.text('削除対象の目標'), findsNothing);
-    expect(find.text('目標がまだありません'), findsOneWidget);
+    expect(find.text('最初の目標を設定しよう'), findsOneWidget);
   });
 
   // ─────────────────────────────────────────────────────────────────────────

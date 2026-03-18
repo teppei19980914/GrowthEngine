@@ -69,7 +69,7 @@ void main() {
     expect(find.text('毎日1時間'), findsOneWidget);
   });
 
-  testWidgets('夢がない状態で追加ボタンをタップするとSnackBarが表示される',
+  testWidgets('夢がない状態でも追加ボタンでダイアログが開く',
       (tester) async {
     final prefs = await getPrefs();
     await tester.pumpWidget(
@@ -80,8 +80,10 @@ void main() {
     await tester.tap(find.byIcon(Icons.add));
     await tester.pumpAndSettle();
 
-    // 夢がないのでSnackBarが表示される
-    expect(find.text('先に「夢」を登録してください'), findsOneWidget);
+    // 夢がなくてもダイアログが表示される
+    expect(find.text('新しい目標を追加'), findsOneWidget);
+    // 「なし（独立した目標）」の選択肢が表示される
+    expect(find.text('なし（独立した目標）'), findsOneWidget);
   });
 
   testWidgets('夢がある状態で追加ボタンをタップするとダイアログが開く',

@@ -105,6 +105,39 @@ void main() {
         );
         expect(g1.color, isNot(g2.color));
       });
+
+      test('dreamIdなしで独立した目標を作成できる', () async {
+        final goal = await service.createGoal(
+          whenTarget: '2026年末',
+          whenType: WhenType.date,
+          what: '独立した目標',
+          how: '自由に進める',
+        );
+        expect(goal.dreamId, isEmpty);
+        expect(goal.what, '独立した目標');
+      });
+    });
+
+    group('getStandaloneGoals', () {
+      test('独立した目標のみ取得する', () async {
+        await service.createGoal(
+          dreamId: 'dream-1',
+          whenTarget: '随時',
+          whenType: WhenType.period,
+          what: '夢に紐づく目標',
+          how: 'H',
+        );
+        await service.createGoal(
+          whenTarget: '随時',
+          whenType: WhenType.period,
+          what: '独立目標',
+          how: 'H',
+        );
+        final standalone = await service.getStandaloneGoals();
+        expect(standalone.length, 1);
+        expect(standalone.first.what, '独立目標');
+        expect(standalone.first.dreamId, isEmpty);
+      });
     });
 
     group('getAllGoals', () {

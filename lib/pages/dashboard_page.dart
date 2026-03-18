@@ -49,17 +49,32 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
         if (!mounted) return;
 
         // オンボーディング（初回のみ表示）
-        await showOnboardingDialog(context, prefs);
+        final onboarded = await showOnboardingDialog(context, prefs);
         if (!context.mounted) return;
+
+        // ダイアログ間にゆったりとした間を入れる
+        if (onboarded) {
+          await Future<void>.delayed(const Duration(milliseconds: 400));
+          if (!context.mounted) return;
+        }
 
         final shown = await showWebTrialDialogIfNeeded(context, prefs);
         if (!shown || !context.mounted) return;
 
+        await Future<void>.delayed(const Duration(milliseconds: 400));
+        if (!context.mounted) return;
+
         // チュートリアル実行の確認ダイアログ
-        final wantTutorial = await showDialog<bool>(
+        final wantTutorial = await showGeneralDialog<bool>(
           context: context,
           barrierDismissible: false,
-          builder: (context) => AlertDialog(
+          barrierColor: Colors.black54,
+          barrierLabel: 'Tutorial',
+          transitionDuration: const Duration(milliseconds: 500),
+          transitionBuilder: (context, animation, secondaryAnimation, child) {
+            return FadeTransition(opacity: animation, child: child);
+          },
+          pageBuilder: (context, animation, secondaryAnimation) => AlertDialog(
             title: const Row(
               children: [
                 Icon(Icons.school, size: 24),
@@ -357,7 +372,7 @@ class _TodayBannerContent extends ConsumerWidget {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Text(
-                    data.studied ? '今日は活動済み!' : 'まだ活動していません',
+                    data.studied ? '今日は活動済み!' : '今日の活動を始めよう',
                     style: theme.textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.bold,
                     ),

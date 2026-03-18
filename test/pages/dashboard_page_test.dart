@@ -97,6 +97,6 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    expect(find.text('まだ活動していません'), findsOneWidget);
+    expect(find.text('今日の活動を始めよう'), findsOneWidget);
   });
 }

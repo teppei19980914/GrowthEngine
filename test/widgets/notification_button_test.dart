@@ -80,7 +80,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('通知'), findsOneWidget);
-    expect(find.text('通知はありません'), findsOneWidget);
+    expect(find.text('新しい通知はここに届きます'), findsOneWidget);
   });
 
   testWidgets('通知がある場合リストに表示される', (tester) async {

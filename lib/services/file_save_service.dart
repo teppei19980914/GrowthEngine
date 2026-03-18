@@ -13,8 +13,15 @@ import 'file_save_service_native.dart'
 Future<bool> saveFile({
   required Uint8List bytes,
   required String fileName,
+  String mimeType = 'application/octet-stream',
+  List<String> allowedExtensions = const ['xlsx'],
 }) {
-  return platform.saveFile(bytes: bytes, fileName: fileName);
+  return platform.saveFile(
+    bytes: bytes,
+    fileName: fileName,
+    mimeType: mimeType,
+    allowedExtensions: allowedExtensions,
+  );
 }
 
 /// ファイルを読み込む.

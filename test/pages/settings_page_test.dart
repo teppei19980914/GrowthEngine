@@ -103,6 +103,21 @@ void main() {
     expect(find.text('体験版の制限事項'), findsOneWidget);
   });
 
+  testWidgets('やりたいこと発見ガイドが表示される', (tester) async {
+    final prefs = await getPrefs();
+    await tester.pumpWidget(
+      wrapWithProviders(const SettingsPage(), prefs: prefs, db: setup.db),
+    );
+    await tester.pumpAndSettle();
+
+    await tester.scrollUntilVisible(
+      find.text('やりたいこと発見ガイド'),
+      200,
+      scrollable: find.byType(Scrollable).first,
+    );
+    expect(find.text('やりたいこと発見ガイド'), findsOneWidget);
+  });
+
   testWidgets('チュートリアルをタップすると確認ダイアログが表示される', (tester) async {
     final prefs = await getPrefs();
     await tester.pumpWidget(
@@ -116,6 +131,8 @@ void main() {
       scrollable: find.byType(Scrollable).first,
     );
 
+    await tester.ensureVisible(find.text('チュートリアルを開始'));
+    await tester.pumpAndSettle();
     await tester.tap(find.text('チュートリアルを開始'));
     await tester.pumpAndSettle();
 
@@ -137,19 +154,17 @@ void main() {
     expect(find.text('削除する'), findsOneWidget);
   });
 
-  testWidgets('インポートをタップするとインポートダイアログが表示される（非体験版）', (tester) async {
-    // テスト環境では kIsWeb=false のため isTrialMode=false となり通常のインポートダイアログが表示される
+  testWidgets('インポートメニューが表示される（非体験版）', (tester) async {
+    // テスト環境では kIsWeb=false のため isTrialMode=false
+    // ファイルピッカーはプラットフォームAPIのためタップ動作はテストしない
     final prefs = await getPrefs();
     await tester.pumpWidget(
       wrapWithProviders(const SettingsPage(), prefs: prefs, db: setup.db),
     );
     await tester.pumpAndSettle();
 
-    await tester.tap(find.text('データをインポート'));
-    await tester.pumpAndSettle();
-
-    expect(find.text('データをインポート'), findsWidgets);
-    expect(find.text('インポート'), findsOneWidget);
+    expect(find.text('データをインポート'), findsOneWidget);
+    expect(find.text('バックアップから復元'), findsOneWidget);
   });
 
   testWidgets('フィードバックセクションが表示される', (tester) async {

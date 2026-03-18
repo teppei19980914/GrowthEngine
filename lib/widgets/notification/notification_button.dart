@@ -117,7 +117,7 @@ class _NotificationPopup extends ConsumerWidget {
                     Icon(Icons.notifications_none,
                         size: 48, color: colors.textMuted),
                     const SizedBox(height: 8),
-                    Text('通知はありません',
+                    Text('新しい通知はここに届きます',
                         style: TextStyle(color: colors.textMuted)),
                   ],
                 ),

@@ -36,9 +36,17 @@ class GoalService {
     return all.where((g) => g.dreamId == dreamId).map(_rowToGoal).toList();
   }
 
+  /// 夢に紐づかない独立Goalを取得する.
+  Future<List<Goal>> getStandaloneGoals() async {
+    final all = await _goalDao.getAll();
+    return all.where((g) => g.dreamId.isEmpty).map(_rowToGoal).toList();
+  }
+
   /// Goalを作成する.
+  ///
+  /// [dreamId]を省略すると独立した目標（夢に紐づかない目標）になる.
   Future<Goal> createGoal({
-    required String dreamId,
+    String dreamId = '',
     required String whenTarget,
     required WhenType whenType,
     required String what,
@@ -65,7 +73,7 @@ class GoalService {
   /// Goalを更新する.
   Future<Goal?> updateGoal({
     required String goalId,
-    required String dreamId,
+    String dreamId = '',
     required String whenTarget,
     required WhenType whenType,
     required String what,

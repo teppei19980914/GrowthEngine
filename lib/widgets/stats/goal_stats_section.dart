@@ -100,8 +100,8 @@ class _GoalStatsSectionState extends ConsumerState<GoalStatsSection> {
                     child: Center(
                       child: Text(
                         _mode == _StatsMode.goals
-                            ? '目標がありません'
-                            : '読書データがありません',
+                            ? '目標を追加すると統計が表示されます'
+                            : '読書を始めると統計が表示されます',
                         style: TextStyle(color: colors.textMuted),
                       ),
                     ),

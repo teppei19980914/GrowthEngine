@@ -26,11 +26,17 @@ Future<bool> showOnboardingDialog(
 ) async {
   if (!shouldShowOnboarding(prefs)) return false;
 
-  final result = await showDialog<bool>(
+  final result = await showGeneralDialog<bool>(
     context: context,
     barrierDismissible: false,
     barrierColor: Colors.black87,
-    builder: (context) => _OnboardingDialog(prefs: prefs),
+    barrierLabel: 'Onboarding',
+    transitionDuration: const Duration(milliseconds: 600),
+    transitionBuilder: (context, animation, secondaryAnimation, child) {
+      return FadeTransition(opacity: animation, child: child);
+    },
+    pageBuilder: (context, animation, secondaryAnimation) =>
+        _OnboardingDialog(prefs: prefs),
   );
 
   return result ?? false;
@@ -215,12 +221,11 @@ class _OnboardingDialogState extends State<_OnboardingDialog>
         colors: colors,
         icon: Icons.auto_awesome,
         iconColor: colors.accent,
-        title: 'あなたには、\n叶えたい夢がありますか？',
-        body: '小さなものでも、大きなものでも。\n'
-            '心のどこかで「こうなりたい」と\n'
-            '思い描いたことはありませんか？',
-        emphasis: 'どんな小さな夢も、夢には変わりない。\n'
-            'でも、夢は願うだけでは叶わない。',
+        title: 'あなたには、\n「やりたいこと」がありますか？',
+        body: '小さなことでも、大きなことでも。\n'
+            '「こうなれたらいいな」と\n'
+            '心に浮かんだことがあるはずです。',
+        emphasis: 'その想いを、一歩ずつ形にしていこう。',
       ),
     );
   }
@@ -233,12 +238,11 @@ class _OnboardingDialogState extends State<_OnboardingDialog>
         colors: colors,
         icon: Icons.edit_note,
         iconColor: colors.accent,
-        title: '夢は、心の中に\n閉じ込めたままでは叶いません。',
-        body: '言葉にして、書き出して、\n'
-            'はじめて脳はそれを「目標」として認識します。\n\n'
-            '夢を外に出すことが、実現への第一歩です。',
-        emphasis: '言霊の力 ── 声に出し、文字にすることで、\n'
-            '夢は「想い」から「目標」へ変わる。',
+        title: '書き出すことで、\n実現に向けて動き出します。',
+        body: '言葉にして書き出すことで、\n'
+            '脳はそれを「目標」として認識します。',
+        emphasis: '文字にすることで、\n'
+            '想いは「目標」へ変わる。',
       ),
     );
   }
@@ -251,13 +255,10 @@ class _OnboardingDialogState extends State<_OnboardingDialog>
         colors: colors,
         icon: Icons.rocket_launch,
         iconColor: colors.accent,
-        title: '人は「慣性」で生きています。',
-        body: '動いている人は動き続け、\n'
-            '止まっている人は止まり続ける。\n\n'
-            '止まっているものを動かすには、\n'
-            '大きな力が必要です。\n'
-            'でも、一歩踏み出せば、\n'
-            'あとは自然と前に進めます。',
+        title: '一歩踏み出せば、\n自然と前に進めます。',
+        body: '動き出した人は、動き続けられる。\n'
+            '最初の一歩さえ踏み出せば、\n'
+            'あとは自然と進んでいけます。',
         emphasis: null,
       ),
     );
@@ -273,11 +274,9 @@ class _OnboardingDialogState extends State<_OnboardingDialog>
         iconColor: colors.accent,
         title: 'ユメログは、あなたの\n「最初の一歩」を支えます。',
         body: '夢を書き出し、目標に分解し、\n'
-            '日々の行動に落とし込む。\n\n'
-            '動き出したあなたを、\n'
-            '止まらないように支え続けます。',
-        emphasis: '夢を持ち、将来に希望をもって、\n'
-            '自分の力で壁を乗り越えよう。',
+            '日々の行動に落とし込む。\n'
+            '動き出したあなたと一緒に走り続けます。',
+        emphasis: '自分の力で未来を切り拓こう。',
       ),
     );
   }
@@ -303,35 +302,35 @@ class _PageContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.fromLTRB(24, 40, 24, 8),
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(24, 32, 24, 8),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           // アイコン
           Container(
-            width: 64,
-            height: 64,
+            width: 56,
+            height: 56,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               color: iconColor.withAlpha(25),
             ),
-            child: Icon(icon, size: 32, color: iconColor),
+            child: Icon(icon, size: 28, color: iconColor),
           ),
-          const SizedBox(height: 24),
+          const SizedBox(height: 20),
 
           // タイトル
           Text(
             title,
             textAlign: TextAlign.center,
             style: TextStyle(
-              fontSize: 20,
+              fontSize: 19,
               fontWeight: FontWeight.bold,
               color: colors.textPrimary,
-              height: 1.5,
+              height: 1.4,
             ),
           ),
-          const SizedBox(height: 20),
+          const SizedBox(height: 16),
 
           // 本文
           Text(
@@ -340,13 +339,13 @@ class _PageContent extends StatelessWidget {
             style: TextStyle(
               fontSize: 14,
               color: colors.textSecondary,
-              height: 1.8,
+              height: 1.7,
             ),
           ),
 
           // 強調テキスト
           if (emphasis != null) ...[
-            const SizedBox(height: 20),
+            const SizedBox(height: 16),
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               decoration: BoxDecoration(

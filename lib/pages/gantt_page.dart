@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../dialogs/book_schedule_dialog.dart';
+import '../dialogs/reading_log_dialog.dart';
 import '../dialogs/task_dialog.dart';
 import '../dialogs/trial_limit_dialog.dart';
 import '../models/goal.dart';
@@ -16,6 +17,7 @@ import '../providers/gantt_providers.dart';
 import '../providers/goal_providers.dart';
 import '../providers/service_providers.dart';
 import '../services/file_save_service.dart' as file_io;
+import '../services/task_study_log_logic.dart';
 import '../services/gantt_excel_import_service.dart';
 import '../services/trial_limit_service.dart';
 import '../services/tutorial_service.dart';
@@ -82,15 +84,16 @@ class GanttPage extends ConsumerWidget {
                 error: (_, _) => const SizedBox.shrink(),
               ),
               const Spacer(),
-              // タスク追加ボタン
-              if (viewState.mode == GanttViewMode.byGoal &&
-                  viewState.selectedGoalId != null)
+              // タスク追加ボタン（目標別・全タスク表示時）
+              if (viewState.mode == GanttViewMode.allTasks ||
+                  (viewState.mode == GanttViewMode.byGoal &&
+                      viewState.selectedGoalId != null))
                 ElevatedButton.icon(
                   key: TutorialTargetKeys.addTaskButton,
                   onPressed: () => _addTask(
                     context,
                     ref,
-                    viewState.selectedGoalId!,
+                    viewState.selectedGoalId ?? '',
                   ),
                   icon: const Icon(Icons.add, size: 18),
                   label: const Text('タスクを追加'),
@@ -156,7 +159,7 @@ class GanttPage extends ConsumerWidget {
                         ),
                         const SizedBox(height: 16),
                         Text(
-                          'タスクがありません',
+                          '最初のタスクを追加しよう',
                           style: theme.textTheme.titleMedium?.copyWith(
                             color: colors.textMuted,
                           ),
@@ -179,6 +182,8 @@ class GanttPage extends ConsumerWidget {
                 }
                 // 書籍タスク用カラーを追加
                 goalColors[bookGanttGoalId] = _parseColor(bookGanttColor);
+                // 独立タスク用カラーを追加
+                goalColors[''] = _parseColor('#94E2D5');
 
                 return GanttChart(
                   tasks: tasks,
@@ -220,7 +225,7 @@ class GanttPage extends ConsumerWidget {
         tutorialState.step == TutorialStep.addTask;
 
     // 体験版: タスク数の制限チェック
-    if (!isTutorial) {
+    if (!isTutorial && goalId.isNotEmpty) {
       final allTasks = await ref.read(ganttTasksProvider.future);
       final tasksForGoal = allTasks.where((t) => t.goalId == goalId).length;
       final level = ref.read(unlockLevelProvider);
@@ -333,12 +338,54 @@ class GanttPage extends ConsumerWidget {
     WidgetRef ref,
     Task task,
   ) async {
-    final ganttService = ref.read(bookGanttServiceProvider);
     final bookService = ref.read(bookServiceProvider);
     final bookId = task.bookId.isNotEmpty ? task.bookId : task.id;
     final book = await bookService.getBook(bookId);
     if (book == null || !context.mounted) return;
 
+    final action = await showDialog<String>(
+      context: context,
+      builder: (context) => SimpleDialog(
+        title: Text('📖 ${book.title}'),
+        children: [
+          SimpleDialogOption(
+            onPressed: () => Navigator.of(context).pop('schedule'),
+            child: const ListTile(
+              leading: Icon(Icons.calendar_month_outlined),
+              title: Text('スケジュールを編集'),
+              contentPadding: EdgeInsets.zero,
+            ),
+          ),
+          SimpleDialogOption(
+            onPressed: () => Navigator.of(context).pop('reading_log'),
+            child: const ListTile(
+              leading: Icon(Icons.timer_outlined),
+              title: Text('読書時間を記録'),
+              contentPadding: EdgeInsets.zero,
+            ),
+          ),
+        ],
+      ),
+    );
+
+    if (action == null || !context.mounted) return;
+
+    if (action == 'reading_log') {
+      final logic = TaskStudyLogLogic(
+        studyLogService: ref.read(studyLogServiceProvider),
+        taskId: bookLogTaskId(bookId),
+        taskName: '📖 ${book.title}',
+      );
+      await showReadingLogDialog(
+        context,
+        logic: logic,
+        bookTitle: book.title,
+      );
+      return;
+    }
+
+    // スケジュール編集
+    final ganttService = ref.read(bookGanttServiceProvider);
     final result = await showBookScheduleDialog(context, book: book);
     if (result == null) return;
 

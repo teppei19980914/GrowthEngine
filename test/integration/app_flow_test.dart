@@ -61,18 +61,19 @@ void main() {
     expect(find.text('設定'), findsWidgets);
   });
 
-  testWidgets('目標ページで夢なし時にSnackBarが表示される', (tester) async {
+  testWidgets('目標ページで夢なし時でもダイアログが開く', (tester) async {
     await tester.pumpWidget(await buildApp());
     await tester.pumpAndSettle();
 
     // 目標ページに遷移
     await navigateViaDrawerInTest(tester, '目標');
 
-    // 追加ボタンをタップ（夢がないのでSnackBarが表示される）
+    // 追加ボタンをタップ（夢がなくてもダイアログが開く）
     await tester.tap(find.byIcon(Icons.add));
     await tester.pumpAndSettle();
 
-    expect(find.text('先に「夢」を登録してください'), findsOneWidget);
+    expect(find.text('新しい目標を追加'), findsOneWidget);
+    expect(find.text('なし（独立した目標）'), findsOneWidget);
   });
 
   testWidgets('設定ページでテーマ切替ができる', (tester) async {

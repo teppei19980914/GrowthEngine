@@ -42,7 +42,7 @@ class GoalPage extends ConsumerWidget {
             children: [
               Expanded(
                 child: Text(
-                  '夢の実現に向けた目標を管理します。',
+                  'やりたいことに向けた目標を管理します。',
                   style: theme.textTheme.bodyMedium?.copyWith(
                     color: colors.textSecondary,
                   ),
@@ -71,14 +71,18 @@ class GoalPage extends ConsumerWidget {
                   return ListView.separated(
                     itemCount: goals.length,
                     separatorBuilder: (_, _) => const SizedBox(height: 8),
-                    itemBuilder: (_, index) => _GoalCard(
-                      goal: goals[index],
-                      dreamTitle:
-                          dreamMap[goals[index].dreamId]?.title ?? '(未設定)',
-                      onEdit: () => _editGoal(context, ref, goals[index]),
-                      onDelete: () =>
-                          _deleteGoal(context, ref, goals[index]),
-                    ),
+                    itemBuilder: (_, index) {
+                      final goal = goals[index];
+                      final dreamTitle = goal.dreamId.isEmpty
+                          ? null
+                          : dreamMap[goal.dreamId]?.title ?? '(未設定)';
+                      return _GoalCard(
+                        goal: goal,
+                        dreamTitle: dreamTitle,
+                        onEdit: () => _editGoal(context, ref, goal),
+                        onDelete: () => _deleteGoal(context, ref, goal),
+                      );
+                    },
                   );
                 },
                 loading: () =>
@@ -107,14 +111,14 @@ class GoalPage extends ConsumerWidget {
           Icon(Icons.flag_outlined, size: 64, color: colors.textMuted),
           const SizedBox(height: 16),
           Text(
-            '目標がまだありません',
+            '最初の目標を設定しよう',
             style: theme.textTheme.titleMedium?.copyWith(
               color: colors.textMuted,
             ),
           ),
           const SizedBox(height: 8),
           Text(
-            '「目標を追加」ボタンから新しい目標を作成しましょう',
+            '「目標を追加」ボタンから始められます',
             style: theme.textTheme.bodySmall,
           ),
         ],
@@ -128,12 +132,6 @@ class GoalPage extends ConsumerWidget {
 
   Future<void> _addGoal(BuildContext context, WidgetRef ref) async {
     final dreams = _getDreams(ref);
-    if (dreams.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('先に「夢」を登録してください')),
-      );
-      return;
-    }
 
     final tutorialState = ref.read(tutorialStateProvider);
     final isTutorial = tutorialState.isActive &&
@@ -184,12 +182,6 @@ class GoalPage extends ConsumerWidget {
     Goal goal,
   ) async {
     final dreams = _getDreams(ref);
-    if (dreams.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('先に「夢」を登録してください')),
-      );
-      return;
-    }
     final result = await showGoalDialog(context, goal: goal, dreams: dreams);
     if (result == null) return;
 
@@ -244,7 +236,7 @@ class _GoalCard extends StatelessWidget {
   });
 
   final Goal goal;
-  final String dreamTitle;
+  final String? dreamTitle;
   final VoidCallback onEdit;
   final VoidCallback onDelete;
 
@@ -328,24 +320,26 @@ class _GoalCard extends StatelessWidget {
                     ),
                     const SizedBox(height: 4),
 
-                    // 夢情報
-                    Row(
-                      children: [
-                        Icon(
-                          Icons.auto_awesome,
-                          size: 13,
-                          color: theme.colorScheme.primary,
-                        ),
-                        const SizedBox(width: 4),
-                        Text(
-                          dreamTitle,
-                          style: theme.textTheme.labelSmall?.copyWith(
+                    // 夢情報（紐づく夢がある場合のみ表示）
+                    if (dreamTitle != null) ...[
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.auto_awesome,
+                            size: 13,
                             color: theme.colorScheme.primary,
-                            fontWeight: FontWeight.w600,
                           ),
-                        ),
-                      ],
-                    ),
+                          const SizedBox(width: 4),
+                          Text(
+                            dreamTitle!,
+                            style: theme.textTheme.labelSmall?.copyWith(
+                              color: theme.colorScheme.primary,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
                     const SizedBox(height: 8),
 
                     // 目標情報

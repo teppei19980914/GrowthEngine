@@ -4,13 +4,21 @@
 /// バージョン情報を提供する.
 library;
 
+import 'dart:convert';
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../dialogs/dream_discovery_dialog.dart';
 import '../dialogs/feedback_dialog.dart';
+import '../providers/book_providers.dart';
+import '../providers/dream_providers.dart';
+import '../providers/goal_providers.dart';
 import '../dialogs/inquiry_dialog.dart';
 import '../dialogs/upgrade_dialog.dart';
+import '../services/file_save_service.dart' as file_io;
 import '../services/inquiry_service.dart';
 import '../providers/service_providers.dart';
 import '../providers/theme_provider.dart';
@@ -138,6 +146,13 @@ class SettingsPage extends ConsumerWidget {
           child: Column(
             children: [
               ListTile(
+                leading: Icon(Icons.explore, color: colors.accent),
+                title: const Text('やりたいこと発見ガイド'),
+                subtitle: const Text('質問に答えてやりたいことを見つけよう'),
+                onTap: () => _openDiscoveryGuide(context, ref),
+              ),
+              const Divider(height: 1),
+              ListTile(
                 leading: Icon(Icons.school_outlined, color: colors.accent),
                 title: const Text('チュートリアルを開始'),
                 subtitle: const Text('実際に操作しながらアプリの使い方を体験'),
@@ -186,6 +201,25 @@ class SettingsPage extends ConsumerWidget {
           ),
         ),
       ],
+    );
+  }
+
+  Future<void> _openDiscoveryGuide(
+    BuildContext context,
+    WidgetRef ref,
+  ) async {
+    final result = await showDreamDiscoveryDialog(context);
+    if (result == null || !context.mounted) return;
+
+    await ref.read(dreamListProvider.notifier).createDream(
+          title: result.title,
+          description: result.description,
+          why: result.why,
+        );
+
+    if (!context.mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('「${result.title}」を作成しました')),
     );
   }
 
@@ -239,30 +273,27 @@ class SettingsPage extends ConsumerWidget {
     try {
       final service = ref.read(dataExportServiceProvider);
       final jsonString = await service.exportData();
-      if (!context.mounted) return;
+      final bytes = Uint8List.fromList(utf8.encode(jsonString));
+      final timestamp = DateTime.now()
+          .toIso8601String()
+          .replaceAll(':', '-')
+          .split('.')
+          .first;
+      final fileName = 'yumelog_backup_$timestamp.json';
 
-      await showDialog<void>(
-        context: context,
-        builder: (context) => AlertDialog(
-          title: const Text('エクスポート完了'),
-          content: SizedBox(
-            width: double.maxFinite,
-            height: 300,
-            child: SingleChildScrollView(
-              child: SelectableText(
-                jsonString,
-                style: const TextStyle(fontSize: 11, fontFamily: 'monospace'),
-              ),
-            ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: const Text('閉じる'),
-            ),
-          ],
-        ),
+      final saved = await file_io.saveFile(
+        bytes: bytes,
+        fileName: fileName,
+        mimeType: 'application/json',
+        allowedExtensions: ['json'],
       );
+
+      if (!context.mounted) return;
+      if (saved) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('$fileNameをエクスポートしました')),
+        );
+      }
     } on Exception catch (e) {
       if (!context.mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
@@ -291,24 +322,40 @@ class SettingsPage extends ConsumerWidget {
       );
       return;
     }
-    final controller = TextEditingController();
+
+    final bytes = await file_io.pickFile(allowedExtensions: ['json']);
+    if (bytes == null) return;
+
+    final jsonString = utf8.decode(bytes);
+    final service = ref.read(dataExportServiceProvider);
+    final validation = service.validateJson(jsonString);
+
+    if (!validation.valid) {
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'インポートに失敗しました: ${validation.errorMessage}',
+          ),
+        ),
+      );
+      return;
+    }
+
+    if (!context.mounted) return;
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('データをインポート'),
-        content: SizedBox(
-          width: double.maxFinite,
-          height: 300,
-          child: TextField(
-            controller: controller,
-            maxLines: null,
-            expands: true,
-            decoration: const InputDecoration(
-              hintText: 'JSONデータを貼り付けてください...',
-              border: OutlineInputBorder(),
-            ),
-            style: const TextStyle(fontSize: 11, fontFamily: 'monospace'),
-          ),
+        content: Text(
+          '以下のデータをインポートします。\n'
+          '既存データは全て上書きされます。\n\n'
+          '夢: ${validation.counts['dreams'] ?? 0}件\n'
+          '目標: ${validation.counts['goals'] ?? 0}件\n'
+          'タスク: ${validation.counts['tasks'] ?? 0}件\n'
+          '書籍: ${validation.counts['books'] ?? 0}件\n'
+          '活動ログ: ${validation.counts['study_logs'] ?? 0}件\n'
+          '通知: ${validation.counts['notifications'] ?? 0}件',
         ),
         actions: [
           TextButton(
@@ -323,16 +370,22 @@ class SettingsPage extends ConsumerWidget {
       ),
     );
 
-    if (confirmed != true || controller.text.trim().isEmpty) return;
+    if (confirmed != true) return;
 
     try {
-      final service = ref.read(dataExportServiceProvider);
-      final result = await service.importData(controller.text);
+      final result = await service.importData(jsonString);
+
+      // 全Providerを再読み込みしてUIに反映
+      ref.invalidate(dreamListProvider);
+      ref.invalidate(goalListProvider);
+      ref.invalidate(bookListProvider);
+
       if (!context.mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            'インポート完了: 目標${result.goalCount}件, '
+            'インポート完了: 夢${result.dreamCount}件, '
+            '目標${result.goalCount}件, '
             'タスク${result.taskCount}件, '
             '書籍${result.bookCount}件, '
             'ログ${result.studyLogCount}件',
@@ -345,7 +398,6 @@ class SettingsPage extends ConsumerWidget {
         SnackBar(content: Text('インポートに失敗しました: $e')),
       );
     }
-    controller.dispose();
   }
 
   Future<void> _clearAllData(BuildContext context, WidgetRef ref) async {
@@ -378,6 +430,12 @@ class SettingsPage extends ConsumerWidget {
     try {
       final service = ref.read(dataExportServiceProvider);
       await service.clearAllData();
+
+      // 全Providerを再読み込みしてUIに反映
+      ref.invalidate(dreamListProvider);
+      ref.invalidate(goalListProvider);
+      ref.invalidate(bookListProvider);
+
       if (!context.mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('全データを削除しました')),

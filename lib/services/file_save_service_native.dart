@@ -12,12 +12,14 @@ import 'package:file_picker/file_picker.dart';
 Future<bool> saveFile({
   required Uint8List bytes,
   required String fileName,
+  String mimeType = 'application/octet-stream',
+  List<String> allowedExtensions = const ['xlsx'],
 }) async {
   final path = await FilePicker.platform.saveFile(
     dialogTitle: 'ファイルの保存先を選択',
     fileName: fileName,
     type: FileType.custom,
-    allowedExtensions: ['xlsx'],
+    allowedExtensions: allowedExtensions,
   );
   if (path == null) return false;
   await File(path).writeAsBytes(bytes, flush: true);

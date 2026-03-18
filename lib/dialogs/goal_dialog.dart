@@ -95,9 +95,15 @@ class _GoalDialogContentState extends State<_GoalDialogContent> {
     _whenType = goal?.whenType ?? WhenType.date;
     final dreamIds = widget.dreams.map((d) => d.id).toSet();
     final candidateId = goal?.dreamId ?? widget.initialDreamId;
-    _selectedDreamId = (candidateId != null && dreamIds.contains(candidateId))
-        ? candidateId
-        : widget.dreams.firstOrNull?.id;
+    if (candidateId != null && candidateId.isNotEmpty && dreamIds.contains(candidateId)) {
+      _selectedDreamId = candidateId;
+    } else if (candidateId != null && candidateId.isEmpty) {
+      // 独立した目標（夢に紐づかない）
+      _selectedDreamId = '';
+    } else {
+      // デフォルト: 夢がある場合は最初の夢、ない場合は空文字（独立目標）
+      _selectedDreamId = widget.dreams.firstOrNull?.id ?? '';
+    }
 
     if (goal != null && goal.whenType == WhenType.date) {
       _selectedDate = goal.getTargetDate();
@@ -142,7 +148,7 @@ class _GoalDialogContentState extends State<_GoalDialogContent> {
 
     Navigator.of(context).pop(
       GoalDialogResult(
-        dreamId: _selectedDreamId!,
+        dreamId: _selectedDreamId ?? '',
         what: _whatController.text.trim(),
         whenType: _whenType,
         whenTarget: _whenTargetController.text.trim(),
@@ -166,9 +172,9 @@ class _GoalDialogContentState extends State<_GoalDialogContent> {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Dream — 紐づく夢
+                // Dream — 紐づく夢（任意）
                 Text(
-                  '紐づく夢',
+                  '紐づく夢（任意）',
                   style: theme.textTheme.titleSmall,
                 ),
                 const SizedBox(height: 4),
@@ -177,17 +183,19 @@ class _GoalDialogContentState extends State<_GoalDialogContent> {
                   decoration: const InputDecoration(
                     hintText: '夢を選択してください',
                   ),
-                  items: widget.dreams
-                      .map((d) => DropdownMenuItem(
-                            value: d.id,
-                            child: Text(d.title),
-                          ))
-                      .toList(),
+                  items: [
+                    const DropdownMenuItem(
+                      value: '',
+                      child: Text('なし（独立した目標）'),
+                    ),
+                    ...widget.dreams.map((d) => DropdownMenuItem(
+                          value: d.id,
+                          child: Text(d.title),
+                        )),
+                  ],
                   onChanged: (value) {
                     setState(() => _selectedDreamId = value);
                   },
-                  validator: (v) =>
-                      v == null || v.isEmpty ? '夢を選択してください' : null,
                 ),
                 const SizedBox(height: 16),
 
