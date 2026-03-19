@@ -307,7 +307,7 @@ class _BookCover extends ConsumerWidget {
     };
 
     return GestureDetector(
-      onTap: () => _showBookMenu(context, ref),
+      onTap: () => _editBook(context, ref),
       child: Container(
         decoration: BoxDecoration(
           // 背表紙のグラデーション（左右に丸みを持たせた陰影）
@@ -395,53 +395,14 @@ class _BookCover extends ConsumerWidget {
     );
   }
 
-  void _showBookMenu(BuildContext context, WidgetRef ref) {
-    final colors = Theme.of(context).appColors;
-    showModalBottomSheet<void>(
-      context: context,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
-      ),
-      builder: (context) => SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 8),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(16),
-                child: Text(
-                  book.title,
-                  style: Theme.of(context).textTheme.titleMedium,
-                  textAlign: TextAlign.center,
-                ),
-              ),
-              ListTile(
-                leading: const Icon(Icons.edit_outlined),
-                title: const Text('書籍情報を編集'),
-                onTap: () {
-                  Navigator.pop(context);
-                  _editBook(context, ref);
-                },
-              ),
-              ListTile(
-                leading: Icon(Icons.delete_outline, color: colors.error),
-                title: Text('削除', style: TextStyle(color: colors.error)),
-                onTap: () {
-                  Navigator.pop(context);
-                  _deleteBook(context, ref);
-                },
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
   Future<void> _editBook(BuildContext context, WidgetRef ref) async {
     final result = await showBookDialog(context, book: book);
     if (result == null) return;
+
+    if (result.deleteRequested) {
+      await ref.read(bookListProvider.notifier).deleteBook(book.id);
+      return;
+    }
 
     await ref.read(bookListProvider.notifier).updateBookInfo(
           book.id,
@@ -452,29 +413,4 @@ class _BookCover extends ConsumerWidget {
         );
   }
 
-  Future<void> _deleteBook(BuildContext context, WidgetRef ref) async {
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('書籍を削除'),
-        content: Text('「${book.title}」を削除しますか？'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(false),
-            child: const Text('キャンセル'),
-          ),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Theme.of(context).colorScheme.error,
-            ),
-            onPressed: () => Navigator.of(context).pop(true),
-            child: const Text('削除'),
-          ),
-        ],
-      ),
-    );
-    if (confirmed != true) return;
-
-    await ref.read(bookListProvider.notifier).deleteBook(book.id);
-  }
 }

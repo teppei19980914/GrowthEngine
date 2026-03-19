@@ -13,6 +13,7 @@ class BookDialogResult {
     required this.category,
     required this.why,
     required this.description,
+    this.deleteRequested = false,
   });
 
   /// 書籍名.
@@ -26,6 +27,9 @@ class BookDialogResult {
 
   /// 内容メモ.
   final String description;
+
+  /// 削除リクエスト.
+  final bool deleteRequested;
 }
 
 /// 書籍ダイアログを表示する.
@@ -147,6 +151,14 @@ class _BookDialogContentState extends State<_BookDialogContent> {
         ),
       ),
       actions: [
+        if (_isEdit)
+          TextButton(
+            onPressed: _requestDelete,
+            style: TextButton.styleFrom(
+              foregroundColor: Theme.of(context).colorScheme.error,
+            ),
+            child: const Text('削除'),
+          ),
         TextButton(
           onPressed: () => Navigator.pop(context),
           child: const Text('キャンセル'),
@@ -157,6 +169,41 @@ class _BookDialogContentState extends State<_BookDialogContent> {
         ),
       ],
     );
+  }
+
+  Future<void> _requestDelete() async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('書籍を削除'),
+        content: Text('「${widget.book!.title}」を削除しますか？'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('キャンセル'),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Theme.of(context).colorScheme.error,
+            ),
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text('削除'),
+          ),
+        ],
+      ),
+    );
+    if (confirmed == true && mounted) {
+      Navigator.pop(
+        context,
+        const BookDialogResult(
+          title: '',
+          category: BookCategory.other,
+          why: '',
+          description: '',
+          deleteRequested: true,
+        ),
+      );
+    }
   }
 
   void _submit() {
