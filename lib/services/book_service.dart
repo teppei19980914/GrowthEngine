@@ -33,12 +33,43 @@ class BookService {
   }
 
   /// Bookを作成する.
-  Future<Book> createBook(String title) async {
+  Future<Book> createBook(
+    String title, {
+    BookCategory category = BookCategory.other,
+    String why = '',
+    String description = '',
+  }) async {
     final trimmed = title.trim();
     if (trimmed.isEmpty) throw ArgumentError('書籍名は必須です');
-    final book = Book(title: trimmed);
+    final book = Book(
+      title: trimmed,
+      category: category,
+      why: why,
+      description: description,
+    );
     await _bookDao.insertBook(_bookToCompanion(book));
     return book;
+  }
+
+  /// 書籍の基本情報を更新する.
+  Future<Book?> updateBookInfo(
+    String bookId, {
+    required String title,
+    required BookCategory category,
+    required String why,
+    required String description,
+  }) async {
+    final existing = await _bookDao.getById(bookId);
+    if (existing == null) return null;
+    final updated = _rowToBook(existing).copyWith(
+      title: title,
+      category: category,
+      why: why,
+      description: description,
+      updatedAt: DateTime.now(),
+    );
+    await _bookDao.updateBook(_bookToCompanion(updated));
+    return updated;
   }
 
   /// 書籍のステータスを更新する.
@@ -135,6 +166,9 @@ class BookService {
       id: row.id,
       title: row.title,
       status: BookStatus.fromValue(row.status),
+      category: BookCategory.fromValue(row.category),
+      why: row.why,
+      description: row.description,
       summary: row.summary,
       impressions: row.impressions,
       completedDate: row.completedDate,
@@ -151,6 +185,9 @@ class BookService {
       id: Value(book.id),
       title: Value(book.title),
       status: Value(book.status.value),
+      category: Value(book.category.name),
+      why: Value(book.why),
+      description: Value(book.description),
       summary: Value(book.summary),
       impressions: Value(book.impressions),
       completedDate: Value(book.completedDate),

@@ -5,15 +5,11 @@ library;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../dialogs/book_review_dialog.dart';
-import '../dialogs/book_schedule_dialog.dart';
-import '../dialogs/reading_log_dialog.dart';
+import '../dialogs/book_dialog.dart';
 import '../dialogs/trial_limit_dialog.dart';
 import '../models/book.dart';
 import '../providers/book_providers.dart';
-import '../providers/dashboard_providers.dart';
 import '../providers/service_providers.dart';
-import '../services/task_study_log_logic.dart';
 import '../services/trial_limit_service.dart';
 import '../theme/app_theme.dart';
 
@@ -28,18 +24,7 @@ class BookPage extends ConsumerStatefulWidget {
 }
 
 class _BookPageState extends ConsumerState<BookPage> {
-  final _titleController = TextEditingController();
-
-  @override
-  void dispose() {
-    _titleController.dispose();
-    super.dispose();
-  }
-
   Future<void> _addBook() async {
-    final title = _titleController.text.trim();
-    if (title.isEmpty) return;
-
     final books = await ref.read(bookListProvider.future);
     final currentCount = books.length;
     final level = ref.read(unlockLevelProvider);
@@ -56,8 +41,16 @@ class _BookPageState extends ConsumerState<BookPage> {
       return;
     }
 
-    await ref.read(bookListProvider.notifier).createBook(title);
-    _titleController.clear();
+    if (!mounted) return;
+    final result = await showBookDialog(context);
+    if (result == null) return;
+
+    await ref.read(bookListProvider.notifier).createBook(
+          result.title,
+          category: result.category,
+          why: result.why,
+          description: result.description,
+        );
   }
 
   @override
@@ -71,24 +64,20 @@ class _BookPageState extends ConsumerState<BookPage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // 書籍追加フォーム
+          // 書籍追加ボタン
           Row(
             children: [
-              Expanded(
-                child: TextField(
-                  controller: _titleController,
-                  decoration: const InputDecoration(
-                    hintText: '書籍名を入力...',
-                    prefixIcon: Icon(Icons.menu_book_outlined, size: 20),
-                  ),
-                  onSubmitted: (_) => _addBook(),
+              Text(
+                '本棚に登録した書籍を管理できます。',
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: colors.textSecondary,
                 ),
               ),
-              const SizedBox(width: 12),
+              const Spacer(),
               ElevatedButton.icon(
                 onPressed: _addBook,
                 icon: const Icon(Icons.add, size: 18),
-                label: const Text('追加'),
+                label: const Text('書籍を追加'),
               ),
             ],
           ),
@@ -318,7 +307,7 @@ class _BookCover extends ConsumerWidget {
     };
 
     return GestureDetector(
-      onTap: () => _showBookActions(context, ref),
+      onTap: () => _showBookMenu(context, ref),
       child: Container(
         decoration: BoxDecoration(
           // 背表紙のグラデーション（左右に丸みを持たせた陰影）
@@ -406,7 +395,7 @@ class _BookCover extends ConsumerWidget {
     );
   }
 
-  void _showBookActions(BuildContext context, WidgetRef ref) {
+  void _showBookMenu(BuildContext context, WidgetRef ref) {
     final colors = Theme.of(context).appColors;
     showModalBottomSheet<void>(
       context: context,
@@ -427,41 +416,12 @@ class _BookCover extends ConsumerWidget {
                   textAlign: TextAlign.center,
                 ),
               ),
-              if (book.status == BookStatus.unread)
-                ListTile(
-                  leading: const Icon(Icons.play_arrow_outlined),
-                  title: const Text('読書開始'),
-                  onTap: () {
-                    Navigator.pop(context);
-                    ref
-                        .read(bookListProvider.notifier)
-                        .updateStatus(book.id, BookStatus.reading);
-                  },
-                ),
-              if (book.status == BookStatus.reading)
-                ListTile(
-                  leading: Icon(Icons.check_circle_outline,
-                      color: colors.success),
-                  title: const Text('読了にする'),
-                  onTap: () {
-                    Navigator.pop(context);
-                    _completeBook(context, ref);
-                  },
-                ),
               ListTile(
-                leading: const Icon(Icons.timer_outlined),
-                title: const Text('読書時間を記録'),
+                leading: const Icon(Icons.edit_outlined),
+                title: const Text('書籍情報を編集'),
                 onTap: () {
                   Navigator.pop(context);
-                  _openReadingLog(context, ref);
-                },
-              ),
-              ListTile(
-                leading: const Icon(Icons.calendar_month_outlined),
-                title: const Text('スケジュールを編集'),
-                onTap: () {
-                  Navigator.pop(context);
-                  _openSchedule(context, ref);
+                  _editBook(context, ref);
                 },
               ),
               ListTile(
@@ -479,63 +439,17 @@ class _BookCover extends ConsumerWidget {
     );
   }
 
-  Future<void> _openReadingLog(BuildContext context, WidgetRef ref) async {
-    final studyLogService = ref.read(studyLogServiceProvider);
-    final logic = TaskStudyLogLogic(
-      studyLogService: studyLogService,
-      taskId: bookLogTaskId(book.id),
-      taskName: '📖 ${book.title}',
-    );
-    if (!context.mounted) return;
-    await showReadingLogDialog(
-      context,
-      logic: logic,
-      bookTitle: book.title,
-    );
-    ref.invalidate(bookListProvider);
-    ref.invalidate(allLogsProvider);
-  }
-
-  Future<void> _completeBook(BuildContext context, WidgetRef ref) async {
-    final result = await showBookReviewDialog(
-      context,
-      bookTitle: book.title,
-    );
+  Future<void> _editBook(BuildContext context, WidgetRef ref) async {
+    final result = await showBookDialog(context, book: book);
     if (result == null) return;
 
-    await ref.read(bookListProvider.notifier).completeBook(
-          bookId: book.id,
-          summary: result.summary,
-          impressions: result.impressions,
-          completedDate: result.completedDate,
-        );
-  }
-
-  Future<void> _openSchedule(BuildContext context, WidgetRef ref) async {
-    final result = await showBookScheduleDialog(context, book: book);
-    if (result == null) return;
-
-    final ganttService = ref.read(bookGanttServiceProvider);
-    if (result.deleteRequested) {
-      await ganttService.clearBookSchedule(book.id);
-    } else {
-      if (book.hasSchedule) {
-        await ganttService.updateBookSchedule(
-          bookId: book.id,
+    await ref.read(bookListProvider.notifier).updateBookInfo(
+          book.id,
           title: result.title,
-          startDate: result.startDate,
-          endDate: result.endDate,
-          progress: result.progress,
+          category: result.category,
+          why: result.why,
+          description: result.description,
         );
-      } else {
-        await ganttService.setBookSchedule(
-          bookId: book.id,
-          startDate: result.startDate,
-          endDate: result.endDate,
-        );
-      }
-    }
-    ref.invalidate(bookListProvider);
   }
 
   Future<void> _deleteBook(BuildContext context, WidgetRef ref) async {

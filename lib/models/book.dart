@@ -3,6 +3,43 @@ library;
 
 import 'package:uuid/uuid.dart';
 
+/// 書籍カテゴリ.
+enum BookCategory {
+  /// IT・技術.
+  it('IT・技術'),
+
+  /// ビジネス.
+  business('ビジネス'),
+
+  /// 小説・文学.
+  novel('小説・文学'),
+
+  /// 自己啓発.
+  selfHelp('自己啓発'),
+
+  /// 学術・教育.
+  academic('学術・教育'),
+
+  /// 趣味・実用.
+  hobby('趣味・実用'),
+
+  /// その他.
+  other('その他');
+
+  const BookCategory(this.label);
+
+  /// 表示ラベル.
+  final String label;
+
+  /// 文字列値からBookCategoryを生成する.
+  static BookCategory fromValue(String value) {
+    return BookCategory.values.firstWhere(
+      (e) => e.name == value,
+      orElse: () => BookCategory.other,
+    );
+  }
+}
+
 /// 書籍のステータス.
 enum BookStatus {
   /// 未読.
@@ -40,6 +77,9 @@ class Book {
     required this.title,
     String? id,
     this.status = BookStatus.unread,
+    this.category = BookCategory.other,
+    this.why = '',
+    this.description = '',
     this.summary = '',
     this.impressions = '',
     this.completedDate,
@@ -70,6 +110,15 @@ class Book {
 
   /// ステータス.
   final BookStatus status;
+
+  /// カテゴリ.
+  final BookCategory category;
+
+  /// なぜ読むのか.
+  final String why;
+
+  /// 内容メモ（フリーテキスト）.
+  final String description;
 
   /// 要約（読了時に記入）.
   final String summary;
@@ -105,6 +154,9 @@ class Book {
     String? id,
     String? title,
     BookStatus? status,
+    BookCategory? category,
+    String? why,
+    String? description,
     String? summary,
     String? impressions,
     DateTime? completedDate,
@@ -121,6 +173,9 @@ class Book {
       id: id ?? this.id,
       title: title ?? this.title,
       status: status ?? this.status,
+      category: category ?? this.category,
+      why: why ?? this.why,
+      description: description ?? this.description,
       summary: summary ?? this.summary,
       impressions: impressions ?? this.impressions,
       completedDate:
@@ -139,6 +194,9 @@ class Book {
       'id': id,
       'title': title,
       'status': status.value,
+      'category': category.name,
+      'why': why,
+      'description': description,
       'summary': summary,
       'impressions': impressions,
       'completed_date': completedDate?.toIso8601String(),
@@ -159,6 +217,11 @@ class Book {
       id: data['id'] as String,
       title: data['title'] as String,
       status: BookStatus.fromValue(data['status'] as String),
+      category: data['category'] != null
+          ? BookCategory.fromValue(data['category'] as String)
+          : BookCategory.other,
+      why: (data['why'] as String?) ?? '',
+      description: (data['description'] as String?) ?? '',
       summary: (data['summary'] as String?) ?? '',
       impressions: (data['impressions'] as String?) ?? '',
       completedDate:

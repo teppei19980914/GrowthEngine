@@ -19,9 +19,33 @@ class BookListNotifier extends AsyncNotifier<List<Book>> {
   }
 
   /// Bookを作成する.
-  Future<void> createBook(String title) async {
+  Future<void> createBook(
+    String title, {
+    BookCategory category = BookCategory.other,
+    String why = '',
+    String description = '',
+  }) async {
     final service = ref.read(bookServiceProvider);
-    await service.createBook(title);
+    await service.createBook(title, category: category, why: why, description: description);
+    ref.invalidateSelf();
+  }
+
+  /// Bookの基本情報を更新する.
+  Future<void> updateBookInfo(
+    String bookId, {
+    required String title,
+    required BookCategory category,
+    required String why,
+    required String description,
+  }) async {
+    final service = ref.read(bookServiceProvider);
+    await service.updateBookInfo(
+      bookId,
+      title: title,
+      category: category,
+      why: why,
+      description: description,
+    );
     ref.invalidateSelf();
   }
 

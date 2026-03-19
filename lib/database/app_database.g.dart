@@ -548,7 +548,7 @@ class Goal extends DataClass implements Insertable<Goal> {
   /// 紐づく夢のID.
   final String dreamId;
 
-  /// なぜ学習するのか（動機・理由）.
+  /// なぜその夢を目指すのか（動機・理由）※Dream側に移動済み.
   final String why;
 
   /// いつまでに（目標日付または期間の説明）.
@@ -557,10 +557,10 @@ class Goal extends DataClass implements Insertable<Goal> {
   /// When指定タイプ（date or period）.
   final String whenType;
 
-  /// 何を学習するのか.
+  /// 何を目標とするか.
   final String what;
 
-  /// どうやって学習するのか.
+  /// どうやって達成するか.
   final String how;
 
   /// 表示色（ガントチャート用）.
@@ -1493,6 +1493,29 @@ class $BooksTable extends Books with TableInfo<$BooksTable, Book> {
       type: DriftSqlType.string,
       requiredDuringInsert: false,
       defaultValue: const Constant('unread'));
+  static const VerificationMeta _categoryMeta =
+      const VerificationMeta('category');
+  @override
+  late final GeneratedColumn<String> category = GeneratedColumn<String>(
+      'category', aliasedName, false,
+      type: DriftSqlType.string,
+      requiredDuringInsert: false,
+      defaultValue: const Constant('other'));
+  static const VerificationMeta _whyMeta = const VerificationMeta('why');
+  @override
+  late final GeneratedColumn<String> why = GeneratedColumn<String>(
+      'why', aliasedName, false,
+      type: DriftSqlType.string,
+      requiredDuringInsert: false,
+      defaultValue: const Constant(''));
+  static const VerificationMeta _descriptionMeta =
+      const VerificationMeta('description');
+  @override
+  late final GeneratedColumn<String> description = GeneratedColumn<String>(
+      'description', aliasedName, false,
+      type: DriftSqlType.string,
+      requiredDuringInsert: false,
+      defaultValue: const Constant(''));
   static const VerificationMeta _summaryMeta =
       const VerificationMeta('summary');
   @override
@@ -1552,6 +1575,9 @@ class $BooksTable extends Books with TableInfo<$BooksTable, Book> {
         id,
         title,
         status,
+        category,
+        why,
+        description,
         summary,
         impressions,
         completedDate,
@@ -1585,6 +1611,20 @@ class $BooksTable extends Books with TableInfo<$BooksTable, Book> {
     if (data.containsKey('status')) {
       context.handle(_statusMeta,
           status.isAcceptableOrUnknown(data['status']!, _statusMeta));
+    }
+    if (data.containsKey('category')) {
+      context.handle(_categoryMeta,
+          category.isAcceptableOrUnknown(data['category']!, _categoryMeta));
+    }
+    if (data.containsKey('why')) {
+      context.handle(
+          _whyMeta, why.isAcceptableOrUnknown(data['why']!, _whyMeta));
+    }
+    if (data.containsKey('description')) {
+      context.handle(
+          _descriptionMeta,
+          description.isAcceptableOrUnknown(
+              data['description']!, _descriptionMeta));
     }
     if (data.containsKey('summary')) {
       context.handle(_summaryMeta,
@@ -1641,6 +1681,12 @@ class $BooksTable extends Books with TableInfo<$BooksTable, Book> {
           .read(DriftSqlType.string, data['${effectivePrefix}title'])!,
       status: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}status'])!,
+      category: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}category'])!,
+      why: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}why'])!,
+      description: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}description'])!,
       summary: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}summary'])!,
       impressions: attachedDatabase.typeMapping
@@ -1676,6 +1722,15 @@ class Book extends DataClass implements Insertable<Book> {
   /// ステータス（unread, reading, completed）.
   final String status;
 
+  /// カテゴリ.
+  final String category;
+
+  /// なぜ読むのか.
+  final String why;
+
+  /// 内容メモ（フリーテキスト）.
+  final String description;
+
   /// 要約（読了時に記入）.
   final String summary;
 
@@ -1703,6 +1758,9 @@ class Book extends DataClass implements Insertable<Book> {
       {required this.id,
       required this.title,
       required this.status,
+      required this.category,
+      required this.why,
+      required this.description,
       required this.summary,
       required this.impressions,
       this.completedDate,
@@ -1717,6 +1775,9 @@ class Book extends DataClass implements Insertable<Book> {
     map['id'] = Variable<String>(id);
     map['title'] = Variable<String>(title);
     map['status'] = Variable<String>(status);
+    map['category'] = Variable<String>(category);
+    map['why'] = Variable<String>(why);
+    map['description'] = Variable<String>(description);
     map['summary'] = Variable<String>(summary);
     map['impressions'] = Variable<String>(impressions);
     if (!nullToAbsent || completedDate != null) {
@@ -1739,6 +1800,9 @@ class Book extends DataClass implements Insertable<Book> {
       id: Value(id),
       title: Value(title),
       status: Value(status),
+      category: Value(category),
+      why: Value(why),
+      description: Value(description),
       summary: Value(summary),
       impressions: Value(impressions),
       completedDate: completedDate == null && nullToAbsent
@@ -1763,6 +1827,9 @@ class Book extends DataClass implements Insertable<Book> {
       id: serializer.fromJson<String>(json['id']),
       title: serializer.fromJson<String>(json['title']),
       status: serializer.fromJson<String>(json['status']),
+      category: serializer.fromJson<String>(json['category']),
+      why: serializer.fromJson<String>(json['why']),
+      description: serializer.fromJson<String>(json['description']),
       summary: serializer.fromJson<String>(json['summary']),
       impressions: serializer.fromJson<String>(json['impressions']),
       completedDate: serializer.fromJson<DateTime?>(json['completedDate']),
@@ -1780,6 +1847,9 @@ class Book extends DataClass implements Insertable<Book> {
       'id': serializer.toJson<String>(id),
       'title': serializer.toJson<String>(title),
       'status': serializer.toJson<String>(status),
+      'category': serializer.toJson<String>(category),
+      'why': serializer.toJson<String>(why),
+      'description': serializer.toJson<String>(description),
       'summary': serializer.toJson<String>(summary),
       'impressions': serializer.toJson<String>(impressions),
       'completedDate': serializer.toJson<DateTime?>(completedDate),
@@ -1795,6 +1865,9 @@ class Book extends DataClass implements Insertable<Book> {
           {String? id,
           String? title,
           String? status,
+          String? category,
+          String? why,
+          String? description,
           String? summary,
           String? impressions,
           Value<DateTime?> completedDate = const Value.absent(),
@@ -1807,6 +1880,9 @@ class Book extends DataClass implements Insertable<Book> {
         id: id ?? this.id,
         title: title ?? this.title,
         status: status ?? this.status,
+        category: category ?? this.category,
+        why: why ?? this.why,
+        description: description ?? this.description,
         summary: summary ?? this.summary,
         impressions: impressions ?? this.impressions,
         completedDate:
@@ -1822,6 +1898,10 @@ class Book extends DataClass implements Insertable<Book> {
       id: data.id.present ? data.id.value : this.id,
       title: data.title.present ? data.title.value : this.title,
       status: data.status.present ? data.status.value : this.status,
+      category: data.category.present ? data.category.value : this.category,
+      why: data.why.present ? data.why.value : this.why,
+      description:
+          data.description.present ? data.description.value : this.description,
       summary: data.summary.present ? data.summary.value : this.summary,
       impressions:
           data.impressions.present ? data.impressions.value : this.impressions,
@@ -1842,6 +1922,9 @@ class Book extends DataClass implements Insertable<Book> {
           ..write('id: $id, ')
           ..write('title: $title, ')
           ..write('status: $status, ')
+          ..write('category: $category, ')
+          ..write('why: $why, ')
+          ..write('description: $description, ')
           ..write('summary: $summary, ')
           ..write('impressions: $impressions, ')
           ..write('completedDate: $completedDate, ')
@@ -1855,8 +1938,21 @@ class Book extends DataClass implements Insertable<Book> {
   }
 
   @override
-  int get hashCode => Object.hash(id, title, status, summary, impressions,
-      completedDate, startDate, endDate, progress, createdAt, updatedAt);
+  int get hashCode => Object.hash(
+      id,
+      title,
+      status,
+      category,
+      why,
+      description,
+      summary,
+      impressions,
+      completedDate,
+      startDate,
+      endDate,
+      progress,
+      createdAt,
+      updatedAt);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -1864,6 +1960,9 @@ class Book extends DataClass implements Insertable<Book> {
           other.id == this.id &&
           other.title == this.title &&
           other.status == this.status &&
+          other.category == this.category &&
+          other.why == this.why &&
+          other.description == this.description &&
           other.summary == this.summary &&
           other.impressions == this.impressions &&
           other.completedDate == this.completedDate &&
@@ -1878,6 +1977,9 @@ class BooksCompanion extends UpdateCompanion<Book> {
   final Value<String> id;
   final Value<String> title;
   final Value<String> status;
+  final Value<String> category;
+  final Value<String> why;
+  final Value<String> description;
   final Value<String> summary;
   final Value<String> impressions;
   final Value<DateTime?> completedDate;
@@ -1891,6 +1993,9 @@ class BooksCompanion extends UpdateCompanion<Book> {
     this.id = const Value.absent(),
     this.title = const Value.absent(),
     this.status = const Value.absent(),
+    this.category = const Value.absent(),
+    this.why = const Value.absent(),
+    this.description = const Value.absent(),
     this.summary = const Value.absent(),
     this.impressions = const Value.absent(),
     this.completedDate = const Value.absent(),
@@ -1905,6 +2010,9 @@ class BooksCompanion extends UpdateCompanion<Book> {
     required String id,
     required String title,
     this.status = const Value.absent(),
+    this.category = const Value.absent(),
+    this.why = const Value.absent(),
+    this.description = const Value.absent(),
     this.summary = const Value.absent(),
     this.impressions = const Value.absent(),
     this.completedDate = const Value.absent(),
@@ -1922,6 +2030,9 @@ class BooksCompanion extends UpdateCompanion<Book> {
     Expression<String>? id,
     Expression<String>? title,
     Expression<String>? status,
+    Expression<String>? category,
+    Expression<String>? why,
+    Expression<String>? description,
     Expression<String>? summary,
     Expression<String>? impressions,
     Expression<DateTime>? completedDate,
@@ -1936,6 +2047,9 @@ class BooksCompanion extends UpdateCompanion<Book> {
       if (id != null) 'id': id,
       if (title != null) 'title': title,
       if (status != null) 'status': status,
+      if (category != null) 'category': category,
+      if (why != null) 'why': why,
+      if (description != null) 'description': description,
       if (summary != null) 'summary': summary,
       if (impressions != null) 'impressions': impressions,
       if (completedDate != null) 'completed_date': completedDate,
@@ -1952,6 +2066,9 @@ class BooksCompanion extends UpdateCompanion<Book> {
       {Value<String>? id,
       Value<String>? title,
       Value<String>? status,
+      Value<String>? category,
+      Value<String>? why,
+      Value<String>? description,
       Value<String>? summary,
       Value<String>? impressions,
       Value<DateTime?>? completedDate,
@@ -1965,6 +2082,9 @@ class BooksCompanion extends UpdateCompanion<Book> {
       id: id ?? this.id,
       title: title ?? this.title,
       status: status ?? this.status,
+      category: category ?? this.category,
+      why: why ?? this.why,
+      description: description ?? this.description,
       summary: summary ?? this.summary,
       impressions: impressions ?? this.impressions,
       completedDate: completedDate ?? this.completedDate,
@@ -1988,6 +2108,15 @@ class BooksCompanion extends UpdateCompanion<Book> {
     }
     if (status.present) {
       map['status'] = Variable<String>(status.value);
+    }
+    if (category.present) {
+      map['category'] = Variable<String>(category.value);
+    }
+    if (why.present) {
+      map['why'] = Variable<String>(why.value);
+    }
+    if (description.present) {
+      map['description'] = Variable<String>(description.value);
     }
     if (summary.present) {
       map['summary'] = Variable<String>(summary.value);
@@ -2025,6 +2154,9 @@ class BooksCompanion extends UpdateCompanion<Book> {
           ..write('id: $id, ')
           ..write('title: $title, ')
           ..write('status: $status, ')
+          ..write('category: $category, ')
+          ..write('why: $why, ')
+          ..write('description: $description, ')
           ..write('summary: $summary, ')
           ..write('impressions: $impressions, ')
           ..write('completedDate: $completedDate, ')
@@ -2179,10 +2311,10 @@ class StudyLog extends DataClass implements Insertable<StudyLog> {
   /// 紐づくTaskのID.
   final String taskId;
 
-  /// 学習実施日.
+  /// 活動実施日.
   final DateTime studyDate;
 
-  /// 学習時間（分単位）.
+  /// 活動時間（分単位）.
   final int durationMinutes;
 
   /// メモ.
@@ -3449,6 +3581,9 @@ typedef $$BooksTableCreateCompanionBuilder = BooksCompanion Function({
   required String id,
   required String title,
   Value<String> status,
+  Value<String> category,
+  Value<String> why,
+  Value<String> description,
   Value<String> summary,
   Value<String> impressions,
   Value<DateTime?> completedDate,
@@ -3463,6 +3598,9 @@ typedef $$BooksTableUpdateCompanionBuilder = BooksCompanion Function({
   Value<String> id,
   Value<String> title,
   Value<String> status,
+  Value<String> category,
+  Value<String> why,
+  Value<String> description,
   Value<String> summary,
   Value<String> impressions,
   Value<DateTime?> completedDate,
@@ -3494,6 +3632,9 @@ class $$BooksTableTableManager extends RootTableManager<
             Value<String> id = const Value.absent(),
             Value<String> title = const Value.absent(),
             Value<String> status = const Value.absent(),
+            Value<String> category = const Value.absent(),
+            Value<String> why = const Value.absent(),
+            Value<String> description = const Value.absent(),
             Value<String> summary = const Value.absent(),
             Value<String> impressions = const Value.absent(),
             Value<DateTime?> completedDate = const Value.absent(),
@@ -3508,6 +3649,9 @@ class $$BooksTableTableManager extends RootTableManager<
             id: id,
             title: title,
             status: status,
+            category: category,
+            why: why,
+            description: description,
             summary: summary,
             impressions: impressions,
             completedDate: completedDate,
@@ -3522,6 +3666,9 @@ class $$BooksTableTableManager extends RootTableManager<
             required String id,
             required String title,
             Value<String> status = const Value.absent(),
+            Value<String> category = const Value.absent(),
+            Value<String> why = const Value.absent(),
+            Value<String> description = const Value.absent(),
             Value<String> summary = const Value.absent(),
             Value<String> impressions = const Value.absent(),
             Value<DateTime?> completedDate = const Value.absent(),
@@ -3536,6 +3683,9 @@ class $$BooksTableTableManager extends RootTableManager<
             id: id,
             title: title,
             status: status,
+            category: category,
+            why: why,
+            description: description,
             summary: summary,
             impressions: impressions,
             completedDate: completedDate,
@@ -3564,6 +3714,21 @@ class $$BooksTableFilterComposer
 
   ColumnFilters<String> get status => $state.composableBuilder(
       column: $state.table.status,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+
+  ColumnFilters<String> get category => $state.composableBuilder(
+      column: $state.table.category,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+
+  ColumnFilters<String> get why => $state.composableBuilder(
+      column: $state.table.why,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+
+  ColumnFilters<String> get description => $state.composableBuilder(
+      column: $state.table.description,
       builder: (column, joinBuilders) =>
           ColumnFilters(column, joinBuilders: joinBuilders));
 
@@ -3623,6 +3788,21 @@ class $$BooksTableOrderingComposer
 
   ColumnOrderings<String> get status => $state.composableBuilder(
       column: $state.table.status,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+
+  ColumnOrderings<String> get category => $state.composableBuilder(
+      column: $state.table.category,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+
+  ColumnOrderings<String> get why => $state.composableBuilder(
+      column: $state.table.why,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+
+  ColumnOrderings<String> get description => $state.composableBuilder(
+      column: $state.table.description,
       builder: (column, joinBuilders) =>
           ColumnOrderings(column, joinBuilders: joinBuilders));
 

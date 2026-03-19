@@ -8,7 +8,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
+import '../models/book.dart';
 import '../models/study_log.dart';
+import '../providers/book_providers.dart';
 import '../providers/dashboard_providers.dart';
 import '../services/study_stats_calculator.dart';
 import '../services/study_stats_types.dart';
@@ -58,6 +60,10 @@ class StatsPage extends ConsumerWidget {
 
           // 目標別統計（プレミアム機能）
           const _GoalStatsPremiumSection(),
+          const SizedBox(height: 16),
+
+          // 書籍統計
+          _BookStatsSection(colors: colors),
           const SizedBox(height: 16),
 
           // アクティビティチャート（プレミアム機能）
@@ -799,6 +805,179 @@ class _LogItem extends StatelessWidget {
               fontWeight: FontWeight.w600,
             ),
           ),
+        ],
+      ),
+    );
+  }
+}
+
+/// 書籍統計セクション.
+class _BookStatsSection extends ConsumerWidget {
+  const _BookStatsSection({required this.colors});
+  final AppColors colors;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final booksAsync = ref.watch(bookListProvider);
+    final theme = Theme.of(context);
+
+    return booksAsync.when(
+      data: (books) {
+        if (books.isEmpty) return const SizedBox.shrink();
+
+        final total = books.length;
+        final completed =
+            books.where((b) => b.status == BookStatus.completed).length;
+        final reading =
+            books.where((b) => b.status == BookStatus.reading).length;
+        final unread =
+            books.where((b) => b.status == BookStatus.unread).length;
+        final completionRate =
+            total > 0 ? (completed / total * 100).round() : 0;
+
+        // カテゴリ別集計
+        final categoryMap = <BookCategory, int>{};
+        final categoryCompletedMap = <BookCategory, int>{};
+        for (final book in books) {
+          categoryMap[book.category] =
+              (categoryMap[book.category] ?? 0) + 1;
+          if (book.status == BookStatus.completed) {
+            categoryCompletedMap[book.category] =
+                (categoryCompletedMap[book.category] ?? 0) + 1;
+          }
+        }
+        final sortedCategories = categoryMap.entries.toList()
+          ..sort((a, b) => b.value.compareTo(a.value));
+
+        return Card(
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Icon(Icons.menu_book, size: 20, color: colors.accent),
+                    const SizedBox(width: 8),
+                    Text('読書統計', style: theme.textTheme.titleSmall),
+                  ],
+                ),
+                const Divider(),
+                Row(
+                  children: [
+                    _BookStatTile(
+                        label: '登録', value: '$total冊',
+                        color: colors.textPrimary),
+                    _BookStatTile(
+                        label: '読了', value: '$completed冊',
+                        color: colors.success),
+                    _BookStatTile(
+                        label: '読書中', value: '$reading冊',
+                        color: colors.accent),
+                    _BookStatTile(
+                        label: '未読', value: '$unread冊',
+                        color: colors.textMuted),
+                  ],
+                ),
+                const SizedBox(height: 12),
+                Row(
+                  children: [
+                    Text('読了率', style: theme.textTheme.bodySmall),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(4),
+                        child: LinearProgressIndicator(
+                          value: total > 0 ? completed / total : 0,
+                          minHeight: 8,
+                          backgroundColor: colors.textMuted.withAlpha(30),
+                          color: colors.success,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Text('$completionRate%',
+                        style: theme.textTheme.bodySmall?.copyWith(
+                            fontWeight: FontWeight.bold)),
+                  ],
+                ),
+                const SizedBox(height: 16),
+                Text('カテゴリ別', style: theme.textTheme.labelLarge),
+                const SizedBox(height: 8),
+                ...sortedCategories.map((entry) {
+                  final cat = entry.key;
+                  final count = entry.value;
+                  final completedInCat = categoryCompletedMap[cat] ?? 0;
+                  return Padding(
+                    padding: const EdgeInsets.only(bottom: 6),
+                    child: Row(
+                      children: [
+                        SizedBox(
+                          width: 90,
+                          child: Text(cat.label,
+                              style: theme.textTheme.bodySmall),
+                        ),
+                        Expanded(
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(3),
+                            child: LinearProgressIndicator(
+                              value: count / total,
+                              minHeight: 6,
+                              backgroundColor:
+                                  colors.textMuted.withAlpha(30),
+                              color: colors.accent.withAlpha(180),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        SizedBox(
+                          width: 70,
+                          child: Text('$completedInCat/$count冊',
+                              style: theme.textTheme.labelSmall,
+                              textAlign: TextAlign.end),
+                        ),
+                      ],
+                    ),
+                  );
+                }),
+              ],
+            ),
+          ),
+        );
+      },
+      loading: () => const Card(
+        child: Padding(
+          padding: EdgeInsets.all(16),
+          child: Center(child: CircularProgressIndicator()),
+        ),
+      ),
+      error: (_, _) => const SizedBox.shrink(),
+    );
+  }
+}
+
+/// 書籍統計の個別タイル.
+class _BookStatTile extends StatelessWidget {
+  const _BookStatTile({
+    required this.label,
+    required this.value,
+    required this.color,
+  });
+
+  final String label;
+  final String value;
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Expanded(
+      child: Column(
+        children: [
+          Text(value,
+              style: theme.textTheme.titleMedium?.copyWith(
+                  color: color, fontWeight: FontWeight.bold)),
+          Text(label, style: theme.textTheme.labelSmall),
         ],
       ),
     );

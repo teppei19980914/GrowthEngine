@@ -14,6 +14,15 @@ class Books extends Table {
   /// ステータス（unread, reading, completed）.
   TextColumn get status => text().withDefault(const Constant('unread'))();
 
+  /// カテゴリ.
+  TextColumn get category => text().withDefault(const Constant('other'))();
+
+  /// なぜ読むのか.
+  TextColumn get why => text().withDefault(const Constant(''))();
+
+  /// 内容メモ（フリーテキスト）.
+  TextColumn get description => text().withDefault(const Constant(''))();
+
   /// 要約（読了時に記入）.
   TextColumn get summary => text().withDefault(const Constant(''))();
 

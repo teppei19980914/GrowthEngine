@@ -1,0 +1,174 @@
+/// 書籍の追加・編集ダイアログ.
+library;
+
+import 'package:flutter/material.dart';
+
+import '../models/book.dart';
+
+/// BookDialog の入力結果.
+class BookDialogResult {
+  /// BookDialogResultを作成する.
+  const BookDialogResult({
+    required this.title,
+    required this.category,
+    required this.why,
+    required this.description,
+  });
+
+  /// 書籍名.
+  final String title;
+
+  /// カテゴリ.
+  final BookCategory category;
+
+  /// なぜ読むのか.
+  final String why;
+
+  /// 内容メモ.
+  final String description;
+}
+
+/// 書籍ダイアログを表示する.
+///
+/// [book]が指定された場合は編集モード、nullの場合は新規作成モード.
+Future<BookDialogResult?> showBookDialog(
+  BuildContext context, {
+  Book? book,
+}) {
+  return showDialog<BookDialogResult>(
+    context: context,
+    builder: (_) => _BookDialogContent(book: book),
+  );
+}
+
+class _BookDialogContent extends StatefulWidget {
+  const _BookDialogContent({this.book});
+
+  final Book? book;
+
+  @override
+  State<_BookDialogContent> createState() => _BookDialogContentState();
+}
+
+class _BookDialogContentState extends State<_BookDialogContent> {
+  final _formKey = GlobalKey<FormState>();
+  late final TextEditingController _titleController;
+  late final TextEditingController _whyController;
+  late final TextEditingController _descriptionController;
+  late BookCategory _selectedCategory;
+
+  bool get _isEdit => widget.book != null;
+
+  @override
+  void initState() {
+    super.initState();
+    _titleController =
+        TextEditingController(text: widget.book?.title ?? '');
+    _whyController =
+        TextEditingController(text: widget.book?.why ?? '');
+    _descriptionController =
+        TextEditingController(text: widget.book?.description ?? '');
+    _selectedCategory = widget.book?.category ?? BookCategory.other;
+  }
+
+  @override
+  void dispose() {
+    _titleController.dispose();
+    _whyController.dispose();
+    _descriptionController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: Row(
+        children: [
+          const Icon(Icons.menu_book_outlined, size: 24),
+          const SizedBox(width: 8),
+          Text(_isEdit ? '書籍を編集' : '書籍を追加'),
+        ],
+      ),
+      content: SizedBox(
+        width: 400,
+        child: Form(
+          key: _formKey,
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                TextFormField(
+                  controller: _titleController,
+                  decoration: const InputDecoration(
+                    labelText: '書籍名 *',
+                    hintText: '書籍のタイトルを入力',
+                  ),
+                  validator: (v) =>
+                      (v == null || v.trim().isEmpty) ? '書籍名は必須です' : null,
+                  autofocus: !_isEdit,
+                ),
+                const SizedBox(height: 16),
+                DropdownButtonFormField<BookCategory>(
+                  initialValue: _selectedCategory,
+                  decoration: const InputDecoration(
+                    labelText: 'カテゴリ',
+                  ),
+                  items: BookCategory.values
+                      .map((c) => DropdownMenuItem(
+                            value: c,
+                            child: Text(c.label),
+                          ))
+                      .toList(),
+                  onChanged: (v) {
+                    if (v != null) setState(() => _selectedCategory = v);
+                  },
+                ),
+                const SizedBox(height: 16),
+                TextFormField(
+                  controller: _whyController,
+                  decoration: const InputDecoration(
+                    labelText: 'なぜ読むのか',
+                    hintText: 'この本を読む理由や目的',
+                  ),
+                  maxLines: 2,
+                ),
+                const SizedBox(height: 16),
+                TextFormField(
+                  controller: _descriptionController,
+                  decoration: const InputDecoration(
+                    labelText: '内容メモ',
+                    hintText: '気になるポイントや期待する学びなど',
+                  ),
+                  maxLines: 3,
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: const Text('キャンセル'),
+        ),
+        FilledButton(
+          onPressed: _submit,
+          child: Text(_isEdit ? '保存' : '追加'),
+        ),
+      ],
+    );
+  }
+
+  void _submit() {
+    if (!_formKey.currentState!.validate()) return;
+    Navigator.pop(
+      context,
+      BookDialogResult(
+        title: _titleController.text.trim(),
+        category: _selectedCategory,
+        why: _whyController.text.trim(),
+        description: _descriptionController.text.trim(),
+      ),
+    );
+  }
+}
