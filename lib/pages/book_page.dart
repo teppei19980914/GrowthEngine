@@ -101,10 +101,11 @@ class _BookPageState extends ConsumerState<BookPage> {
                   ? _buildEmptyState(theme, colors)
                   : LayoutBuilder(
                       builder: (context, constraints) {
+                        // 本の幅50 + 左右padding2 = 52px per book
                         final booksPerShelf =
-                            constraints.maxWidth > 900 ? 6
-                            : constraints.maxWidth > 600 ? 4
-                            : 3;
+                            ((constraints.maxWidth - 8) / 52)
+                                .floor()
+                                .clamp(2, 20);
                         return _Bookshelf(
                           books: books,
                           booksPerShelf: booksPerShelf,
@@ -184,25 +185,30 @@ class _ShelfRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
+    return Container(
+      color: const Color(0xFF2C1810), // 棚の奥の暗い背景
+      child: Column(
       children: [
         // 本の列
         SizedBox(
-          height: 140,
+          height: 150,
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8),
+            padding: const EdgeInsets.symmetric(horizontal: 4),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
-                for (var i = 0; i < booksPerShelf; i++)
-                  Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 4),
-                      child: i < books.length
-                          ? _BookCover(book: books[i])
-                          : const SizedBox.shrink(),
+                for (var i = 0; i < books.length; i++)
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 1),
+                    child: SizedBox(
+                      width: 50, // 本の幅を固定
+                      height: 120 +
+                          (books[i].title.length % 4) * 8.0,
+                      child: _BookCover(book: books[i]),
                     ),
                   ),
+                // 残りのスペースは背景色で埋める
+                const Spacer(),
               ],
             ),
           ),
@@ -213,6 +219,7 @@ class _ShelfRow extends StatelessWidget {
           painter: _ShelfBoardPainter(),
         ),
       ],
+      ),
     );
   }
 }
@@ -270,61 +277,131 @@ class _ShelfBoardPainter extends CustomPainter {
   bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
 
-/// 本棚風の書籍カバーウィジェット.
+/// 背表紙が見える本のウィジェット.
 class _BookCover extends ConsumerWidget {
   const _BookCover({required this.book});
 
   final Book book;
 
+  /// 本ごとに固定の色を決定（タイトルのハッシュから算出）.
+  Color _bookBaseColor() {
+    // 落ち着いた書籍風カラーパレット
+    const palette = [
+      Color(0xFF1B5E20), // ダークグリーン
+      Color(0xFF004D40), // ティール
+      Color(0xFF0D47A1), // ダークブルー
+      Color(0xFF311B92), // ダークパープル
+      Color(0xFF880E4F), // ダークピンク
+      Color(0xFFBF360C), // ダークオレンジ
+      Color(0xFF4E342E), // ダークブラウン
+      Color(0xFF263238), // ダークグレー
+      Color(0xFF1A237E), // インディゴ
+      Color(0xFF33691E), // ライトグリーン
+    ];
+    final index = book.title.hashCode.abs() % palette.length;
+    return palette[index];
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
     final colors = theme.appColors;
+    final baseColor = _bookBaseColor();
+    final darkerColor = Color.lerp(baseColor, Colors.black, 0.3)!;
+    final lighterColor = Color.lerp(baseColor, Colors.white, 0.15)!;
 
-    // ステータスに応じた色
-    final (statusColor, bookColor) = switch (book.status) {
-      BookStatus.unread => (colors.textMuted, const Color(0xFF546E7A)),
-      BookStatus.reading => (colors.accent, const Color(0xFF1565C0)),
-      BookStatus.completed => (colors.success, const Color(0xFF2E7D32)),
+    // ステータスに応じた帯の色
+    final bandColor = switch (book.status) {
+      BookStatus.unread => Colors.transparent,
+      BookStatus.reading => colors.accent,
+      BookStatus.completed => colors.success,
     };
 
     return GestureDetector(
       onTap: () => _showBookActions(context, ref),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: [
-          // 本アイコン
-          Icon(
-            Icons.menu_book,
-            size: 36,
-            color: bookColor,
+      child: Container(
+        decoration: BoxDecoration(
+          // 背表紙のグラデーション（左右に丸みを持たせた陰影）
+          gradient: LinearGradient(
+            begin: Alignment.centerLeft,
+            end: Alignment.centerRight,
+            stops: const [0.0, 0.05, 0.15, 0.85, 0.95, 1.0],
+            colors: [
+              darkerColor,
+              baseColor,
+              lighterColor,
+              lighterColor,
+              baseColor,
+              darkerColor,
+            ],
           ),
-          const SizedBox(height: 4),
-          // ステータスドット
-          Container(
-            width: 8,
-            height: 8,
-            decoration: BoxDecoration(
-              color: statusColor,
-              shape: BoxShape.circle,
+          borderRadius: BorderRadius.circular(2),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withAlpha(60),
+              offset: const Offset(2, 1),
+              blurRadius: 3,
             ),
-          ),
-          const SizedBox(height: 4),
-          // タイトル
-          SizedBox(
-            height: 48,
-            child: Text(
-              book.title,
-              style: theme.textTheme.labelSmall?.copyWith(
-                fontSize: 10,
-                height: 1.2,
+          ],
+        ),
+        child: Stack(
+          children: [
+            // 上部の装飾ライン
+            Positioned(
+              top: 6,
+              left: 4,
+              right: 4,
+              child: Container(
+                height: 1,
+                color: Colors.white.withAlpha(40),
               ),
-              textAlign: TextAlign.center,
-              maxLines: 3,
-              overflow: TextOverflow.ellipsis,
             ),
-          ),
-        ],
+            // 下部の装飾ライン
+            Positioned(
+              bottom: 6,
+              left: 4,
+              right: 4,
+              child: Container(
+                height: 1,
+                color: Colors.white.withAlpha(40),
+              ),
+            ),
+            // ステータス帯（読書中・読了のみ表示）
+            if (bandColor != Colors.transparent)
+              Positioned(
+                top: 10,
+                left: 2,
+                right: 2,
+                child: Container(
+                  height: 3,
+                  decoration: BoxDecoration(
+                    color: bandColor,
+                    borderRadius: BorderRadius.circular(1),
+                  ),
+                ),
+              ),
+            // タイトル（縦書き風）
+            Center(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                    horizontal: 3, vertical: 16),
+                child: Text(
+                  book.title,
+                  style: TextStyle(
+                    fontSize: 10,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.white.withAlpha(220),
+                    height: 1.4,
+                    letterSpacing: 1,
+                  ),
+                  textAlign: TextAlign.center,
+                  maxLines: 6,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

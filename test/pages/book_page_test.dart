@@ -47,7 +47,7 @@ void main() {
     expect(find.text('Dart言語ガイド'), findsOneWidget);
   });
 
-  testWidgets('読書中ステータスバッジが表示される', (tester) async {
+  testWidgets('書籍が本棚スタイルで表示される', (tester) async {
     final prefs = await getPrefs();
     await tester.pumpWidget(
       wrapWithProviders(
@@ -62,7 +62,8 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    expect(find.text('読書中'), findsOneWidget);
-    expect(find.text('未読'), findsOneWidget);
+    // 背表紙にタイトルが表示される
+    expect(find.text('Flutter実践入門'), findsOneWidget);
+    expect(find.text('Dart言語ガイド'), findsOneWidget);
   });
 }

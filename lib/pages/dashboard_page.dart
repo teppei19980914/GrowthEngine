@@ -564,14 +564,43 @@ class _BookshelfContent extends ConsumerWidget {
                 ),
               )
             else
-              SizedBox(
-                height: 100,
-                child: ListView.separated(
-                  scrollDirection: Axis.horizontal,
-                  itemCount: displayBooks.length,
-                  separatorBuilder: (_, _) => const SizedBox(width: 8),
-                  itemBuilder: (_, index) =>
-                      _MiniBookCover(book: displayBooks[index], colors: colors),
+              Container(
+                decoration: const BoxDecoration(
+                  color: Color(0xFF2C1810), // 棚の奥の背景
+                ),
+                child: Column(
+                  children: [
+                    // 本の列
+                    SizedBox(
+                      height: 100,
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 4),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            for (final b in displayBooks)
+                              Padding(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 1),
+                                child: SizedBox(
+                                  width: 36,
+                                  height: 75 +
+                                      (b.title.length % 4) * 6.0,
+                                  child: _MiniBookCover(
+                                      book: b, colors: colors),
+                                ),
+                              ),
+                            const Spacer(),
+                          ],
+                        ),
+                      ),
+                    ),
+                    // 木目調の棚板
+                    CustomPaint(
+                      size: const Size(double.infinity, 10),
+                      painter: _MiniShelfPainter(),
+                    ),
+                  ],
                 ),
               ),
           ],
@@ -583,77 +612,122 @@ class _BookshelfContent extends ConsumerWidget {
   }
 }
 
-/// ダッシュボード用の小さな本カバー.
+/// ダッシュボード用の背表紙スタイル本カバー.
 class _MiniBookCover extends StatelessWidget {
   const _MiniBookCover({required this.book, required this.colors});
 
   final Book book;
   final AppColors colors;
 
+  Color _bookBaseColor() {
+    const palette = [
+      Color(0xFF1B5E20), Color(0xFF004D40), Color(0xFF0D47A1),
+      Color(0xFF311B92), Color(0xFF880E4F), Color(0xFFBF360C),
+      Color(0xFF4E342E), Color(0xFF263238), Color(0xFF1A237E),
+      Color(0xFF33691E),
+    ];
+    return palette[book.title.hashCode.abs() % palette.length];
+  }
+
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final isCompleted = book.status == BookStatus.completed;
-    final spineColor = isCompleted
-        ? colors.success.withAlpha(120)
-        : colors.accent.withAlpha(120);
+    final baseColor = _bookBaseColor();
+    final darkerColor = Color.lerp(baseColor, Colors.black, 0.3)!;
+    final lighterColor = Color.lerp(baseColor, Colors.white, 0.15)!;
 
-    return SizedBox(
-      width: 70,
-      child: Column(
+    final bandColor = switch (book.status) {
+      BookStatus.reading => colors.accent,
+      BookStatus.completed => colors.success,
+      _ => Colors.transparent,
+    };
+
+    return Container(
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.centerLeft,
+          end: Alignment.centerRight,
+          stops: const [0.0, 0.08, 0.2, 0.8, 0.92, 1.0],
+          colors: [
+            darkerColor, baseColor, lighterColor,
+            lighterColor, baseColor, darkerColor,
+          ],
+        ),
+        borderRadius: BorderRadius.circular(2),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withAlpha(50),
+            offset: const Offset(1, 1),
+            blurRadius: 2,
+          ),
+        ],
+      ),
+      child: Stack(
         children: [
-          Expanded(
-            child: Container(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.centerLeft,
-                  end: Alignment.centerRight,
-                  stops: const [0.0, 0.1, 0.1, 1.0],
-                  colors: [
-                    spineColor,
-                    spineColor,
-                    theme.cardColor,
-                    theme.cardColor,
-                  ],
+          // 装飾ライン
+          Positioned(top: 4, left: 3, right: 3,
+            child: Container(height: 0.5,
+                color: Colors.white.withAlpha(35))),
+          Positioned(bottom: 4, left: 3, right: 3,
+            child: Container(height: 0.5,
+                color: Colors.white.withAlpha(35))),
+          if (bandColor != Colors.transparent)
+            Positioned(top: 7, left: 2, right: 2,
+              child: Container(height: 2,
+                decoration: BoxDecoration(
+                  color: bandColor,
+                  borderRadius: BorderRadius.circular(1),
+                ))),
+          // タイトル
+          Center(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(
+                  horizontal: 2, vertical: 10),
+              child: Text(
+                book.title,
+                style: TextStyle(
+                  fontSize: 7,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.white.withAlpha(210),
+                  height: 1.3,
                 ),
-                borderRadius: BorderRadius.circular(3),
-                border: Border.all(color: colors.textMuted.withAlpha(40)),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withAlpha(30),
-                    offset: const Offset(1, 1),
-                    blurRadius: 2,
-                  ),
-                ],
-              ),
-              child: Center(
-                child: Padding(
-                  padding: const EdgeInsets.all(4),
-                  child: Text(
-                    book.title,
-                    style: theme.textTheme.labelSmall?.copyWith(
-                      fontSize: 9,
-                      height: 1.2,
-                    ),
-                    textAlign: TextAlign.center,
-                    maxLines: 3,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ),
+                textAlign: TextAlign.center,
+                maxLines: 5,
+                overflow: TextOverflow.ellipsis,
               ),
             ),
-          ),
-          const SizedBox(height: 2),
-          // ステータスアイコン
-          Icon(
-            isCompleted ? Icons.check_circle : Icons.auto_stories,
-            size: 12,
-            color: isCompleted ? colors.success : colors.accent,
           ),
         ],
       ),
     );
   }
+}
+
+/// ダッシュボード用の小さな木目棚板.
+class _MiniShelfPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    canvas.drawRect(
+      Rect.fromLTWH(0, 0, size.width, size.height - 1),
+      Paint()..color = const Color(0xFF5D4037),
+    );
+    final grainPaint = Paint()
+      ..color = const Color(0xFF4E342E)
+      ..strokeWidth = 0.6;
+    for (var y = 1.5; y < size.height - 1; y += 2.5) {
+      canvas.drawLine(Offset(0, y), Offset(size.width, y + 0.3), grainPaint);
+    }
+    canvas.drawLine(
+      const Offset(0, 0.3), Offset(size.width, 0.3),
+      Paint()..color = const Color(0xFF8D6E63)..strokeWidth = 1,
+    );
+    canvas.drawRect(
+      Rect.fromLTWH(0, size.height - 1, size.width, 1),
+      Paint()..color = const Color(0xFF3E2723),
+    );
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
 
 /// 自己ベストカード.

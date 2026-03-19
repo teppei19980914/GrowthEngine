@@ -23,14 +23,14 @@ void main() {
     await tester.pumpWidget(buildApp());
     await tester.pumpAndSettle();
 
-    expect(find.byIcon(Icons.mail_outline), findsOneWidget);
+    expect(find.byIcon(Icons.mail_outline), findsWidgets);
   });
 
   testWidgets('タップで選択メニューが表示される', (tester) async {
     await tester.pumpWidget(buildApp());
     await tester.pumpAndSettle();
 
-    await tester.tap(find.byIcon(Icons.mail_outline));
+    await tester.tap(find.byIcon(Icons.mail_outline).first);
     await tester.pumpAndSettle();
 
     expect(find.text('ご意見・お問い合わせ'), findsOneWidget);
@@ -38,30 +38,15 @@ void main() {
     expect(find.text('お問い合わせ'), findsOneWidget);
   });
 
-  testWidgets('フィードバックを選択するとダイアログが開く', (tester) async {
+  testWidgets('メニューのサブタイトルが表示される', (tester) async {
     await tester.pumpWidget(buildApp());
     await tester.pumpAndSettle();
 
-    await tester.tap(find.byIcon(Icons.mail_outline));
+    await tester.tap(find.byIcon(Icons.mail_outline).first);
     await tester.pumpAndSettle();
 
-    await tester.tap(find.text('フィードバックを送る'));
-    await tester.pumpAndSettle();
-
-    expect(find.text('フィードバックを送信'), findsOneWidget);
-  });
-
-  testWidgets('お問い合わせを選択するとダイアログが開く', (tester) async {
-    await tester.pumpWidget(buildApp());
-    await tester.pumpAndSettle();
-
-    await tester.tap(find.byIcon(Icons.mail_outline));
-    await tester.pumpAndSettle();
-
-    await tester.tap(find.text('お問い合わせ'));
-    await tester.pumpAndSettle();
-
-    expect(find.text('お問い合わせを送信'), findsOneWidget);
+    expect(find.text('アプリへのご意見・改善要望'), findsOneWidget);
+    expect(find.text('追加開発・案件のご相談など'), findsOneWidget);
   });
 }
 

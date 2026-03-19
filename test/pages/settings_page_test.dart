@@ -24,7 +24,6 @@ void main() {
     expect(find.text('外観'), findsOneWidget);
     expect(find.text('通知'), findsOneWidget);
     expect(find.text('データ管理'), findsOneWidget);
-    expect(find.text('フィードバック'), findsOneWidget);
 
     // スクロールして下部のセクションを確認
     await tester.scrollUntilVisible(
@@ -167,14 +166,14 @@ void main() {
     expect(find.text('バックアップから復元'), findsOneWidget);
   });
 
-  testWidgets('フィードバックセクションが表示される', (tester) async {
+  testWidgets('非体験版ではフィードバックセクションが非表示', (tester) async {
     final prefs = await getPrefs();
     await tester.pumpWidget(
       wrapWithProviders(const SettingsPage(), prefs: prefs, db: setup.db),
     );
     await tester.pumpAndSettle();
 
-    expect(find.text('フィードバック'), findsOneWidget);
-    expect(find.text('フィードバックを送信'), findsOneWidget);
+    // 非体験版（テスト環境）ではフィードバックセクションは非表示
+    expect(find.text('フィードバックを送信'), findsNothing);
   });
 }
