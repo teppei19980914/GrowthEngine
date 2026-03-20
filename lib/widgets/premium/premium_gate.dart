@@ -247,7 +247,7 @@ class _UpgradeCard extends StatelessWidget {
               ),
               const SizedBox(height: 8),
               Text(
-                'サブスクプランで利用できます',
+                'プレミアムプランで利用できます',
                 style: theme.textTheme.bodySmall?.copyWith(
                   color: theme.hintColor,
                 ),

@@ -1,7 +1,57 @@
 /// 夢のデータモデル.
 library;
 
+import 'package:flutter/material.dart';
 import 'package:uuid/uuid.dart';
+
+/// 夢のカテゴリ.
+enum DreamCategory {
+  /// キャリア・仕事.
+  career('career', 'キャリア', Icons.work_outline, Color(0xFF4FC3F7)),
+
+  /// 学び・資格.
+  learning('learning', '学び', Icons.school_outlined, Color(0xFF81C784)),
+
+  /// 健康・運動.
+  health('health', '健康', Icons.favorite_outline, Color(0xFFE57373)),
+
+  /// お金・資産.
+  finance('finance', 'お金', Icons.savings_outlined, Color(0xFFFFD54F)),
+
+  /// 趣味・創作.
+  hobby('hobby', '趣味', Icons.palette_outlined, Color(0xFFBA68C8)),
+
+  /// 人間関係.
+  relationship('relationship', '人間関係', Icons.people_outline, Color(0xFFFF8A65)),
+
+  /// 旅行・体験.
+  travel('travel', '旅行', Icons.flight_outlined, Color(0xFF4DD0E1)),
+
+  /// その他.
+  other('other', 'その他', Icons.auto_awesome, Color(0xFF90A4AE));
+
+  const DreamCategory(this.value, this.label, this.icon, this.color);
+
+  /// DB保存用の値.
+  final String value;
+
+  /// 表示用ラベル.
+  final String label;
+
+  /// アイコン.
+  final IconData icon;
+
+  /// テーマカラー.
+  final Color color;
+
+  /// 文字列からDreamCategoryを取得する.
+  static DreamCategory fromValue(String value) {
+    return DreamCategory.values.firstWhere(
+      (e) => e.value == value,
+      orElse: () => DreamCategory.other,
+    );
+  }
+}
 
 /// 夢モデル.
 class Dream {
@@ -11,11 +61,13 @@ class Dream {
     String? id,
     String? description,
     String? why,
+    String? category,
     DateTime? createdAt,
     DateTime? updatedAt,
   })  : id = id ?? const Uuid().v4(),
         description = description ?? '',
         why = why ?? '',
+        category = category ?? DreamCategory.other.value,
         createdAt = createdAt ?? DateTime.now(),
         updatedAt = updatedAt ?? DateTime.now();
 
@@ -31,6 +83,12 @@ class Dream {
   /// なぜこの夢を叶えたいか（動機・理由）.
   final String why;
 
+  /// カテゴリ.
+  final String category;
+
+  /// カテゴリのenum.
+  DreamCategory get dreamCategory => DreamCategory.fromValue(category);
+
   /// 作成日時.
   final DateTime createdAt;
 
@@ -43,6 +101,7 @@ class Dream {
     String? title,
     String? description,
     String? why,
+    String? category,
     DateTime? createdAt,
     DateTime? updatedAt,
   }) {
@@ -51,6 +110,7 @@ class Dream {
       title: title ?? this.title,
       description: description ?? this.description,
       why: why ?? this.why,
+      category: category ?? this.category,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
     );
@@ -63,6 +123,7 @@ class Dream {
       'title': title,
       'description': description,
       'why': why,
+      'category': category,
       'created_at': createdAt.toIso8601String(),
       'updated_at': updatedAt.toIso8601String(),
     };
@@ -75,6 +136,7 @@ class Dream {
       title: data['title'] as String,
       description: data['description'] as String? ?? '',
       why: data['why'] as String? ?? '',
+      category: data['category'] as String? ?? 'other',
       createdAt: DateTime.parse(data['created_at'] as String),
       updatedAt: DateTime.parse(data['updated_at'] as String),
     );

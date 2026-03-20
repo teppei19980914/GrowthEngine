@@ -41,6 +41,7 @@ class DreamService {
     required String title,
     String description = '',
     String why = '',
+    String category = 'other',
   }) async {
     if (title.trim().isEmpty) {
       throw ArgumentError('タイトルは必須です');
@@ -49,6 +50,7 @@ class DreamService {
       title: title.trim(),
       description: description.trim(),
       why: why.trim(),
+      category: category,
     );
     await _dreamDao.insertDream(_dreamToCompanion(dream));
     return dream;
@@ -60,6 +62,7 @@ class DreamService {
     required String title,
     String description = '',
     String why = '',
+    String category = 'other',
   }) async {
     if (title.trim().isEmpty) {
       throw ArgumentError('タイトルは必須です');
@@ -71,6 +74,7 @@ class DreamService {
       title: title.trim(),
       description: description.trim(),
       why: why.trim(),
+      category: category,
       updatedAt: DateTime.now(),
     );
     await _dreamDao.updateDream(_dreamToCompanion(updated));
@@ -94,6 +98,7 @@ class DreamService {
       title: row.title,
       description: row.description,
       why: row.why,
+      category: row.category,
       createdAt: row.createdAt,
       updatedAt: row.updatedAt,
     );
@@ -105,6 +110,7 @@ class DreamService {
       title: Value(dream.title),
       description: Value(dream.description),
       why: Value(dream.why),
+      category: Value(dream.category),
       createdAt: Value(dream.createdAt),
       updatedAt: Value(dream.updatedAt),
     );

@@ -16,10 +16,14 @@ class DreamDiscoveryResult {
     required this.title,
     required this.description,
     required this.why,
+    this.categoryKey,
   });
 
   /// 夢のタイトル.
   final String title;
+
+  /// ガイドで選択されたカテゴリキー（dream_templates.dartのDreamCategory.name）.
+  final String? categoryKey;
 
   /// 説明.
   final String description;
@@ -110,6 +114,7 @@ class _DreamDiscoveryDialogState extends State<_DreamDiscoveryDialog> {
         title: _titleController.text.trim(),
         description: _descriptionController.text.trim(),
         why: _whyController.text.trim(),
+        categoryKey: _selectedCategory?.name,
       ),
     );
   }

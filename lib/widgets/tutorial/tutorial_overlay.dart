@@ -286,12 +286,34 @@ class _TutorialSpotlightState extends ConsumerState<TutorialSpotlight>
 
     final screenSize = MediaQuery.of(context).size;
 
+    // AppBar説明ステップ → 専用UI
+    if (state.step == TutorialStep.explainAppBar) {
+      if (_pulseController.isAnimating) _pulseController.stop();
+      return Stack(
+        children: [
+          _AppBarExplainBubble(
+            screenSize: screenSize,
+            onNext: () async {
+              final tutorialService = ref.read(tutorialServiceProvider);
+              await tutorialService.advanceStep();
+              ref.invalidate(tutorialStateProvider);
+            },
+            onClose: _stopTutorial,
+          ),
+        ],
+      );
+    }
+
     // ターゲットが未マウント → スポットライトなしで吹き出しのみ表示
     if (targetRect == null) {
       if (_pulseController.isAnimating) _pulseController.stop();
-      // ガントチャート制限時（addTask でターゲットなし）は完了ステップに進める
+      // ガントチャート制限時（addTask でターゲットなし）は次ステップに進める
       final onClose = state.step == TutorialStep.addTask
-          ? _finishTutorial
+          ? () async {
+              final tutorialService = ref.read(tutorialServiceProvider);
+              await tutorialService.advanceStep();
+              ref.invalidate(tutorialStateProvider);
+            }
           : _stopTutorial;
       return Stack(
         children: [
@@ -410,6 +432,8 @@ class _TutorialSpotlightState extends ConsumerState<TutorialSpotlight>
           return TutorialTargetKeys.addTaskButton;
         }
         return TutorialTargetKeys.ganttDropdown;
+      case TutorialStep.explainAppBar:
+        return null; // フローティング表示（ターゲットなし）
       case TutorialStep.completed:
         return null;
     }
@@ -429,7 +453,7 @@ class _TutorialSpotlightState extends ConsumerState<TutorialSpotlight>
   String _getHint(TutorialStep step, GlobalKey? targetKey) {
     if (step == TutorialStep.addTask &&
         _findTargetRectFromKey(targetKey) == null) {
-      return 'サブスクプランにアップグレードすると'
+      return 'プレミアムプランにアップグレードすると'
           'タスク管理・進捗トラッキングなど全機能をご利用いただけます';
     }
     return step.hint;
@@ -448,10 +472,6 @@ class _TutorialSpotlightState extends ConsumerState<TutorialSpotlight>
     ref.read(tutorialStateProvider.notifier).reset();
   }
 
-  /// チュートリアルを完了ステップに進め、保持/削除ダイアログを表示する.
-  Future<void> _finishTutorial() async {
-    await ref.read(tutorialStateProvider.notifier).advanceStep();
-  }
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -927,4 +947,169 @@ class _SpotlightPainter extends CustomPainter {
   bool shouldRepaint(_SpotlightPainter oldDelegate) =>
       oldDelegate.targetRect != targetRect ||
       oldDelegate.pulseValue != pulseValue;
+}
+
+/// AppBar アイコン説明バブル.
+class _AppBarExplainBubble extends StatelessWidget {
+  const _AppBarExplainBubble({
+    required this.screenSize,
+    required this.onNext,
+    required this.onClose,
+  });
+
+  final Size screenSize;
+  final VoidCallback onNext;
+  final VoidCallback onClose;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
+    return Positioned(
+      top: 80,
+      left: 16,
+      right: 16,
+      child: Center(
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 400),
+          child: Material(
+            color: theme.colorScheme.primary,
+            borderRadius: BorderRadius.circular(14),
+            elevation: 8,
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // タイトル
+                  Row(
+                    children: [
+                      Icon(Icons.info_outline,
+                          size: 18, color: theme.colorScheme.onPrimary),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          '画面右上のアイコンについて',
+                          style: theme.textTheme.titleSmall?.copyWith(
+                            color: theme.colorScheme.onPrimary,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                      // 閉じるボタン
+                      GestureDetector(
+                        onTap: onClose,
+                        child: Icon(Icons.close,
+                            size: 18,
+                            color: theme.colorScheme.onPrimary.withAlpha(180)),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+
+                  // アイコン説明リスト
+                  _iconRow(
+                    context,
+                    icon: Icons.eco,
+                    label: '使い方',
+                    description: 'アプリの全体像・操作手順を確認できます。'
+                        'チュートリアルもここから再開できます。',
+                  ),
+                  const SizedBox(height: 8),
+                  _iconRow(
+                    context,
+                    icon: Icons.help_outline,
+                    label: 'ヘルプ',
+                    description: 'よくある質問（FAQ）を検索できます。'
+                        '困った時はまずここを確認してください。',
+                  ),
+                  const SizedBox(height: 8),
+                  _iconRow(
+                    context,
+                    icon: Icons.mail_outline,
+                    label: '問い合わせ',
+                    description: 'フィードバックの送信や'
+                        '開発に関するお問い合わせができます。',
+                  ),
+                  const SizedBox(height: 8),
+                  _iconRow(
+                    context,
+                    icon: Icons.emoji_events_outlined,
+                    label: '実績',
+                    description: '活動の積み重ねで解除される実績を確認できます。'
+                        '新しい実績はバッジでお知らせします。',
+                  ),
+
+                  const SizedBox(height: 14),
+
+                  // 次へボタン
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: theme.colorScheme.onPrimary,
+                        foregroundColor: theme.colorScheme.primary,
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 20, vertical: 8),
+                      ),
+                      onPressed: onNext,
+                      child: const Text('次へ'),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _iconRow(
+    BuildContext context, {
+    required IconData icon,
+    required String label,
+    required String description,
+  }) {
+    final theme = Theme.of(context);
+    final onPrimary = theme.colorScheme.onPrimary;
+
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Container(
+          width: 32,
+          height: 32,
+          decoration: BoxDecoration(
+            color: onPrimary.withAlpha(25),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Icon(icon, size: 18, color: onPrimary),
+        ),
+        const SizedBox(width: 10),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                label,
+                style: theme.textTheme.labelMedium?.copyWith(
+                  color: onPrimary,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              Text(
+                description,
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: onPrimary.withAlpha(200),
+                  fontSize: 11,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
 }

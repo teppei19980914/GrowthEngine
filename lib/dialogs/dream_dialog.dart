@@ -13,6 +13,7 @@ class DreamDialogResult {
     required this.title,
     required this.description,
     required this.why,
+    required this.category,
     this.deleteRequested = false,
   });
 
@@ -24,6 +25,9 @@ class DreamDialogResult {
 
   /// なぜこの夢を叶えたいか.
   final String why;
+
+  /// カテゴリ.
+  final String category;
 
   /// 削除リクエスト.
   final bool deleteRequested;
@@ -72,6 +76,7 @@ class _DreamDialogContentState extends State<_DreamDialogContent> {
   late final TextEditingController _titleController;
   late final TextEditingController _descriptionController;
   late final TextEditingController _whyController;
+  late DreamCategory _selectedCategory;
 
   bool get _isEdit => widget.dream != null;
 
@@ -84,6 +89,7 @@ class _DreamDialogContentState extends State<_DreamDialogContent> {
         text: widget.dream?.description ?? widget.initialDescription ?? '');
     _whyController = TextEditingController(
         text: widget.dream?.why ?? widget.initialWhy ?? '');
+    _selectedCategory = widget.dream?.dreamCategory ?? DreamCategory.other;
   }
 
   @override
@@ -102,6 +108,7 @@ class _DreamDialogContentState extends State<_DreamDialogContent> {
         title: _titleController.text.trim(),
         description: _descriptionController.text.trim(),
         why: _whyController.text.trim(),
+        category: _selectedCategory.value,
       ),
     );
   }
@@ -121,10 +128,56 @@ class _DreamDialogContentState extends State<_DreamDialogContent> {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  'タイトル',
-                  style: theme.textTheme.titleSmall,
+                // カテゴリ選択
+                Text('カテゴリ', style: theme.textTheme.titleSmall),
+                const SizedBox(height: 8),
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  children: DreamCategory.values.map((cat) {
+                    final isSelected = cat == _selectedCategory;
+                    return GestureDetector(
+                      onTap: () => setState(() => _selectedCategory = cat),
+                      child: AnimatedContainer(
+                        duration: const Duration(milliseconds: 200),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 12, vertical: 8),
+                        decoration: BoxDecoration(
+                          color: isSelected
+                              ? cat.color.withAlpha(40)
+                              : Colors.transparent,
+                          border: Border.all(
+                            color: isSelected
+                                ? cat.color
+                                : theme.dividerColor,
+                            width: isSelected ? 2 : 1,
+                          ),
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(cat.icon, size: 16, color: cat.color),
+                            const SizedBox(width: 4),
+                            Text(
+                              cat.label,
+                              style: theme.textTheme.bodySmall?.copyWith(
+                                color: isSelected
+                                    ? cat.color
+                                    : theme.textTheme.bodySmall?.color,
+                                fontWeight: isSelected
+                                    ? FontWeight.bold
+                                    : FontWeight.normal,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  }).toList(),
                 ),
+                const SizedBox(height: 16),
+                Text('タイトル', style: theme.textTheme.titleSmall),
                 const SizedBox(height: 4),
                 TextFormField(
                   controller: _titleController,
@@ -135,10 +188,7 @@ class _DreamDialogContentState extends State<_DreamDialogContent> {
                       v == null || v.trim().isEmpty ? '必須項目です' : null,
                 ),
                 const SizedBox(height: 16),
-                Text(
-                  '説明',
-                  style: theme.textTheme.titleSmall,
-                ),
+                Text('説明', style: theme.textTheme.titleSmall),
                 const SizedBox(height: 4),
                 TextFormField(
                   controller: _descriptionController,
@@ -220,6 +270,7 @@ class _DreamDialogContentState extends State<_DreamDialogContent> {
           title: '',
           description: '',
           why: '',
+          category: 'other',
           deleteRequested: true,
         ),
       );

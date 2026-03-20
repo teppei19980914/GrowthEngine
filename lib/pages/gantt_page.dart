@@ -9,6 +9,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../dialogs/book_schedule_dialog.dart';
 import '../dialogs/reading_log_dialog.dart';
 import '../dialogs/task_dialog.dart';
+import '../dialogs/task_discovery_dialog.dart';
 import '../dialogs/trial_limit_dialog.dart';
 import '../models/goal.dart';
 import '../models/task.dart';
@@ -88,7 +89,13 @@ class GanttPage extends ConsumerWidget {
               // タスク追加ボタン（目標別・全タスク表示時）
               if (viewState.mode == GanttViewMode.allTasks ||
                   (viewState.mode == GanttViewMode.byGoal &&
-                      viewState.selectedGoalId != null))
+                      viewState.selectedGoalId != null)) ...[
+                OutlinedButton.icon(
+                  onPressed: () => _openTaskDiscovery(context, ref),
+                  icon: const Icon(Icons.lightbulb_outline, size: 18),
+                  label: const Text('発見ガイド'),
+                ),
+                const SizedBox(width: 8),
                 ElevatedButton.icon(
                   key: TutorialTargetKeys.addTaskButton,
                   onPressed: () => _addTask(
@@ -99,6 +106,7 @@ class GanttPage extends ConsumerWidget {
                   icon: const Icon(Icons.add, size: 18),
                   label: const Text('タスクを追加'),
                 ),
+              ],
               // 読書スケジュール追加ボタン
               if (viewState.mode == GanttViewMode.allBooks)
                 ElevatedButton.icon(
@@ -213,6 +221,41 @@ class GanttPage extends ConsumerWidget {
   Color _parseColor(String hex) {
     final code = hex.replaceFirst('#', '');
     return Color(int.parse('FF$code', radix: 16));
+  }
+
+  Future<void> _openTaskDiscovery(
+    BuildContext context,
+    WidgetRef ref,
+  ) async {
+    final goals = await ref.read(goalServiceProvider).getAllGoals();
+    final dreamService = ref.read(dreamServiceProvider);
+
+    // GoalID → DreamCategory のマップを構築
+    final categoryMap = <String, String>{};
+    for (final goal in goals) {
+      if (goal.dreamId.isNotEmpty) {
+        final dream = await dreamService.getDream(goal.dreamId);
+        if (dream != null) {
+          categoryMap[goal.id] = dream.category;
+        }
+      }
+    }
+
+    if (!context.mounted) return;
+    final result = await showTaskDiscoveryDialog(
+      context,
+      goals: goals,
+      goalDreamCategoryMap: categoryMap,
+    );
+    if (result == null) return;
+
+    await ref.read(taskServiceProvider).createTask(
+          goalId: result.goalId,
+          title: result.title,
+          startDate: result.startDate,
+          endDate: result.endDate,
+        );
+    ref.invalidate(ganttTasksProvider);
   }
 
   Future<void> _addTask(

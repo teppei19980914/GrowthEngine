@@ -8,19 +8,27 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 /// アプリ使い方ガイドダイアログを表示する.
+/// アプリ使い方ガイドダイアログを表示する.
+///
+/// [onStartTutorial] が指定された場合、チュートリアル開始ボタンを表示する.
 Future<void> showAppGuideDialog(
   BuildContext context, {
   bool isPremium = false,
+  VoidCallback? onStartTutorial,
 }) async {
   await showDialog<void>(
     context: context,
-    builder: (context) => _AppGuideDialog(isPremium: isPremium),
+    builder: (context) => _AppGuideDialog(
+      isPremium: isPremium,
+      onStartTutorial: onStartTutorial,
+    ),
   );
 }
 
 class _AppGuideDialog extends StatefulWidget {
-  const _AppGuideDialog({required this.isPremium});
+  const _AppGuideDialog({required this.isPremium, this.onStartTutorial});
   final bool isPremium;
+  final VoidCallback? onStartTutorial;
 
   @override
   State<_AppGuideDialog> createState() => _AppGuideDialogState();
@@ -33,7 +41,7 @@ class _AppGuideDialogState extends State<_AppGuideDialog>
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 3, vsync: this);
+    _tabController = TabController(length: 2, vsync: this);
   }
 
   @override
@@ -49,9 +57,9 @@ class _AppGuideDialogState extends State<_AppGuideDialog>
     return AlertDialog(
       title: Row(
         children: [
-          Icon(Icons.help_outline, size: 24, color: theme.colorScheme.primary),
+          Icon(Icons.menu_book_outlined, size: 24, color: theme.colorScheme.primary),
           const SizedBox(width: 8),
-          const Expanded(child: Text('ヘルプ')),
+          const Expanded(child: Text('使い方')),
           IconButton(
             icon: const Icon(Icons.close, size: 20),
             onPressed: () => Navigator.of(context).pop(),
@@ -73,7 +81,6 @@ class _AppGuideDialogState extends State<_AppGuideDialog>
               tabs: const [
                 Tab(text: '全体像'),
                 Tab(text: '使い方'),
-                Tab(text: 'FAQ'),
               ],
             ),
             Expanded(
@@ -82,7 +89,6 @@ class _AppGuideDialogState extends State<_AppGuideDialog>
                 children: [
                   _OverviewTab(isPremium: widget.isPremium),
                   _GuideTab(isPremium: widget.isPremium),
-                  const _FaqTab(),
                 ],
               ),
             ),
@@ -90,6 +96,15 @@ class _AppGuideDialogState extends State<_AppGuideDialog>
         ),
       ),
       actions: [
+        if (widget.onStartTutorial != null)
+          TextButton.icon(
+            onPressed: () {
+              Navigator.of(context).pop();
+              widget.onStartTutorial!();
+            },
+            icon: const Icon(Icons.school_outlined, size: 18),
+            label: const Text('チュートリアルを開始'),
+          ),
         FilledButton(
           onPressed: () => Navigator.of(context).pop(),
           child: const Text('閉じる'),
@@ -727,204 +742,3 @@ class _GuideStepItem extends StatelessWidget {
   }
 }
 
-// ── FAQ タブ ──────────────────────────────────────────────────
-
-class _FaqTab extends StatefulWidget {
-  const _FaqTab();
-
-  @override
-  State<_FaqTab> createState() => _FaqTabState();
-}
-
-class _FaqTabState extends State<_FaqTab> {
-  String _searchQuery = '';
-
-  static const _faqs = <_FaqItem>[
-    _FaqItem(
-      question: 'データはどこに保存されますか？',
-      answer: 'すべてのデータはお使いのブラウザ内（ローカルストレージ）に保存されます。'
-          'サーバーにデータが送信されることはありません。'
-          'ただし、ブラウザのデータを消去するとアプリのデータも削除されます。',
-      keywords: ['データ', '保存', 'ローカル', 'ブラウザ', '消去', '削除'],
-    ),
-    _FaqItem(
-      question: 'スマートフォンでも使えますか？',
-      answer: 'はい、スマートフォンのブラウザからアクセスできます。'
-          'ホーム画面に追加すると、アプリのように使えます。',
-      keywords: ['スマートフォン', 'スマホ', 'モバイル', '携帯', 'ホーム画面'],
-    ),
-    _FaqItem(
-      question: '夢・目標・タスクの違いは何ですか？',
-      answer: '「夢」は最終的に達成したい大きな目標です。\n'
-          '「目標」は夢を実現するための具体的なステップです。\n'
-          '「タスク」は目標を達成するための日々のアクションです。\n\n'
-          '例: 夢「ITエンジニアになる」→ 目標「基本情報技術者を取得する」'
-          '→ タスク「午前問題を毎日10問解く」',
-      keywords: ['夢', '目標', 'タスク', '違い', '使い分け', '階層'],
-    ),
-    _FaqItem(
-      question: '体験版の制限を解除するには？',
-      answer: 'フィードバックを送信すると段階的に制限が解除されます。'
-          'すべての機能を無制限で使うには、サブスクリプションプランをご検討ください。',
-      keywords: ['制限', '解除', 'フィードバック', 'サブスク', '有料', '無料', '体験版'],
-    ),
-    _FaqItem(
-      question: 'データのバックアップはできますか？',
-      answer: '設定ページの「データ管理」からデータのエクスポート（書き出し）が可能です。'
-          'JSON形式でダウンロードし、別のブラウザにインポートすることもできます。',
-      keywords: ['バックアップ', 'エクスポート', 'インポート', '書き出し', '移行', 'データ管理'],
-    ),
-    _FaqItem(
-      question: '星座はどうすれば完成しますか？',
-      answer: '夢に紐づくタスクの活動ログを記録すると、星座の星が一つずつ輝きます。'
-          '必要な活動時間を積み重ねることで星座が完成します。',
-      keywords: ['星座', '完成', '星', '輝く', '活動ログ'],
-    ),
-    _FaqItem(
-      question: 'ガントチャートとは何ですか？',
-      answer: 'タスクのスケジュールを横棒グラフで表示する機能です。'
-          '各タスクの開始日・終了日・進捗を視覚的に確認でき、'
-          'プロジェクト全体のスケジュール管理に役立ちます。',
-      keywords: ['ガントチャート', 'ガント', 'スケジュール', 'チャート', 'タイムライン'],
-    ),
-    _FaqItem(
-      question: '活動ログはどうやって記録しますか？',
-      answer: 'ガントチャートのタスクをタップすると活動ログの記録画面が開きます。'
-          '手動で時間を入力するか、タイマー機能を使って記録できます。'
-          'ダッシュボードの「活動を記録」ボタンからも記録できます。',
-      keywords: ['活動ログ', 'ログ', '記録', 'タイマー', '時間', '入力'],
-    ),
-    _FaqItem(
-      question: '別のブラウザや端末でデータを使えますか？',
-      answer: 'データはブラウザごとに独立して保存されます。'
-          '別のブラウザで使う場合は、設定ページからデータをエクスポートし、'
-          '新しいブラウザでインポートしてください。',
-      keywords: ['ブラウザ', '端末', '移行', 'エクスポート', 'インポート', '同期', '別'],
-    ),
-    _FaqItem(
-      question: '書籍の読了レビューはどこから入力しますか？',
-      answer: '書籍ページで、読了にしたい書籍のチェックアイコンをタップすると、'
-          '要約・感想の入力画面が表示されます。'
-          '記録した内容は書籍カードに表示されます。',
-      keywords: ['書籍', '読了', 'レビュー', '要約', '感想', '読書'],
-    ),
-  ];
-
-  List<_FaqItem> get _filteredFaqs {
-    if (_searchQuery.isEmpty) return _faqs;
-    final query = _searchQuery.toLowerCase();
-    return _faqs.where((faq) {
-      return faq.question.toLowerCase().contains(query) ||
-          faq.answer.toLowerCase().contains(query) ||
-          faq.keywords.any((k) => k.toLowerCase().contains(query));
-    }).toList();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final filtered = _filteredFaqs;
-
-    return Column(
-      children: [
-        // 検索フィールド
-        Padding(
-          padding: const EdgeInsets.fromLTRB(0, 12, 0, 4),
-          child: TextField(
-            onChanged: (value) => setState(() => _searchQuery = value),
-            decoration: InputDecoration(
-              hintText: 'キーワードで検索...',
-              prefixIcon: const Icon(Icons.search, size: 20),
-              suffixIcon: _searchQuery.isNotEmpty
-                  ? IconButton(
-                      icon: const Icon(Icons.clear, size: 18),
-                      onPressed: () => setState(() => _searchQuery = ''),
-                    )
-                  : null,
-              isDense: true,
-              contentPadding: const EdgeInsets.symmetric(
-                horizontal: 12,
-                vertical: 10,
-              ),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8),
-              ),
-            ),
-          ),
-        ),
-
-        // FAQ リスト
-        Expanded(
-          child: filtered.isEmpty
-              ? Center(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(Icons.search_off, size: 40, color: theme.hintColor),
-                      const SizedBox(height: 8),
-                      Text(
-                        '該当するFAQが見つかりません',
-                        style: theme.textTheme.bodySmall?.copyWith(
-                          color: theme.hintColor,
-                        ),
-                      ),
-                    ],
-                  ),
-                )
-              : ListView.builder(
-                  padding: const EdgeInsets.symmetric(vertical: 4),
-                  itemCount: filtered.length,
-                  itemBuilder: (context, index) {
-                    return _FaqExpansionTile(
-                      faq: filtered[index],
-                      highlightQuery: _searchQuery,
-                    );
-                  },
-                ),
-        ),
-      ],
-    );
-  }
-}
-
-class _FaqItem {
-  const _FaqItem({
-    required this.question,
-    required this.answer,
-    required this.keywords,
-  });
-  final String question;
-  final String answer;
-  final List<String> keywords;
-}
-
-class _FaqExpansionTile extends StatelessWidget {
-  const _FaqExpansionTile({
-    required this.faq,
-    this.highlightQuery = '',
-  });
-  final _FaqItem faq;
-  final String highlightQuery;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return ExpansionTile(
-      tilePadding: const EdgeInsets.symmetric(horizontal: 4),
-      childrenPadding: const EdgeInsets.fromLTRB(4, 0, 4, 12),
-      leading: Icon(Icons.help, size: 20, color: theme.colorScheme.primary),
-      title: Text(
-        faq.question,
-        style: theme.textTheme.bodyMedium?.copyWith(
-          fontWeight: FontWeight.w600,
-        ),
-      ),
-      children: [
-        Align(
-          alignment: Alignment.centerLeft,
-          child: Text(faq.answer, style: theme.textTheme.bodySmall),
-        ),
-      ],
-    );
-  }
-}

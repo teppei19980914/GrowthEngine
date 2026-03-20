@@ -24,12 +24,14 @@ class DreamListNotifier extends AsyncNotifier<List<Dream>> {
     required String title,
     String description = '',
     String why = '',
+    String category = 'other',
   }) async {
     final service = ref.read(dreamServiceProvider);
     final dream = await service.createDream(
       title: title,
       description: description,
       why: why,
+      category: category,
     );
     ref.invalidateSelf();
     return dream.id;
@@ -41,6 +43,7 @@ class DreamListNotifier extends AsyncNotifier<List<Dream>> {
     required String title,
     String description = '',
     String why = '',
+    String category = 'other',
   }) async {
     final service = ref.read(dreamServiceProvider);
     await service.updateDream(
@@ -48,6 +51,7 @@ class DreamListNotifier extends AsyncNotifier<List<Dream>> {
       title: title,
       description: description,
       why: why,
+      category: category,
     );
     ref.invalidateSelf();
   }

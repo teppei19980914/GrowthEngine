@@ -79,7 +79,7 @@ class _WebTrialBannerState extends State<WebTrialBanner> {
                 Text(
                   inviteStatus.isActive
                       ? '招待プラン利用中です'
-                      : 'Web体験版をご利用中です',
+                      : 'スタータープランをご利用中です',
                   style: theme.textTheme.titleSmall?.copyWith(
                     fontWeight: FontWeight.bold,
                   ),
@@ -91,12 +91,12 @@ class _WebTrialBannerState extends State<WebTrialBanner> {
                           '残り${inviteStatus.remainingDays}日'
                       : isUnlimited
                           ? '基本機能の制限は完全に解除されています。'
-                              'ガントチャート等のプレミアム機能はサブスクプランをご利用ください。'
+                              'ガントチャート等のプレミアム機能はプレミアムプランをご利用ください。'
                           : '夢${maxDreams(level)}個・'
                               '目標${maxGoalsPerDream(level)}個/夢・'
                               '書籍${maxBooks(level)}冊まで'
                               '（レベル$level / $feedbackMaxLevel）。'
-                              'ガントチャート等のプレミアム機能はサブスクプランをご利用ください。',
+                              'ガントチャート等のプレミアム機能はプレミアムプランをご利用ください。',
                   style: theme.textTheme.bodySmall,
                 ),
               ],
@@ -174,7 +174,7 @@ Future<void> _showTrialDialog(
         children: [
           Icon(Icons.language, size: 24),
           SizedBox(width: 8),
-          Text('Web体験版について'),
+          Text('スタータープランについて'),
         ],
       ),
       content: SingleChildScrollView(
@@ -183,7 +183,7 @@ Future<void> _showTrialDialog(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Text(
-            'このアプリはWeb体験版です。デスクトップ版のインストール前に'
+            'このアプリはスタータープランです。デスクトップ版のインストール前に'
             '機能をお試しいただけます。',
           ),
           const SizedBox(height: 16),
@@ -212,14 +212,14 @@ Future<void> _showTrialDialog(
             icon: Icons.lock_outline,
             text: isUnlimited
                 ? '制限は完全に解除されています。'
-                : '体験版の登録上限（レベル$unlockLevel / $feedbackMaxLevel）: '
+                : 'スタータープランの登録上限（レベル$unlockLevel / $feedbackMaxLevel）: '
                     '夢${maxDreams(unlockLevel)}個、'
                     '目標${maxGoalsPerDream(unlockLevel)}個/夢、'
                     '書籍${maxBooks(unlockLevel)}冊',
           ),
           const SizedBox(height: 16),
           const Text(
-            'サブスクプランにアップグレードすると、ガントチャート・'
+            'プレミアムプランにアップグレードすると、ガントチャート・'
             '高度な統計等のプレミアム機能も含め全機能を制限なくご利用いただけます。',
             style: TextStyle(fontWeight: FontWeight.w500),
           ),

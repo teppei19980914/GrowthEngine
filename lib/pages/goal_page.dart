@@ -8,6 +8,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart' show DateFormat;
 
 import '../dialogs/goal_dialog.dart';
+import '../dialogs/goal_discovery_dialog.dart';
 import '../dialogs/trial_limit_dialog.dart';
 import '../models/dream.dart';
 import '../models/goal.dart';
@@ -48,7 +49,13 @@ class GoalPage extends ConsumerWidget {
                   ),
                 ),
               ),
-              const SizedBox(width: 16),
+              const SizedBox(width: 8),
+              OutlinedButton.icon(
+                onPressed: () => _openGoalGuide(context, ref),
+                icon: const Icon(Icons.explore, size: 16),
+                label: const Text('発見ガイド'),
+              ),
+              const SizedBox(width: 8),
               ElevatedButton.icon(
                 key: TutorialTargetKeys.addGoalButton,
                 onPressed: () => _addGoal(context, ref),
@@ -68,6 +75,8 @@ class GoalPage extends ConsumerWidget {
                     return _buildEmptyState(theme, colors);
                   }
                   final dreamMap = {for (final d in dreams) d.id: d};
+                  final progressAsync = ref.watch(goalProgressProvider);
+                  final progressMap = progressAsync.valueOrNull ?? {};
                   return ListView.separated(
                     itemCount: goals.length,
                     separatorBuilder: (_, _) => const SizedBox(height: 8),
@@ -76,9 +85,12 @@ class GoalPage extends ConsumerWidget {
                       final dreamTitle = goal.dreamId.isEmpty
                           ? null
                           : dreamMap[goal.dreamId]?.title ?? '(未設定)';
+                      final progress = progressMap[goal.id];
                       return _GoalCard(
                         goal: goal,
                         dreamTitle: dreamTitle,
+                        totalTasks: progress?.total ?? 0,
+                        completedTasks: progress?.completed ?? 0,
                         onTap: () => _editGoal(context, ref, goal),
                       );
                     },
@@ -129,6 +141,21 @@ class GoalPage extends ConsumerWidget {
     return ref.read(dreamListProvider).valueOrNull ?? [];
   }
 
+  Future<void> _openGoalGuide(BuildContext context, WidgetRef ref) async {
+    final dreams = _getDreams(ref);
+    final result = await showGoalDiscoveryDialog(context, dreams: dreams);
+    if (result == null) return;
+
+    await ref.read(goalListProvider.notifier).createGoal(
+          dreamId: result.dreamId,
+          what: result.what,
+          how: result.how,
+          whenType: WhenType.period,
+          whenTarget: result.whenTarget,
+        );
+    ref.invalidate(goalProgressProvider);
+  }
+
   Future<void> _addGoal(BuildContext context, WidgetRef ref) async {
     final dreams = _getDreams(ref);
 
@@ -156,6 +183,34 @@ class GoalPage extends ConsumerWidget {
     }
 
     if (!context.mounted) return;
+
+    // チュートリアル中: ガイドを使うか自分で入力するかを選択
+    if (isTutorial) {
+      final useGuide = await _showTutorialGoalChoice(context);
+      if (useGuide == null || !context.mounted) return;
+
+      if (useGuide) {
+        // ガイド経由
+        final guideResult =
+            await showGoalDiscoveryDialog(context, dreams: dreams);
+        if (guideResult == null) return;
+
+        final goalId = await ref.read(goalListProvider.notifier).createGoal(
+              dreamId: guideResult.dreamId,
+              what: guideResult.what,
+              how: guideResult.how,
+              whenType: WhenType.period,
+              whenTarget: guideResult.whenTarget,
+            );
+
+        final tutorialService = ref.read(tutorialServiceProvider);
+        await tutorialService.setTutorialGoalId(goalId);
+        await ref.read(tutorialStateProvider.notifier).advanceStep();
+        ref.invalidate(goalProgressProvider);
+        return;
+      }
+    }
+
     final result = await showGoalDialog(context, dreams: dreams);
     if (result == null) return;
 
@@ -173,6 +228,42 @@ class GoalPage extends ConsumerWidget {
       await tutorialService.setTutorialGoalId(goalId);
       await ref.read(tutorialStateProvider.notifier).advanceStep();
     }
+  }
+
+  /// チュートリアル中の目標追加で、ガイドを使うか自分で入力するかを選択.
+  Future<bool?> _showTutorialGoalChoice(BuildContext context) {
+    return showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Row(
+          children: [
+            Icon(Icons.lightbulb_outline, size: 24),
+            SizedBox(width: 8),
+            Expanded(child: Text('どんな目標を立てますか？')),
+          ],
+        ),
+        content: const Text(
+          '夢を実現するための具体的な目標を設定します。\n'
+          'まだ決まっていない方は、ガイドが一緒に考えるお手伝いをします。',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('キャンセル'),
+          ),
+          OutlinedButton.icon(
+            icon: const Icon(Icons.explore, size: 18),
+            label: const Text('ガイドで考える'),
+            onPressed: () => Navigator.pop(context, true),
+          ),
+          FilledButton.icon(
+            icon: const Icon(Icons.edit, size: 18),
+            label: const Text('自分で入力する'),
+            onPressed: () => Navigator.pop(context, false),
+          ),
+        ],
+      ),
+    );
   }
 
   Future<void> _editGoal(
@@ -205,11 +296,15 @@ class _GoalCard extends StatelessWidget {
   const _GoalCard({
     required this.goal,
     required this.dreamTitle,
+    required this.totalTasks,
+    required this.completedTasks,
     required this.onTap,
   });
 
   final Goal goal;
   final String? dreamTitle;
+  final int totalTasks;
+  final int completedTasks;
   final VoidCallback onTap;
 
   Color _parseColor(String hex) {
@@ -223,6 +318,12 @@ class _GoalCard extends StatelessWidget {
     final colors = theme.appColors;
     final goalColor = _parseColor(goal.color);
 
+    final progressPercent =
+        totalTasks > 0 ? completedTasks / totalTasks : 0.0;
+    final progressText = totalTasks > 0
+        ? '$completedTasks / $totalTasks'
+        : 'タスク未設定';
+
     return GestureDetector(
       onTap: onTap,
       child: Card(
@@ -233,10 +334,45 @@ class _GoalCard extends StatelessWidget {
             // カラーバー
             Container(width: 6, color: goalColor),
 
+            // 達成率リング
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+              child: SizedBox(
+                width: 52,
+                height: 52,
+                child: Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    SizedBox(
+                      width: 52,
+                      height: 52,
+                      child: CircularProgressIndicator(
+                        value: progressPercent,
+                        strokeWidth: 4,
+                        backgroundColor: goalColor.withAlpha(30),
+                        valueColor:
+                            AlwaysStoppedAnimation<Color>(goalColor),
+                      ),
+                    ),
+                    Text(
+                      totalTasks > 0
+                          ? '${(progressPercent * 100).round()}%'
+                          : '—',
+                      style: theme.textTheme.labelSmall?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: goalColor,
+                        fontSize: 11,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+
             // コンテンツ
             Expanded(
               child: Padding(
-                padding: const EdgeInsets.fromLTRB(16, 14, 8, 14),
+                padding: const EdgeInsets.fromLTRB(0, 14, 8, 14),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -269,24 +405,34 @@ class _GoalCard extends StatelessWidget {
                             color: theme.colorScheme.primary,
                           ),
                           const SizedBox(width: 4),
-                          Text(
-                            dreamTitle!,
-                            style: theme.textTheme.labelSmall?.copyWith(
-                              color: theme.colorScheme.primary,
-                              fontWeight: FontWeight.w600,
+                          Expanded(
+                            child: Text(
+                              dreamTitle!,
+                              style: theme.textTheme.labelSmall?.copyWith(
+                                color: theme.colorScheme.primary,
+                                fontWeight: FontWeight.w600,
+                              ),
+                              overflow: TextOverflow.ellipsis,
                             ),
                           ),
                         ],
                       ),
                     ],
-                    const SizedBox(height: 8),
+                    const SizedBox(height: 6),
 
-                    // 目標情報
-                    _InfoRow(
-                      icon: Icons.build_outlined,
-                      label: 'How',
-                      value: goal.how,
-                      color: colors.textSecondary,
+                    // 進捗テキスト
+                    Row(
+                      children: [
+                        Icon(Icons.check_circle_outline,
+                            size: 13, color: goalColor),
+                        const SizedBox(width: 4),
+                        Text(
+                          progressText,
+                          style: theme.textTheme.labelSmall?.copyWith(
+                            color: colors.textSecondary,
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),
@@ -360,42 +506,3 @@ class _WhenBadge extends StatelessWidget {
   }
 }
 
-/// 情報行.
-class _InfoRow extends StatelessWidget {
-  const _InfoRow({
-    required this.icon,
-    required this.label,
-    required this.value,
-    required this.color,
-  });
-
-  final IconData icon;
-  final String label;
-  final String value;
-  final Color color;
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Icon(icon, size: 14, color: color),
-        const SizedBox(width: 4),
-        Text(
-          '$label: ',
-          style: TextStyle(
-            fontSize: 12,
-            color: color,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-        Expanded(
-          child: Text(
-            value,
-            style: TextStyle(fontSize: 12, color: color),
-          ),
-        ),
-      ],
-    );
-  }
-}

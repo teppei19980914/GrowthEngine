@@ -73,7 +73,7 @@ class _TrialLimitDialog extends StatelessWidget {
           _UsageBar(current: currentCount, max: maxCount, itemName: itemName),
           const SizedBox(height: 16),
           Text(
-            'Web体験版では$itemNameを$maxCount件まで登録できます。',
+            'スタータープランでは$itemNameを$maxCount件まで登録できます。',
             style: theme.textTheme.bodyMedium,
           ),
           const SizedBox(height: 12),

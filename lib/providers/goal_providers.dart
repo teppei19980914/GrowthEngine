@@ -6,6 +6,23 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/goal.dart';
 import 'service_providers.dart';
 
+/// 目標ごとのタスク進捗（goalId → {total, completed}）.
+final goalProgressProvider =
+    FutureProvider<Map<String, ({int total, int completed})>>((ref) async {
+  final taskService = ref.watch(taskServiceProvider);
+  final goalService = ref.watch(goalServiceProvider);
+  final goals = await goalService.getAllGoals();
+  final result = <String, ({int total, int completed})>{};
+
+  for (final goal in goals) {
+    final tasks = await taskService.getTasksForGoal(goal.id);
+    final completed =
+        tasks.where((t) => t.progress >= 100).length;
+    result[goal.id] = (total: tasks.length, completed: completed);
+  }
+  return result;
+});
+
 /// 全Goal一覧を取得・管理するProvider.
 final goalListProvider =
     AsyncNotifierProvider<GoalListNotifier, List<Goal>>(GoalListNotifier.new);

@@ -76,6 +76,11 @@ Future<void> _initRemoteConfigAsync(
       remoteConfigProvider.overrideWithValue(config),
     ]);
 
+    // unlimited: プレミアム機能を解放（開発者用）
+    if (config.unlimited) {
+      setSubscriptionPremium(enabled: true);
+    }
+
     // resetOnAccess: アクセス時にデータをリセット
     if (config.resetOnAccess) {
       await service.clearPreferencesExceptKey();

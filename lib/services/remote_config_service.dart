@@ -254,6 +254,34 @@ class RemoteConfigService {
     );
   }
 
+  /// Gist からリリースノートを取得する.
+  ///
+  /// Gist JSON の `release` セクションからバージョンとノートを取得する.
+  /// 返り値: `{version: "1.1.0", notes: ["新機能A", "改善B"]}` または null.
+  Future<({String version, List<String> notes})?> fetchReleaseNotes() async {
+    if (remoteConfigGistId.isEmpty) return null;
+
+    try {
+      final content = await _fetchGistContent();
+      if (content == null) return null;
+
+      final configJson = jsonDecode(content) as Map<String, dynamic>;
+      final release = configJson['release'] as Map<String, dynamic>?;
+      if (release == null) return null;
+
+      final version = release['version'] as String? ?? '';
+      final notesList = (release['notes'] as List<dynamic>?)
+              ?.map((e) => e.toString())
+              .toList() ??
+          [];
+
+      if (version.isEmpty || notesList.isEmpty) return null;
+      return (version: version, notes: notesList);
+    } on Exception {
+      return null;
+    }
+  }
+
   /// ユーザーキーと設定をクリアする.
   Future<void> clearConfig() async {
     await _prefs.remove(_userKeyPref);

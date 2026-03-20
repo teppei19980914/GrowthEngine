@@ -140,10 +140,12 @@ class DreamPage extends ConsumerWidget {
     final result = await showDreamDiscoveryDialog(context);
     if (result == null || !context.mounted) return;
 
+    final category = _mapGuideCategory(result.categoryKey);
     await ref.read(dreamListProvider.notifier).createDream(
           title: result.title,
           description: result.description,
           why: result.why,
+          category: category,
         );
   }
 
@@ -174,35 +176,41 @@ class DreamPage extends ConsumerWidget {
     if (!context.mounted) return;
 
     // チュートリアル中: ガイドを使うか自分で入力するか選択
-    String? guideTitle;
-    String? guideDescription;
-    String? guideWhy;
     if (isTutorial) {
       final useGuide = await _showTutorialDreamChoice(context);
       if (!context.mounted) return;
       if (useGuide == null) return; // キャンセル
       if (useGuide) {
+        // ガイド経由: ガイド結果をそのまま登録（夢追加ダイアログは経由しない）
         final guideResult = await showDreamDiscoveryDialog(context);
         if (guideResult == null || !context.mounted) return;
-        guideTitle = guideResult.title;
-        guideDescription = guideResult.description;
-        guideWhy = guideResult.why;
+
+        // カテゴリをガイドの選択から自動割り当て
+        final category = _mapGuideCategory(guideResult.categoryKey);
+        final dreamId =
+            await ref.read(dreamListProvider.notifier).createDream(
+                  title: guideResult.title,
+                  description: guideResult.description,
+                  why: guideResult.why,
+                  category: category,
+                );
+
+        final tutorialService = ref.read(tutorialServiceProvider);
+        await tutorialService.setTutorialDreamId(dreamId);
+        await ref.read(tutorialStateProvider.notifier).advanceStep();
+        return;
       }
     }
 
     if (!context.mounted) return;
-    final result = await showDreamDialog(
-      context,
-      initialTitle: guideTitle,
-      initialDescription: guideDescription,
-      initialWhy: guideWhy,
-    );
+    final result = await showDreamDialog(context);
     if (result == null) return;
 
     final dreamId = await ref.read(dreamListProvider.notifier).createDream(
           title: result.title,
           description: result.description,
           why: result.why,
+          category: result.category,
         );
 
     // チュートリアル中: 夢IDを記録してステップを進める
@@ -216,6 +224,20 @@ class DreamPage extends ConsumerWidget {
   /// チュートリアル中の夢追加で、ガイドを使うか自分で入力するかを選択.
   ///
   /// 戻り値: true=ガイドを使う, false=自分で入力, null=キャンセル.
+  /// ガイドのカテゴリキーをDreamモデルのカテゴリ値にマッピング.
+  String _mapGuideCategory(String? guideKey) {
+    const mapping = {
+      'career': 'career',
+      'health': 'health',
+      'learning': 'learning',
+      'hobby': 'hobby',
+      'relationships': 'relationship',
+      'money': 'finance',
+      'lifestyle': 'other',
+    };
+    return mapping[guideKey] ?? 'other';
+  }
+
   Future<bool?> _showTutorialDreamChoice(BuildContext context) {
     return showDialog<bool>(
       context: context,
@@ -269,6 +291,7 @@ class DreamPage extends ConsumerWidget {
           title: result.title,
           description: result.description,
           why: result.why,
+          category: result.category,
         );
   }
 }
@@ -289,7 +312,7 @@ class _DreamCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colors = theme.appColors;
-    final primary = theme.colorScheme.primary;
+    final cat = dream.dreamCategory;
 
     return GestureDetector(
       onTap: onTap,
@@ -298,13 +321,44 @@ class _DreamCard extends StatelessWidget {
       child: IntrinsicHeight(
         child: Row(
           children: [
-            // カラーバー
-            Container(width: 6, color: primary),
+            // カテゴリカラーバー
+            Container(width: 6, color: cat.color),
+
+            // カテゴリアイコン
+            Container(
+              width: 56,
+              alignment: Alignment.center,
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [
+                    cat.color.withAlpha(30),
+                    cat.color.withAlpha(10),
+                  ],
+                ),
+              ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(cat.icon, size: 28, color: cat.color),
+                  const SizedBox(height: 2),
+                  Text(
+                    cat.label,
+                    style: theme.textTheme.labelSmall?.copyWith(
+                      color: cat.color,
+                      fontSize: 9,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ],
+              ),
+            ),
 
             // コンテンツ
             Expanded(
               child: Padding(
-                padding: const EdgeInsets.fromLTRB(16, 14, 8, 14),
+                padding: const EdgeInsets.fromLTRB(12, 14, 8, 14),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -312,8 +366,6 @@ class _DreamCard extends StatelessWidget {
                     Row(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        Icon(Icons.auto_awesome, size: 18, color: primary),
-                        const SizedBox(width: 8),
                         Expanded(
                           child: Text(
                             dream.title,
@@ -322,7 +374,7 @@ class _DreamCard extends StatelessWidget {
                             ),
                           ),
                         ),
-                        // 目標数バッジ（1件以上の場合のみ表示）
+                        // 目標数バッジ
                         if (goalCount > 0)
                           Container(
                             padding: const EdgeInsets.symmetric(
@@ -330,15 +382,22 @@ class _DreamCard extends StatelessWidget {
                               vertical: 3,
                             ),
                             decoration: BoxDecoration(
-                              color: primary.withAlpha(20),
+                              color: cat.color.withAlpha(25),
                               borderRadius: BorderRadius.circular(12),
                             ),
-                            child: Text(
-                              '目標 $goalCount',
-                              style: theme.textTheme.labelSmall?.copyWith(
-                                color: primary,
-                                fontWeight: FontWeight.w600,
-                              ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(Icons.flag, size: 12, color: cat.color),
+                                const SizedBox(width: 3),
+                                Text(
+                                  '$goalCount',
+                                  style: theme.textTheme.labelSmall?.copyWith(
+                                    color: cat.color,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
                         Icon(Icons.chevron_right,
@@ -354,10 +413,12 @@ class _DreamCard extends StatelessWidget {
                         style: theme.textTheme.bodyMedium?.copyWith(
                           color: colors.textSecondary,
                         ),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
                       ),
                     ],
 
-                    // Why（動機）— 強調表示
+                    // Why（動機）
                     if (dream.why.isNotEmpty) ...[
                       const SizedBox(height: 8),
                       Container(
@@ -366,7 +427,7 @@ class _DreamCard extends StatelessWidget {
                           vertical: 6,
                         ),
                         decoration: BoxDecoration(
-                          color: primary.withAlpha(12),
+                          color: cat.color.withAlpha(12),
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: Row(
@@ -375,7 +436,7 @@ class _DreamCard extends StatelessWidget {
                             Icon(
                               Icons.favorite,
                               size: 13,
-                              color: primary.withAlpha(180),
+                              color: cat.color.withAlpha(180),
                             ),
                             const SizedBox(width: 6),
                             Expanded(
@@ -385,6 +446,8 @@ class _DreamCard extends StatelessWidget {
                                   color: colors.textSecondary,
                                   fontStyle: FontStyle.italic,
                                 ),
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
                               ),
                             ),
                           ],

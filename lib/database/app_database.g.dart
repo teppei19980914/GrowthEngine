@@ -33,6 +33,14 @@ class $DreamsTable extends Dreams with TableInfo<$DreamsTable, Dream> {
       type: DriftSqlType.string,
       requiredDuringInsert: false,
       defaultValue: const Constant(''));
+  static const VerificationMeta _categoryMeta =
+      const VerificationMeta('category');
+  @override
+  late final GeneratedColumn<String> category = GeneratedColumn<String>(
+      'category', aliasedName, false,
+      type: DriftSqlType.string,
+      requiredDuringInsert: false,
+      defaultValue: const Constant('other'));
   static const VerificationMeta _createdAtMeta =
       const VerificationMeta('createdAt');
   @override
@@ -47,7 +55,7 @@ class $DreamsTable extends Dreams with TableInfo<$DreamsTable, Dream> {
       type: DriftSqlType.dateTime, requiredDuringInsert: true);
   @override
   List<GeneratedColumn> get $columns =>
-      [id, title, description, why, createdAt, updatedAt];
+      [id, title, description, why, category, createdAt, updatedAt];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -79,6 +87,10 @@ class $DreamsTable extends Dreams with TableInfo<$DreamsTable, Dream> {
       context.handle(
           _whyMeta, why.isAcceptableOrUnknown(data['why']!, _whyMeta));
     }
+    if (data.containsKey('category')) {
+      context.handle(_categoryMeta,
+          category.isAcceptableOrUnknown(data['category']!, _categoryMeta));
+    }
     if (data.containsKey('created_at')) {
       context.handle(_createdAtMeta,
           createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta));
@@ -108,6 +120,8 @@ class $DreamsTable extends Dreams with TableInfo<$DreamsTable, Dream> {
           .read(DriftSqlType.string, data['${effectivePrefix}description'])!,
       why: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}why'])!,
+      category: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}category'])!,
       createdAt: attachedDatabase.typeMapping
           .read(DriftSqlType.dateTime, data['${effectivePrefix}created_at'])!,
       updatedAt: attachedDatabase.typeMapping
@@ -134,6 +148,9 @@ class Dream extends DataClass implements Insertable<Dream> {
   /// なぜこの夢を叶えたいか（動機・理由）.
   final String why;
 
+  /// カテゴリ.
+  final String category;
+
   /// 作成日時.
   final DateTime createdAt;
 
@@ -144,6 +161,7 @@ class Dream extends DataClass implements Insertable<Dream> {
       required this.title,
       required this.description,
       required this.why,
+      required this.category,
       required this.createdAt,
       required this.updatedAt});
   @override
@@ -153,6 +171,7 @@ class Dream extends DataClass implements Insertable<Dream> {
     map['title'] = Variable<String>(title);
     map['description'] = Variable<String>(description);
     map['why'] = Variable<String>(why);
+    map['category'] = Variable<String>(category);
     map['created_at'] = Variable<DateTime>(createdAt);
     map['updated_at'] = Variable<DateTime>(updatedAt);
     return map;
@@ -164,6 +183,7 @@ class Dream extends DataClass implements Insertable<Dream> {
       title: Value(title),
       description: Value(description),
       why: Value(why),
+      category: Value(category),
       createdAt: Value(createdAt),
       updatedAt: Value(updatedAt),
     );
@@ -177,6 +197,7 @@ class Dream extends DataClass implements Insertable<Dream> {
       title: serializer.fromJson<String>(json['title']),
       description: serializer.fromJson<String>(json['description']),
       why: serializer.fromJson<String>(json['why']),
+      category: serializer.fromJson<String>(json['category']),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
       updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
     );
@@ -189,6 +210,7 @@ class Dream extends DataClass implements Insertable<Dream> {
       'title': serializer.toJson<String>(title),
       'description': serializer.toJson<String>(description),
       'why': serializer.toJson<String>(why),
+      'category': serializer.toJson<String>(category),
       'createdAt': serializer.toJson<DateTime>(createdAt),
       'updatedAt': serializer.toJson<DateTime>(updatedAt),
     };
@@ -199,6 +221,7 @@ class Dream extends DataClass implements Insertable<Dream> {
           String? title,
           String? description,
           String? why,
+          String? category,
           DateTime? createdAt,
           DateTime? updatedAt}) =>
       Dream(
@@ -206,6 +229,7 @@ class Dream extends DataClass implements Insertable<Dream> {
         title: title ?? this.title,
         description: description ?? this.description,
         why: why ?? this.why,
+        category: category ?? this.category,
         createdAt: createdAt ?? this.createdAt,
         updatedAt: updatedAt ?? this.updatedAt,
       );
@@ -216,6 +240,7 @@ class Dream extends DataClass implements Insertable<Dream> {
       description:
           data.description.present ? data.description.value : this.description,
       why: data.why.present ? data.why.value : this.why,
+      category: data.category.present ? data.category.value : this.category,
       createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
       updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
     );
@@ -228,6 +253,7 @@ class Dream extends DataClass implements Insertable<Dream> {
           ..write('title: $title, ')
           ..write('description: $description, ')
           ..write('why: $why, ')
+          ..write('category: $category, ')
           ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt')
           ..write(')'))
@@ -236,7 +262,7 @@ class Dream extends DataClass implements Insertable<Dream> {
 
   @override
   int get hashCode =>
-      Object.hash(id, title, description, why, createdAt, updatedAt);
+      Object.hash(id, title, description, why, category, createdAt, updatedAt);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -245,6 +271,7 @@ class Dream extends DataClass implements Insertable<Dream> {
           other.title == this.title &&
           other.description == this.description &&
           other.why == this.why &&
+          other.category == this.category &&
           other.createdAt == this.createdAt &&
           other.updatedAt == this.updatedAt);
 }
@@ -254,6 +281,7 @@ class DreamsCompanion extends UpdateCompanion<Dream> {
   final Value<String> title;
   final Value<String> description;
   final Value<String> why;
+  final Value<String> category;
   final Value<DateTime> createdAt;
   final Value<DateTime> updatedAt;
   final Value<int> rowid;
@@ -262,6 +290,7 @@ class DreamsCompanion extends UpdateCompanion<Dream> {
     this.title = const Value.absent(),
     this.description = const Value.absent(),
     this.why = const Value.absent(),
+    this.category = const Value.absent(),
     this.createdAt = const Value.absent(),
     this.updatedAt = const Value.absent(),
     this.rowid = const Value.absent(),
@@ -271,6 +300,7 @@ class DreamsCompanion extends UpdateCompanion<Dream> {
     required String title,
     this.description = const Value.absent(),
     this.why = const Value.absent(),
+    this.category = const Value.absent(),
     required DateTime createdAt,
     required DateTime updatedAt,
     this.rowid = const Value.absent(),
@@ -283,6 +313,7 @@ class DreamsCompanion extends UpdateCompanion<Dream> {
     Expression<String>? title,
     Expression<String>? description,
     Expression<String>? why,
+    Expression<String>? category,
     Expression<DateTime>? createdAt,
     Expression<DateTime>? updatedAt,
     Expression<int>? rowid,
@@ -292,6 +323,7 @@ class DreamsCompanion extends UpdateCompanion<Dream> {
       if (title != null) 'title': title,
       if (description != null) 'description': description,
       if (why != null) 'why': why,
+      if (category != null) 'category': category,
       if (createdAt != null) 'created_at': createdAt,
       if (updatedAt != null) 'updated_at': updatedAt,
       if (rowid != null) 'rowid': rowid,
@@ -303,6 +335,7 @@ class DreamsCompanion extends UpdateCompanion<Dream> {
       Value<String>? title,
       Value<String>? description,
       Value<String>? why,
+      Value<String>? category,
       Value<DateTime>? createdAt,
       Value<DateTime>? updatedAt,
       Value<int>? rowid}) {
@@ -311,6 +344,7 @@ class DreamsCompanion extends UpdateCompanion<Dream> {
       title: title ?? this.title,
       description: description ?? this.description,
       why: why ?? this.why,
+      category: category ?? this.category,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
       rowid: rowid ?? this.rowid,
@@ -332,6 +366,9 @@ class DreamsCompanion extends UpdateCompanion<Dream> {
     if (why.present) {
       map['why'] = Variable<String>(why.value);
     }
+    if (category.present) {
+      map['category'] = Variable<String>(category.value);
+    }
     if (createdAt.present) {
       map['created_at'] = Variable<DateTime>(createdAt.value);
     }
@@ -351,6 +388,7 @@ class DreamsCompanion extends UpdateCompanion<Dream> {
           ..write('title: $title, ')
           ..write('description: $description, ')
           ..write('why: $why, ')
+          ..write('category: $category, ')
           ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt, ')
           ..write('rowid: $rowid')
@@ -2996,6 +3034,7 @@ typedef $$DreamsTableCreateCompanionBuilder = DreamsCompanion Function({
   required String title,
   Value<String> description,
   Value<String> why,
+  Value<String> category,
   required DateTime createdAt,
   required DateTime updatedAt,
   Value<int> rowid,
@@ -3005,6 +3044,7 @@ typedef $$DreamsTableUpdateCompanionBuilder = DreamsCompanion Function({
   Value<String> title,
   Value<String> description,
   Value<String> why,
+  Value<String> category,
   Value<DateTime> createdAt,
   Value<DateTime> updatedAt,
   Value<int> rowid,
@@ -3031,6 +3071,7 @@ class $$DreamsTableTableManager extends RootTableManager<
             Value<String> title = const Value.absent(),
             Value<String> description = const Value.absent(),
             Value<String> why = const Value.absent(),
+            Value<String> category = const Value.absent(),
             Value<DateTime> createdAt = const Value.absent(),
             Value<DateTime> updatedAt = const Value.absent(),
             Value<int> rowid = const Value.absent(),
@@ -3040,6 +3081,7 @@ class $$DreamsTableTableManager extends RootTableManager<
             title: title,
             description: description,
             why: why,
+            category: category,
             createdAt: createdAt,
             updatedAt: updatedAt,
             rowid: rowid,
@@ -3049,6 +3091,7 @@ class $$DreamsTableTableManager extends RootTableManager<
             required String title,
             Value<String> description = const Value.absent(),
             Value<String> why = const Value.absent(),
+            Value<String> category = const Value.absent(),
             required DateTime createdAt,
             required DateTime updatedAt,
             Value<int> rowid = const Value.absent(),
@@ -3058,6 +3101,7 @@ class $$DreamsTableTableManager extends RootTableManager<
             title: title,
             description: description,
             why: why,
+            category: category,
             createdAt: createdAt,
             updatedAt: updatedAt,
             rowid: rowid,
@@ -3085,6 +3129,11 @@ class $$DreamsTableFilterComposer
 
   ColumnFilters<String> get why => $state.composableBuilder(
       column: $state.table.why,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+
+  ColumnFilters<String> get category => $state.composableBuilder(
+      column: $state.table.category,
       builder: (column, joinBuilders) =>
           ColumnFilters(column, joinBuilders: joinBuilders));
 
@@ -3119,6 +3168,11 @@ class $$DreamsTableOrderingComposer
 
   ColumnOrderings<String> get why => $state.composableBuilder(
       column: $state.table.why,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+
+  ColumnOrderings<String> get category => $state.composableBuilder(
+      column: $state.table.category,
       builder: (column, joinBuilders) =>
           ColumnOrderings(column, joinBuilders: joinBuilders));
 
