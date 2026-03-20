@@ -1,6 +1,9 @@
-/// ガントチャートのExcelエクスポートサービス.
+/// ガントチャートのエクスポートサービス.
+///
+/// HTML / Excel / CSV 形式でガントチャートをエクスポートする.
 library;
 
+import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:excel/excel.dart';
@@ -16,47 +19,172 @@ const _statusLabels = {
   TaskStatus.completed: '完了',
 };
 
-/// ステータスの日本語文字列からTaskStatusへの逆マッピング.
-TaskStatus? statusFromLabel(String label) {
-  for (final entry in _statusLabels.entries) {
-    if (entry.value == label) return entry.key;
-  }
-  return null;
-}
-
-/// ガントチャートExcelエクスポート結果.
-class GanttExcelExportResult {
-  /// GanttExcelExportResultを作成する.
-  const GanttExcelExportResult({
+/// エクスポート結果.
+class GanttExportResult {
+  /// GanttExportResultを作成する.
+  const GanttExportResult({
     required this.bytes,
     required this.fileName,
+    this.mimeType,
   });
 
-  /// Excelファイルのバイトデータ.
+  /// ファイルのバイトデータ.
   final Uint8List bytes;
 
   /// ファイル名.
   final String fileName;
+
+  /// MIMEタイプ.
+  final String? mimeType;
 }
 
-/// ガントチャートをExcelファイルにエクスポートするサービス.
+/// ガントチャートエクスポートサービス.
 class GanttExcelExportService {
-  /// タスクと目標情報からExcelファイルを生成する.
-  GanttExcelExportResult export({
+  /// 指定形式でエクスポートする.
+  GanttExportResult exportAs({
+    required List<Task> tasks,
+    required List<Goal> goals,
+    required String format,
+  }) {
+    final goalMap = {for (final g in goals) g.id: g};
+    final dateStr = DateFormat('yyyyMMdd').format(DateTime.now());
+
+    switch (format) {
+      case 'html':
+        return _exportHtml(tasks, goalMap, dateStr);
+      case 'csv':
+        return _exportCsv(tasks, goalMap, dateStr);
+      default:
+        return _exportExcel(tasks, goalMap, dateStr);
+    }
+  }
+
+  /// 後方互換: 既存の export メソッド.
+  GanttExportResult export({
     required List<Task> tasks,
     required List<Goal> goals,
   }) {
+    return exportAs(tasks: tasks, goals: goals, format: 'excel');
+  }
+
+  // ── HTML エクスポート ──────────────────────────────────────
+
+  GanttExportResult _exportHtml(
+    List<Task> tasks,
+    Map<String, Goal> goalMap,
+    String dateStr,
+  ) {
+    final sorted = _sortTasks(tasks, goalMap);
+    final (earliest, latest) = _dateRange(sorted);
+    final totalDays = latest.difference(earliest).inDays + 1;
+    final df = DateFormat('yyyy/MM/dd');
+
+    final buf = StringBuffer()
+      ..writeln('<!DOCTYPE html>')
+      ..writeln('<html lang="ja"><head>')
+      ..writeln('<meta charset="UTF-8">')
+      ..writeln('<meta name="viewport" content="width=device-width,initial-scale=1">')
+      ..writeln('<title>ガントチャート - ${df.format(DateTime.now())}</title>')
+      ..writeln('<style>')
+      ..writeln('* { margin: 0; padding: 0; box-sizing: border-box; }')
+      ..writeln('body { font-family: -apple-system, "Segoe UI", sans-serif; background: #1e1e2e; color: #cdd6f4; padding: 20px; }')
+      ..writeln('h1 { font-size: 18px; margin-bottom: 4px; }')
+      ..writeln('.subtitle { color: #6c7086; font-size: 12px; margin-bottom: 16px; }')
+      ..writeln('.gantt-container { overflow-x: auto; }')
+      ..writeln('table { border-collapse: collapse; min-width: 100%; }')
+      ..writeln('th, td { padding: 6px 8px; font-size: 12px; white-space: nowrap; border: 1px solid #313244; }')
+      ..writeln('th { background: #313244; color: #cdd6f4; font-weight: 600; position: sticky; top: 0; }')
+      ..writeln('.goal-name { color: #89b4fa; font-weight: 600; }')
+      ..writeln('.progress-cell { text-align: center; font-weight: 600; border-radius: 4px; }')
+      ..writeln('.p100 { background: #a6e3a1; color: #1e1e2e; }')
+      ..writeln('.p50 { background: #f9e2af; color: #1e1e2e; }')
+      ..writeln('.p1 { background: #fab387; color: #1e1e2e; }')
+      ..writeln('.p0 { background: #f38ba8; color: #1e1e2e; }')
+      ..writeln('.bar { min-width: 18px; height: 100%; }')
+      ..writeln('.bar-done { opacity: 1.0; }')
+      ..writeln('.bar-remain { opacity: 0.3; }')
+      ..writeln('.date-header { font-size: 10px; text-align: center; min-width: 24px; padding: 4px 2px; }')
+      ..writeln('.weekend { background: #1e1e2e; }')
+      ..writeln('.legend { margin-top: 16px; font-size: 11px; color: #6c7086; }')
+      ..writeln('</style></head><body>')
+      ..writeln('<h1>ガントチャート</h1>')
+      ..writeln('<div class="subtitle">エクスポート日: ${df.format(DateTime.now())} | '
+          'タスク数: ${tasks.length} | '
+          '期間: ${df.format(earliest)} ～ ${df.format(latest)}</div>')
+      ..writeln('<div class="gantt-container"><table>');
+
+    // ヘッダー行
+    buf.write('<tr><th>目標</th><th>タスク</th><th>進捗</th>'
+        '<th>ステータス</th><th>開始日</th><th>終了日</th>');
+    for (var d = 0; d < totalDays; d++) {
+      final date = earliest.add(Duration(days: d));
+      final isWeekend = date.weekday == 6 || date.weekday == 7;
+      buf.write('<th class="date-header${isWeekend ? ' weekend' : ''}">'
+          '${date.month}/${date.day}</th>');
+    }
+    buf.writeln('</tr>');
+
+    // タスク行
+    for (final task in sorted) {
+      final goalName = _goalName(task.goalId, goalMap);
+      final goalColor = _goalHexColor(task.goalId, goalMap);
+      final pClass = task.progress >= 100
+          ? 'p100'
+          : task.progress >= 50
+              ? 'p50'
+              : task.progress > 0
+                  ? 'p1'
+                  : 'p0';
+
+      buf.write('<tr>');
+      buf.write('<td class="goal-name">${_escapeHtml(goalName)}</td>');
+      buf.write('<td>${_escapeHtml(task.title)}</td>');
+      buf.write('<td class="progress-cell $pClass">${task.progress}%</td>');
+      buf.write('<td>${_statusLabels[task.status] ?? "未着手"}</td>');
+      buf.write('<td>${df.format(task.startDate)}</td>');
+      buf.write('<td>${df.format(task.endDate)}</td>');
+
+      final taskStartDay = task.startDate.difference(earliest).inDays;
+      final taskEndDay = task.endDate.difference(earliest).inDays;
+      final taskDuration = taskEndDay - taskStartDay + 1;
+      final progressDays = (taskDuration * task.progress / 100).round();
+
+      for (var d = 0; d < totalDays; d++) {
+        if (d >= taskStartDay && d <= taskEndDay) {
+          final isDone = (d - taskStartDay) < progressDays;
+          buf.write('<td class="bar ${isDone ? 'bar-done' : 'bar-remain'}" '
+              'style="background:#$goalColor;"></td>');
+        } else {
+          final date = earliest.add(Duration(days: d));
+          final isWeekend = date.weekday == 6 || date.weekday == 7;
+          buf.write('<td${isWeekend ? ' class="weekend"' : ''}></td>');
+        }
+      }
+      buf.writeln('</tr>');
+    }
+
+    buf
+      ..writeln('</table></div>')
+      ..writeln('<div class="legend">ユメログ - ガントチャートエクスポート</div>')
+      ..writeln('</body></html>');
+
+    return GanttExportResult(
+      bytes: Uint8List.fromList(utf8.encode(buf.toString())),
+      fileName: 'gantt_$dateStr.html',
+      mimeType: 'text/html',
+    );
+  }
+
+  // ── Excel エクスポート ─────────────────────────────────────
+
+  GanttExportResult _exportExcel(
+    List<Task> tasks,
+    Map<String, Goal> goalMap,
+    String dateStr,
+  ) {
     final excel = Excel.createExcel();
-
-    final goalMap = {for (final g in goals) g.id: g};
-
-    // データ表シートを先に作成（編集用）
-    _buildDataSheet(excel, tasks, goalMap);
-
-    // ガントチャートシートを作成（読み取り専用）
     _buildGanttSheet(excel, tasks, goalMap);
 
-    // デフォルトの Sheet1 を削除
     if (excel.sheets.containsKey('Sheet1')) {
       excel.delete('Sheet1');
     }
@@ -66,136 +194,69 @@ class GanttExcelExportService {
       throw StateError('Excelファイルの生成に失敗しました');
     }
 
-    final dateStr = DateFormat('yyyyMMdd').format(DateTime.now());
-    final fileName = 'gantt_$dateStr.xlsx';
-
-    return GanttExcelExportResult(
+    return GanttExportResult(
       bytes: Uint8List.fromList(bytes),
-      fileName: fileName,
+      fileName: 'gantt_$dateStr.xlsx',
+      mimeType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
     );
   }
 
-  /// データ表シートを構築する.
-  void _buildDataSheet(
-    Excel excel,
+  // ── CSV エクスポート ──────────────────────────────────────
+
+  GanttExportResult _exportCsv(
     List<Task> tasks,
     Map<String, Goal> goalMap,
+    String dateStr,
   ) {
-    final sheet = excel['データ表'];
+    final sorted = _sortTasks(tasks, goalMap);
+    final df = DateFormat('yyyy/MM/dd');
+    final buf = StringBuffer();
 
-    // ヘッダー行
-    const headers = [
-      'task_id',
-      '目標名',
-      'タスク名',
-      '開始日',
-      '終了日',
-      '進捗(%)',
-      'ステータス',
-      'メモ',
-    ];
+    // BOM（Excelで日本語が文字化けしないように）
+    buf.write('\uFEFF');
 
-    // ヘッダースタイル
-    final headerStyle = CellStyle(
-      bold: true,
-      backgroundColorHex: ExcelColor.fromHexString('#4472C4'),
-      fontColorHex: ExcelColor.fromHexString('#FFFFFF'),
-      horizontalAlign: HorizontalAlign.Center,
-    );
-
-    for (var col = 0; col < headers.length; col++) {
-      final cell = sheet.cell(
-        CellIndex.indexByColumnRow(columnIndex: col, rowIndex: 0),
-      );
-      cell.value = TextCellValue(headers[col]);
-      cell.cellStyle = headerStyle;
-    }
+    // ヘッダー
+    buf.writeln('目標名,タスク名,開始日,終了日,進捗(%),ステータス,期間(日)');
 
     // データ行
-    final dateFormat = DateFormat('yyyy/MM/dd');
-    final sortedTasks = List<Task>.from(tasks)
-      ..sort((a, b) {
-        final goalCmp =
-            _goalName(a.goalId, goalMap).compareTo(
-              _goalName(b.goalId, goalMap),
-            );
-        if (goalCmp != 0) return goalCmp;
-        return a.startDate.compareTo(b.startDate);
-      });
-
-    for (var i = 0; i < sortedTasks.length; i++) {
-      final task = sortedTasks[i];
-      final row = i + 1;
+    for (final task in sorted) {
       final goalName = _goalName(task.goalId, goalMap);
-
-      final values = <CellValue>[
-        TextCellValue(task.id),
-        TextCellValue(goalName),
-        TextCellValue(task.title),
-        TextCellValue(dateFormat.format(task.startDate)),
-        TextCellValue(dateFormat.format(task.endDate)),
-        IntCellValue(task.progress),
-        TextCellValue(_statusLabels[task.status] ?? '未着手'),
-        TextCellValue(task.memo),
-      ];
-
-      for (var col = 0; col < values.length; col++) {
-        final cell = sheet.cell(
-          CellIndex.indexByColumnRow(columnIndex: col, rowIndex: row),
-        );
-        cell.value = values[col];
-
-        // 進捗セルの色分け
-        if (col == 5) {
-          cell.cellStyle = _progressStyle(task.progress);
-        }
-      }
+      final duration = task.endDate.difference(task.startDate).inDays + 1;
+      buf.writeln(
+        '${_csvEscape(goalName)},'
+        '${_csvEscape(task.title)},'
+        '${df.format(task.startDate)},'
+        '${df.format(task.endDate)},'
+        '${task.progress},'
+        '${_statusLabels[task.status] ?? "未着手"},'
+        '$duration',
+      );
     }
 
-    // 列幅設定
-    sheet.setColumnWidth(0, 10); // task_id (非表示に近い幅)
-    sheet.setColumnWidth(1, 20); // 目標名
-    sheet.setColumnWidth(2, 25); // タスク名
-    sheet.setColumnWidth(3, 14); // 開始日
-    sheet.setColumnWidth(4, 14); // 終了日
-    sheet.setColumnWidth(5, 10); // 進捗
-    sheet.setColumnWidth(6, 12); // ステータス
-    sheet.setColumnWidth(7, 30); // メモ
+    return GanttExportResult(
+      bytes: Uint8List.fromList(utf8.encode(buf.toString())),
+      fileName: 'gantt_$dateStr.csv',
+      mimeType: 'text/csv',
+    );
   }
 
-  /// ガントチャートシートを構築する.
+  // ── Excel ガントチャートシート ────────────────────────────
+
   void _buildGanttSheet(
     Excel excel,
     List<Task> tasks,
     Map<String, Goal> goalMap,
   ) {
     final sheet = excel['ガントチャート'];
-
     if (tasks.isEmpty) return;
 
-    // 日付範囲を計算
-    final sortedTasks = List<Task>.from(tasks)
-      ..sort((a, b) {
-        final goalCmp =
-            _goalName(a.goalId, goalMap).compareTo(
-              _goalName(b.goalId, goalMap),
-            );
-        if (goalCmp != 0) return goalCmp;
-        return a.startDate.compareTo(b.startDate);
-      });
-
-    var earliest = sortedTasks.first.startDate;
-    var latest = sortedTasks.first.endDate;
-    for (final task in sortedTasks) {
-      if (task.startDate.isBefore(earliest)) earliest = task.startDate;
-      if (task.endDate.isAfter(latest)) latest = task.endDate;
-    }
-
+    final sortedTasks = _sortTasks(tasks, goalMap);
+    final (earliest, latest) = _dateRange(sortedTasks);
     final totalDays = latest.difference(earliest).inDays + 1;
 
-    // ヘッダー行0: 固定列 + 月ラベル
-    const fixedHeaders = ['目標名', 'タスク名', '進捗(%)'];
-    final fixedHeaderStyle = CellStyle(
+    // ヘッダー
+    const fixedHeaders = ['目標名', 'タスク名', '進捗(%)', 'ステータス', '開始日', '終了日'];
+    final headerStyle = CellStyle(
       bold: true,
       backgroundColorHex: ExcelColor.fromHexString('#4472C4'),
       fontColorHex: ExcelColor.fromHexString('#FFFFFF'),
@@ -207,30 +268,29 @@ class GanttExcelExportService {
         CellIndex.indexByColumnRow(columnIndex: col, rowIndex: 0),
       );
       cell.value = TextCellValue(fixedHeaders[col]);
-      cell.cellStyle = fixedHeaderStyle;
+      cell.cellStyle = headerStyle;
     }
 
-    // ヘッダー行1: 日付番号
+    // 日付ヘッダー
     final dateHeaderStyle = CellStyle(
       horizontalAlign: HorizontalAlign.Center,
       fontSize: 8,
       backgroundColorHex: ExcelColor.fromHexString('#D6E4F0'),
     );
-
+    final df = DateFormat('M/d');
     for (var d = 0; d < totalDays; d++) {
       final date = earliest.add(Duration(days: d));
       final col = fixedHeaders.length + d;
-
-      // 行0: 月/日
-      final headerCell = sheet.cell(
+      final cell = sheet.cell(
         CellIndex.indexByColumnRow(columnIndex: col, rowIndex: 0),
       );
-      headerCell.value = TextCellValue('${date.month}/${date.day}');
-      headerCell.cellStyle = dateHeaderStyle;
+      cell.value = TextCellValue(df.format(date));
+      cell.cellStyle = dateHeaderStyle;
     }
 
-    // GoalIDごとのバースタイルを事前生成（再利用でスタイル数を削減）
+    // スタイルキャッシュ
     final barStyleCache = <String, (CellStyle, CellStyle)>{};
+    final dateFmt = DateFormat('yyyy/MM/dd');
 
     // タスク行
     for (var i = 0; i < sortedTasks.length; i++) {
@@ -238,7 +298,6 @@ class GanttExcelExportService {
       final row = i + 1;
       final goalName = _goalName(task.goalId, goalMap);
 
-      // 固定列
       sheet
           .cell(CellIndex.indexByColumnRow(columnIndex: 0, rowIndex: row))
           .value = TextCellValue(goalName);
@@ -252,7 +311,17 @@ class GanttExcelExportService {
       progressCell.value = IntCellValue(task.progress);
       progressCell.cellStyle = _progressStyle(task.progress);
 
-      // ガントバー: 日付セルに色を塗る（スタイルを再利用）
+      sheet
+          .cell(CellIndex.indexByColumnRow(columnIndex: 3, rowIndex: row))
+          .value = TextCellValue(_statusLabels[task.status] ?? '未着手');
+      sheet
+          .cell(CellIndex.indexByColumnRow(columnIndex: 4, rowIndex: row))
+          .value = TextCellValue(dateFmt.format(task.startDate));
+      sheet
+          .cell(CellIndex.indexByColumnRow(columnIndex: 5, rowIndex: row))
+          .value = TextCellValue(dateFmt.format(task.endDate));
+
+      // ガントバー
       final goalHex = _goalHexColor(task.goalId, goalMap);
       final styles = barStyleCache.putIfAbsent(task.goalId, () {
         final barStyle = CellStyle(
@@ -264,8 +333,6 @@ class GanttExcelExportService {
         );
         return (barStyle, lightStyle);
       });
-      final barStyle = styles.$1;
-      final barLightStyle = styles.$2;
 
       final taskStartDay = task.startDate.difference(earliest).inDays;
       final taskEndDay = task.endDate.difference(earliest).inDays;
@@ -278,31 +345,54 @@ class GanttExcelExportService {
           CellIndex.indexByColumnRow(columnIndex: col, rowIndex: row),
         );
         cell.cellStyle =
-            (d - taskStartDay) < progressDays ? barStyle : barLightStyle;
+            (d - taskStartDay) < progressDays ? styles.$1 : styles.$2;
       }
     }
 
-    // 列幅設定
-    sheet.setColumnWidth(0, 18); // 目標名
-    sheet.setColumnWidth(1, 20); // タスク名
-    sheet.setColumnWidth(2, 8); // 進捗
-    // 日付列は狭く
+    // 列幅
+    sheet.setColumnWidth(0, 18);
+    sheet.setColumnWidth(1, 22);
+    sheet.setColumnWidth(2, 8);
+    sheet.setColumnWidth(3, 10);
+    sheet.setColumnWidth(4, 12);
+    sheet.setColumnWidth(5, 12);
     for (var d = 0; d < totalDays; d++) {
       sheet.setColumnWidth(fixedHeaders.length + d, 4);
     }
   }
 
-  /// 進捗率に応じたセルスタイルを返す.
+  // ── ヘルパー ──────────────────────────────────────────────
+
+  List<Task> _sortTasks(List<Task> tasks, Map<String, Goal> goalMap) {
+    return List<Task>.from(tasks)
+      ..sort((a, b) {
+        final goalCmp = _goalName(a.goalId, goalMap)
+            .compareTo(_goalName(b.goalId, goalMap));
+        if (goalCmp != 0) return goalCmp;
+        return a.startDate.compareTo(b.startDate);
+      });
+  }
+
+  (DateTime, DateTime) _dateRange(List<Task> sorted) {
+    var earliest = sorted.first.startDate;
+    var latest = sorted.first.endDate;
+    for (final task in sorted) {
+      if (task.startDate.isBefore(earliest)) earliest = task.startDate;
+      if (task.endDate.isAfter(latest)) latest = task.endDate;
+    }
+    return (earliest, latest);
+  }
+
   CellStyle _progressStyle(int progress) {
     final ExcelColor bgColor;
     if (progress >= 100) {
-      bgColor = ExcelColor.fromHexString('#C6EFCE'); // 緑系
+      bgColor = ExcelColor.fromHexString('#C6EFCE');
     } else if (progress >= 50) {
-      bgColor = ExcelColor.fromHexString('#FFEB9C'); // 黄系
+      bgColor = ExcelColor.fromHexString('#FFEB9C');
     } else if (progress > 0) {
-      bgColor = ExcelColor.fromHexString('#FDD8B5'); // オレンジ系
+      bgColor = ExcelColor.fromHexString('#FDD8B5');
     } else {
-      bgColor = ExcelColor.fromHexString('#FFC7CE'); // 赤系
+      bgColor = ExcelColor.fromHexString('#FFC7CE');
     }
     return CellStyle(
       backgroundColorHex: bgColor,
@@ -310,32 +400,43 @@ class GanttExcelExportService {
     );
   }
 
-  /// GoalIDから目標名を取得する.
   String _goalName(String goalId, Map<String, Goal> goalMap) {
     if (goalId == bookGanttGoalId) return '書籍';
     if (goalId.isEmpty) return '独立タスク';
     return goalMap[goalId]?.what ?? '不明';
   }
 
-  /// GoalIDからカラーHexを取得する.
   String _goalHexColor(String goalId, Map<String, Goal> goalMap) {
     final color = goalMap[goalId]?.color;
     if (color != null) return color.replaceFirst('#', '');
-    return '89B4FA'; // デフォルト青
+    return '89B4FA';
   }
 
-  /// Hex色を薄くする.
   String _lightenHex(String hex) {
     final clean = hex.replaceFirst('#', '');
     final r = int.parse(clean.substring(0, 2), radix: 16);
     final g = int.parse(clean.substring(2, 4), radix: 16);
     final b = int.parse(clean.substring(4, 6), radix: 16);
-    // 白に近づける（70%の白ブレンド）
     final lr = r + ((255 - r) * 0.7).round();
     final lg = g + ((255 - g) * 0.7).round();
     final lb = b + ((255 - b) * 0.7).round();
     return '${lr.clamp(0, 255).toRadixString(16).padLeft(2, '0')}'
         '${lg.clamp(0, 255).toRadixString(16).padLeft(2, '0')}'
         '${lb.clamp(0, 255).toRadixString(16).padLeft(2, '0')}';
+  }
+
+  String _escapeHtml(String text) {
+    return text
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;');
+  }
+
+  String _csvEscape(String text) {
+    if (text.contains(',') || text.contains('"') || text.contains('\n')) {
+      return '"${text.replaceAll('"', '""')}"';
+    }
+    return text;
   }
 }

@@ -72,6 +72,9 @@ void main() {
       expect(service.currentStep, TutorialStep.addTask);
 
       await service.advanceStep();
+      expect(service.currentStep, TutorialStep.explainAppBar);
+
+      await service.advanceStep();
       expect(service.currentStep, TutorialStep.completed);
     });
   });
@@ -81,14 +84,14 @@ void main() {
       service = await createService();
       await service.start();
 
-      // 7ステップ (goToDreams, addDream, goToGoals, addGoal, goToGantt, addTask, completed)
-      expect(service.progress, 0.0); // 0/6
+      // 8ステップ (goToDreams, addDream, goToGoals, addGoal, goToGantt, addTask, explainAppBar, completed)
+      expect(service.progress, 0.0); // 0/7
 
       await service.advanceStep();
-      expect(service.progress, closeTo(1 / 6, 0.01)); // 1/6
+      expect(service.progress, closeTo(1 / 7, 0.01)); // 1/7
 
       await service.advanceStep();
-      expect(service.progress, closeTo(2 / 6, 0.01)); // 2/6
+      expect(service.progress, closeTo(2 / 7, 0.01)); // 2/7
     });
   });
 

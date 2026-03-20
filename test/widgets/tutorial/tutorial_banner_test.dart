@@ -75,6 +75,7 @@ void main() {
         TutorialStep.addGoal,
         TutorialStep.goToGantt,
         TutorialStep.addTask,
+        TutorialStep.explainAppBar,
         TutorialStep.completed,
       ];
 

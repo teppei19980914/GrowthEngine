@@ -8,6 +8,8 @@ import '../services/motivation_calculator.dart';
 import '../services/study_stats_calculator.dart';
 import '../services/study_stats_types.dart';
 import '../widgets/stats/goal_stats_section.dart';
+import 'dream_providers.dart';
+import 'goal_providers.dart';
 import 'service_providers.dart';
 
 /// ダッシュボードレイアウトProvider.
@@ -110,15 +112,13 @@ final bookshelfProvider = FutureProvider<BookshelfData>((ref) async {
 
 /// 夢数Provider.
 final dreamCountProvider = FutureProvider<int>((ref) async {
-  final dreamService = ref.watch(dreamServiceProvider);
-  final dreams = await dreamService.getAllDreams();
+  final dreams = await ref.watch(dreamListProvider.future);
   return dreams.length;
 });
 
 /// 目標数Provider.
 final goalCountProvider = FutureProvider<int>((ref) async {
-  final goalService = ref.watch(goalServiceProvider);
-  final goals = await goalService.getAllGoals();
+  final goals = await ref.watch(goalListProvider.future);
   return goals.length;
 });
 

@@ -1,12 +1,14 @@
 /// ユメログ アプリケーションのエントリポイント.
 library;
 
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'app.dart';
+import 'firebase_options.dart';
 import 'providers/service_providers.dart';
 import 'providers/theme_provider.dart';
 import 'services/invite_service.dart';
@@ -20,6 +22,9 @@ import 'services/trial_limit_service.dart';
 /// リモート設定は非同期で取得してアプリを即座に起動する.
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
   final prefs = await SharedPreferences.getInstance();
 
   // URLキーの保存は同期的に実施（軽量なSharedPreferences操作のみ）
@@ -135,6 +140,11 @@ Future<void> _initSubscriptionAsync(SharedPreferences prefs) async {
   // 無料トライアル有効ならプレミアム機能を解放
   if (stripeService.isTrialActive) {
     setTrialPremium(enabled: true);
+  }
+
+  // 新規サブスク成功時はクラウド認証フラグを立てる
+  if (subscriptionParam == 'success') {
+    await prefs.setBool('cloud_auth_pending', true);
   }
 }
 

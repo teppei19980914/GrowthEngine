@@ -97,7 +97,7 @@ void main() {
     expect(find.text('2 / 2'), findsOneWidget);
   });
 
-  testWidgets('Web体験版の制限テキストが表示される', (tester) async {
+  testWidgets('スタータープランの制限テキストが表示される', (tester) async {
     await tester.pumpWidget(buildApp(
       itemName: '夢',
       currentCount: 2,
@@ -106,7 +106,7 @@ void main() {
     await tester.tap(find.text('Open'));
     await tester.pumpAndSettle();
 
-    expect(find.text('Web体験版では夢を2件まで登録できます。'), findsOneWidget);
+    expect(find.text('スタータープランでは夢を2件まで登録できます。'), findsOneWidget);
   });
 
   testWidgets('閉じるボタンでダイアログが閉じる', (tester) async {

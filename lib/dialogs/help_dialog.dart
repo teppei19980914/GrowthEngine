@@ -2,24 +2,18 @@
 library;
 
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-
 import '../services/trial_limit_service.dart';
 
 /// ヘルプダイアログを表示する.
-Future<void> showHelpDialog(
-  BuildContext context, {
-  required SharedPreferences prefs,
-}) async {
+Future<void> showHelpDialog(BuildContext context) async {
   await showDialog<void>(
     context: context,
-    builder: (context) => _HelpDialog(prefs: prefs),
+    builder: (context) => const _HelpDialog(),
   );
 }
 
 class _HelpDialog extends StatefulWidget {
-  const _HelpDialog({required this.prefs});
-  final SharedPreferences prefs;
+  const _HelpDialog();
 
   @override
   State<_HelpDialog> createState() => _HelpDialogState();
@@ -34,7 +28,7 @@ class _HelpDialogState extends State<_HelpDialog>
   void initState() {
     super.initState();
     _tabController = TabController(
-      length: _showTrialTab ? 2 : 1,
+      length: _showTrialTab ? 3 : 2,
       vsync: this,
     );
   }
@@ -74,16 +68,18 @@ class _HelpDialogState extends State<_HelpDialog>
             TabBar(
               controller: _tabController,
               tabs: [
+                const Tab(text: 'アプリについて'),
                 const Tab(text: 'FAQ'),
-                if (_showTrialTab) const Tab(text: 'スタータープランの制限'),
+                if (_showTrialTab) const Tab(text: 'スタータープラン'),
               ],
             ),
             Expanded(
               child: TabBarView(
                 controller: _tabController,
                 children: [
+                  const _AboutTab(),
                   const _FaqTab(),
-                  if (_showTrialTab) _TrialInfoTab(prefs: widget.prefs),
+                  if (_showTrialTab) const _TrialInfoTab(),
                 ],
               ),
             ),
@@ -201,7 +197,9 @@ class _FaqTabState extends State<_FaqTab> {
     _FaqItem(
       question: 'プレミアムプランを解約したい場合はどうすればよいですか？',
       answer: '画面右上のメールアイコンから「お問い合わせ」を選択し、'
-          '解約希望の旨をお伝えください。\n\n'
+          '解約希望の旨をお伝えください。\n'
+          'その際、プレミアムプラン申込時に入力したメールアドレスを'
+          '必ずご記載ください（契約の特定に必要です）。\n\n'
           '解約後は次回更新日以降に課金が停止され、'
           'スタータープランに移行します。\n'
           '登録済みのデータはそのまま残ります。',
@@ -392,11 +390,10 @@ class _FaqExpansionTile extends StatelessWidget {
   }
 }
 
-// ── 体験版の制限事項タブ ──────────────────────────────────────
+// ── アプリについてタブ ──────────────────────────────────────
 
-class _TrialInfoTab extends StatelessWidget {
-  const _TrialInfoTab({required this.prefs});
-  final SharedPreferences prefs;
+class _AboutTab extends StatelessWidget {
+  const _AboutTab();
 
   @override
   Widget build(BuildContext context) {
@@ -410,35 +407,146 @@ class _TrialInfoTab extends StatelessWidget {
           _InfoRow(
             icon: Icons.security,
             color: Colors.orange,
-            title: '完全匿名でご利用いただけます。',
-            subtitle: 'ユーザー登録・ログインは不要です。'
+            title: '完全匿名でご利用いただけます',
+            subtitle: 'ユーザー登録・ログインは不要です。\n'
                 '入力したデータは全てお使いのブラウザ内にのみ保存され、'
                 '開発者を含む第三者に送信・公開されることはありません。',
           ),
           _InfoRow(
             icon: Icons.warning_amber,
             color: Colors.amber,
-            title: 'ブラウザのキャッシュ/データを削除すると、全ての活動記録が消えます。',
-            subtitle: null,
+            title: 'ブラウザのデータ削除で全データが消えます',
+            subtitle: 'ブラウザのキャッシュやデータを消去すると、'
+                'アプリで登録した夢・目標・タスク・書籍・活動ログ等'
+                '全てのデータが削除されます。',
           ),
           _InfoRow(
             icon: Icons.devices,
             color: Colors.deepOrange,
-            title: '別の端末や別のブラウザからアクセスすると、データは引き継がれません。',
-            subtitle: '（設定画面のエクスポート/インポート機能で移行可能）',
+            title: '別の端末・ブラウザではデータを引き継げません',
+            subtitle: 'データはブラウザごとに独立して保存されます。\n'
+                'プレミアムプランでは設定画面のエクスポート/インポート機能で'
+                'データ移行が可能です。',
+          ),
+          const SizedBox(height: 8),
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: theme.colorScheme.primary.withAlpha(10),
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(
+                color: theme.colorScheme.primary.withAlpha(30),
+              ),
+            ),
+            child: Row(
+              children: [
+                Icon(Icons.lightbulb_outline,
+                    size: 16, color: theme.colorScheme.primary),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    '大切なデータは定期的にエクスポートして'
+                    'バックアップすることをおすすめします。',
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: theme.colorScheme.primary,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// ── スタータープランタブ ──────────────────────────────────────
+
+class _TrialInfoTab extends StatelessWidget {
+  const _TrialInfoTab();
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
+    return SingleChildScrollView(
+      padding: const EdgeInsets.symmetric(vertical: 12),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            '登録上限',
+            style: theme.textTheme.titleSmall?.copyWith(
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: 8),
+          _InfoRow(
+            icon: Icons.auto_awesome,
+            color: Colors.blue,
+            title: '夢: 1個まで',
+            subtitle: null,
+          ),
+          _InfoRow(
+            icon: Icons.flag,
+            color: Colors.green,
+            title: '目標: 夢1つにつき2個まで',
+            subtitle: null,
+          ),
+          _InfoRow(
+            icon: Icons.menu_book,
+            color: Colors.purple,
+            title: '書籍: 3冊まで',
+            subtitle: null,
           ),
           _InfoRow(
             icon: Icons.lock_outline,
             color: Colors.red,
-            title: 'スタータープランの登録上限（レベル0/3）：夢1個、目標2個/夢、書籍3冊',
-            subtitle: null,
+            title: 'ガントチャート・詳細統計: 利用不可',
+            subtitle: 'フィードバック送信で段階的に登録上限が緩和されます',
           ),
-          const SizedBox(height: 12),
-          Text(
-            'プレミアムプランにアップグレードすると、ガントチャート・高度な統計等の'
-            'プレミアム機能も含め全機能を制限なくご利用いただけます。',
-            style: theme.textTheme.bodySmall?.copyWith(
-              color: theme.colorScheme.primary,
+          const SizedBox(height: 16),
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(14),
+            decoration: BoxDecoration(
+              color: theme.colorScheme.primary.withAlpha(15),
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(
+                color: theme.colorScheme.primary.withAlpha(40),
+              ),
+            ),
+            child: Column(
+              children: [
+                Icon(Icons.workspace_premium,
+                    size: 28, color: theme.colorScheme.primary),
+                const SizedBox(height: 8),
+                Text(
+                  'プレミアムプラン',
+                  style: theme.textTheme.titleSmall?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: theme.colorScheme.primary,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  '月額480円（税込）で全機能を制限なくご利用いただけます。\n'
+                  '初回7日間の無料トライアルもご用意しています。',
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: theme.colorScheme.primary,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  '設定ページの「プランのアップグレード」からお申し込みください。',
+                  style: theme.textTheme.labelSmall?.copyWith(
+                    color: theme.hintColor,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ],
             ),
           ),
         ],

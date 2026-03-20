@@ -10,11 +10,13 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../dialogs/cloud_auth_dialog.dart';
+import '../dialogs/upgrade_dialog.dart';
 import '../providers/book_providers.dart';
 import '../providers/dream_providers.dart';
 import '../providers/goal_providers.dart';
-import '../dialogs/upgrade_dialog.dart';
 import '../services/file_save_service.dart' as file_io;
+import '../services/firestore_sync_service.dart';
 import '../providers/service_providers.dart';
 import '../providers/theme_provider.dart';
 import '../services/invite_service.dart';
@@ -104,7 +106,9 @@ class SettingsPage extends ConsumerWidget {
                   color: colors.accent,
                 ),
                 title: const Text('データをエクスポート'),
-                subtitle: const Text('JSON形式でバックアップ'),
+                subtitle: const Text(
+                  '夢・目標・タスク・書籍・活動ログ・通知をJSON形式でバックアップ',
+                ),
                 onTap: () => _exportData(context, ref),
               ),
               const Divider(height: 1),
@@ -183,6 +187,50 @@ class SettingsPage extends ConsumerWidget {
                 title: const Text('ご利用プラン'),
                 subtitle: Text(_getPlanName(ref)),
               ),
+              // プレミアム未認証: 認証の警告と認証ボタン
+              if (isPremium && !FirestoreSyncService().isSignedIn) ...[
+                Padding(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  child: Text(
+                    'データ保護のためにクラウド認証を設定してください。\n'
+                    '未認証の場合、ブラウザのキャッシュクリアで'
+                    '全データが失われます。',
+                    style: TextStyle(
+                      color: colors.error,
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                  child: SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton.icon(
+                      onPressed: () => _setupCloudAuth(context, ref),
+                      icon: const Icon(Icons.cloud_outlined, size: 18),
+                      label: const Text('クラウド認証を設定する'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: colors.error,
+                        foregroundColor: Colors.white,
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 4),
+              ],
+              // プレミアム認証済み: データ復元ボタン
+              if (isPremium && FirestoreSyncService().isSignedIn) ...[
+                const Divider(height: 1),
+                ListTile(
+                  leading: Icon(Icons.cloud_download, color: colors.success),
+                  title: const Text('クラウドからデータ復元'),
+                  subtitle: const Text('バックアップからデータを復元します'),
+                  onTap: () => _restoreFromCloud(context, ref),
+                ),
+              ],
               const Divider(height: 1),
               const ListTile(
                 leading: Icon(Icons.code),
@@ -209,6 +257,81 @@ class SettingsPage extends ConsumerWidget {
 
 
 
+  Future<void> _setupCloudAuth(BuildContext context, WidgetRef ref) async {
+    final result = await showCloudAuthDialog(context);
+    if (result == CloudAuthResult.success && context.mounted) {
+      // 認証成功 → ローカルデータをアップロード
+      final syncService = FirestoreSyncService();
+      final exportService = ref.read(dataExportServiceProvider);
+      final json = await exportService.exportData();
+      await syncService.uploadData(json);
+
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('クラウド認証を設定し、データを保存しました')),
+      );
+      // UIを更新
+      (context as Element).markNeedsBuild();
+    }
+  }
+
+  Future<void> _restoreFromCloud(BuildContext context, WidgetRef ref) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('クラウドからデータ復元'),
+        content: const Text(
+          'クラウドに保存されたデータでローカルデータを上書きします。\n'
+          '現在のローカルデータは失われます。\n\n'
+          '復元しますか？',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('キャンセル'),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text('復元する'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed != true || !context.mounted) return;
+
+    try {
+      final syncService = FirestoreSyncService();
+      final json = await syncService.downloadData();
+
+      if (json == null) {
+        if (!context.mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('クラウドにバックアップデータが見つかりません')),
+        );
+        return;
+      }
+
+      final exportService = ref.read(dataExportServiceProvider);
+      await exportService.importData(json);
+
+      // 全Providerを更新
+      ref.invalidate(dreamListProvider);
+      ref.invalidate(goalListProvider);
+      ref.invalidate(bookListProvider);
+
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('クラウドからデータを復元しました')),
+      );
+    } on Exception catch (e) {
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('復元に失敗しました: $e')),
+      );
+    }
+  }
+
   String _getPlanName(WidgetRef ref) {
     // 招待プラン
     final prefs = ref.watch(sharedPreferencesProvider);
@@ -219,7 +342,12 @@ class SettingsPage extends ConsumerWidget {
     }
 
     // プレミアムプラン
-    if (isPremium) return 'プレミアムプラン';
+    if (isPremium) {
+      final syncService = FirestoreSyncService();
+      return syncService.isSignedIn
+          ? 'プレミアムプラン（認証）'
+          : 'プレミアムプラン（未認証）';
+    }
 
     // スタータープラン
     return 'スタータープラン';

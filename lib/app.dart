@@ -8,6 +8,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import 'dialogs/app_guide_dialog.dart';
+import 'dialogs/cloud_auth_dialog.dart';
+import 'services/firestore_sync_service.dart';
 import 'dialogs/help_dialog.dart';
 import 'dialogs/monitor_submission_dialog.dart';
 import 'dialogs/release_notes_dialog.dart';
@@ -163,9 +165,61 @@ class _AppShellState extends ConsumerState<_AppShell> {
   bool _resetChecked = false;
   bool _releaseNotesChecked = false;
   bool _monitorChecked = false;
+  bool _cloudAuthChecked = false;
 
   static const _seenVersionKey = 'release_notes_seen_version';
   static const _monitorSubmittedKey = 'monitor_data_submitted';
+
+  /// クラウド認証の確認（サブスク成功後に表示）.
+  void _checkCloudAuth() {
+    if (_cloudAuthChecked) return;
+    _cloudAuthChecked = true;
+
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      if (!mounted) return;
+      final prefs = ref.read(sharedPreferencesProvider);
+
+      // クラウド認証保留フラグがなければスキップ
+      if (!(prefs.getBool('cloud_auth_pending') ?? false)) {
+        // 既にサインイン済みなら自動同期
+        final syncService = FirestoreSyncService();
+        if (syncService.isSignedIn && isPremium) {
+          _autoSync(syncService);
+        }
+        return;
+      }
+
+      // フラグをクリア
+      await prefs.remove('cloud_auth_pending');
+
+      if (!mounted) return;
+      final result = await showCloudAuthDialog(context);
+
+      if (result == CloudAuthResult.success && mounted) {
+        // アカウント作成成功 → ローカルデータをアップロード
+        final syncService = FirestoreSyncService();
+        final exportService = ref.read(dataExportServiceProvider);
+        final json = await exportService.exportData();
+        await syncService.uploadData(json);
+
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('データをクラウドに保存しました')),
+        );
+      }
+    });
+  }
+
+  /// プレミアムユーザーのデータを自動同期.
+  Future<void> _autoSync(FirestoreSyncService syncService) async {
+    try {
+      final exportService = ref.read(dataExportServiceProvider);
+      final json = await exportService.exportData();
+      await syncService.uploadData(json);
+    } on Exception {
+      // 同期失敗は無視（次回起動時に再試行）
+    }
+  }
 
   /// モニターデータ提出の確認.
   void _checkMonitorSubmission() {
@@ -223,8 +277,42 @@ class _AppShellState extends ConsumerState<_AppShell> {
   /// チュートリアルを開始する.
   Future<void> _startTutorial() async {
     final tutorialState = ref.read(tutorialStateProvider);
-    if (tutorialState.isActive) return;
 
+    // 既にチュートリアル中の場合はリセットして再開するか確認
+    if (tutorialState.isActive) {
+      final restart = await showDialog<bool>(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text('チュートリアル実行中'),
+          content: const Text(
+            'チュートリアルが実行中です。\n'
+            '最初からやり直しますか？',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context, false),
+              child: const Text('キャンセル'),
+            ),
+            FilledButton(
+              onPressed: () => Navigator.pop(context, true),
+              child: const Text('最初から'),
+            ),
+          ],
+        ),
+      );
+      if (restart != true || !mounted) return;
+
+      // 既存のチュートリアルデータを削除してリセット
+      final tutorialService = ref.read(tutorialServiceProvider);
+      final dreamId = tutorialService.tutorialDreamId;
+      if (dreamId != null) {
+        await ref.read(dreamListProvider.notifier).deleteDream(dreamId);
+      }
+      await tutorialService.finish();
+      ref.read(tutorialStateProvider.notifier).reset();
+    }
+
+    if (!mounted) return;
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
@@ -335,6 +423,9 @@ class _AppShellState extends ConsumerState<_AppShell> {
     // モニターデータ提出の確認
     _checkMonitorSubmission();
 
+    // クラウド認証の確認
+    _checkCloudAuth();
+
     // チュートリアル: ルート変更を検知してステップを自動進行
     final tutorialState = ref.watch(tutorialStateProvider);
     if (tutorialState.isActive) {
@@ -383,10 +474,7 @@ class _AppShellState extends ConsumerState<_AppShell> {
               IconButton(
                 icon: const Icon(Icons.help_outline),
                 tooltip: 'ヘルプ',
-                onPressed: () {
-                  final prefs = ref.read(sharedPreferencesProvider);
-                  showHelpDialog(context, prefs: prefs);
-                },
+                onPressed: () => showHelpDialog(context),
               ),
               const ContactButton(),
               const MilestoneButton(),

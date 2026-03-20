@@ -77,7 +77,7 @@ void main() {
         (tester) async {
       SharedPreferences.setMockInitialValues({
         'tutorial_active': true,
-        'tutorial_step': 6,
+        'tutorial_step': 7,
       });
       prefs = await SharedPreferences.getInstance();
 
@@ -96,7 +96,7 @@ void main() {
         (tester) async {
       SharedPreferences.setMockInitialValues({
         'tutorial_active': true,
-        'tutorial_step': 6,
+        'tutorial_step': 7,
       });
       prefs = await SharedPreferences.getInstance();
 
@@ -116,7 +116,7 @@ void main() {
         (tester) async {
       SharedPreferences.setMockInitialValues({
         'tutorial_active': true,
-        'tutorial_step': 6,
+        'tutorial_step': 7,
       });
       prefs = await SharedPreferences.getInstance();
 
@@ -156,7 +156,7 @@ void main() {
       await tester.pump();
 
       // 吹き出しにステップ番号と指示テキストが表示される
-      expect(find.textContaining('ステップ 1 / 6'), findsOneWidget);
+      expect(find.textContaining('ステップ 1 / 7'), findsOneWidget);
       expect(
         find.text(TutorialStep.goToDreams.instruction),
         findsOneWidget,
@@ -183,7 +183,7 @@ void main() {
       await tester.pump();
       await tester.pump();
 
-      expect(find.textContaining('ステップ 1 / 6'), findsOneWidget);
+      expect(find.textContaining('ステップ 1 / 7'), findsOneWidget);
 
       await tester.tap(find.byIcon(Icons.close));
       await tester.pump();
@@ -207,7 +207,7 @@ void main() {
       await tester.pump();
 
       // ターゲットが見つからなくてもフローティング吹き出しが表示される
-      expect(find.textContaining('ステップ 2 / 6'), findsOneWidget);
+      expect(find.textContaining('ステップ 2 / 7'), findsOneWidget);
       expect(
         find.text(TutorialStep.addDream.instruction),
         findsOneWidget,
@@ -287,12 +287,12 @@ void main() {
         findsOneWidget,
       );
       expect(
-        find.textContaining('サブスクプランにアップグレードすると'),
+        find.textContaining('プレミアムプランにアップグレードすると'),
         findsOneWidget,
       );
     });
 
-    testWidgets('addTaskステップの×ボタンで完了ダイアログが表示される',
+    testWidgets('addTaskステップの×ボタンでexplainAppBarステップに進む',
         (tester) async {
       SharedPreferences.setMockInitialValues({
         'tutorial_active': true,
@@ -307,13 +307,12 @@ void main() {
       await tester.pump();
       await tester.pump();
 
-      // ×ボタンタップで完了ダイアログに遷移
+      // ×ボタンタップでexplainAppBarステップに遷移
       await tester.tap(find.byIcon(Icons.close));
       await tester.pump();
 
-      expect(find.text('チュートリアル完了！'), findsOneWidget);
-      expect(find.text('データを削除'), findsOneWidget);
-      expect(find.text('データを保持'), findsOneWidget);
+      // 完了ダイアログではなく次のステップに進む
+      expect(find.text('チュートリアル完了！'), findsNothing);
     });
 
     testWidgets('フローティング吹き出しの×ボタンでチュートリアルが中断される',
@@ -331,7 +330,7 @@ void main() {
       await tester.pump();
       await tester.pump();
 
-      expect(find.textContaining('ステップ 2 / 6'), findsOneWidget);
+      expect(find.textContaining('ステップ 2 / 7'), findsOneWidget);
 
       await tester.tap(find.byIcon(Icons.close));
       await tester.pump();

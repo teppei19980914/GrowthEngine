@@ -16,11 +16,9 @@ import '../models/task.dart';
 import '../services/book_gantt_service.dart' show bookGanttColor;
 import '../providers/dashboard_providers.dart';
 import '../providers/gantt_providers.dart';
-import '../providers/goal_providers.dart';
 import '../providers/service_providers.dart';
 import '../services/file_save_service.dart' as file_io;
 import '../services/task_study_log_logic.dart';
-import '../services/gantt_excel_import_service.dart';
 import '../services/trial_limit_service.dart';
 import '../services/tutorial_service.dart';
 import '../theme/app_theme.dart';
@@ -115,38 +113,11 @@ class GanttPage extends ConsumerWidget {
                   label: const Text('読書スケジュールを追加'),
                 ),
               const SizedBox(width: 8),
-              // エクスポート/インポートメニュー
-              PopupMenuButton<String>(
-                icon: const Icon(Icons.more_vert),
-                tooltip: 'エクスポート/インポート',
-                onSelected: (value) {
-                  switch (value) {
-                    case 'export':
-                      _exportToExcel(context, ref);
-                    case 'import':
-                      _importFromExcel(context, ref);
-                  }
-                },
-                itemBuilder: (context) => [
-                  const PopupMenuItem(
-                    value: 'export',
-                    child: ListTile(
-                      leading: Icon(Icons.file_download_outlined),
-                      title: Text('Excelエクスポート'),
-                      dense: true,
-                      contentPadding: EdgeInsets.zero,
-                    ),
-                  ),
-                  const PopupMenuItem(
-                    value: 'import',
-                    child: ListTile(
-                      leading: Icon(Icons.file_upload_outlined),
-                      title: Text('Excelインポート'),
-                      dense: true,
-                      contentPadding: EdgeInsets.zero,
-                    ),
-                  ),
-                ],
+              // エクスポート
+              IconButton(
+                icon: const Icon(Icons.file_download_outlined),
+                tooltip: 'エクスポート',
+                onPressed: () => _showExportMenu(context, ref),
               ),
             ],
           ),
@@ -509,7 +480,7 @@ class GanttPage extends ConsumerWidget {
     }
   }
 
-  Future<void> _exportToExcel(BuildContext context, WidgetRef ref) async {
+  Future<void> _showExportMenu(BuildContext context, WidgetRef ref) async {
     final tasks = ref.read(ganttTasksProvider).valueOrNull ?? [];
     if (tasks.isEmpty) {
       if (!context.mounted) return;
@@ -519,15 +490,62 @@ class GanttPage extends ConsumerWidget {
       return;
     }
 
-    final goals =
-        await ref.read(goalServiceProvider).getAllGoals();
+    final format = await showDialog<String>(
+      context: context,
+      builder: (context) => SimpleDialog(
+        title: const Text('エクスポート形式を選択'),
+        children: [
+          SimpleDialogOption(
+            onPressed: () => Navigator.pop(context, 'html'),
+            child: const ListTile(
+              leading: Icon(Icons.language),
+              title: Text('HTML'),
+              subtitle: Text('ブラウザで閲覧・共有に最適'),
+              dense: true,
+              contentPadding: EdgeInsets.zero,
+            ),
+          ),
+          SimpleDialogOption(
+            onPressed: () => Navigator.pop(context, 'excel'),
+            child: const ListTile(
+              leading: Icon(Icons.table_chart),
+              title: Text('Excel (.xlsx)'),
+              subtitle: Text('Excel / Google スプレッドシートで開けます'),
+              dense: true,
+              contentPadding: EdgeInsets.zero,
+            ),
+          ),
+          SimpleDialogOption(
+            onPressed: () => Navigator.pop(context, 'csv'),
+            child: const ListTile(
+              leading: Icon(Icons.grid_on),
+              title: Text('CSV'),
+              subtitle: Text('Google スプレッドシート / 各種ツールで利用可能'),
+              dense: true,
+              contentPadding: EdgeInsets.zero,
+            ),
+          ),
+        ],
+      ),
+    );
+
+    if (format == null || !context.mounted) return;
+
+    final goals = await ref.read(goalServiceProvider).getAllGoals();
     final exportService = ref.read(ganttExcelExportServiceProvider);
 
     try {
-      final result = exportService.export(tasks: tasks, goals: goals);
+      final result = exportService.exportAs(
+        tasks: tasks,
+        goals: goals,
+        format: format,
+      );
+      final ext = result.fileName.split('.').last;
       final saved = await file_io.saveFile(
         bytes: result.bytes,
         fileName: result.fileName,
+        mimeType: result.mimeType ?? 'application/octet-stream',
+        allowedExtensions: [ext],
       );
       if (!context.mounted) return;
       if (saved) {
@@ -543,77 +561,6 @@ class GanttPage extends ConsumerWidget {
     }
   }
 
-  Future<void> _importFromExcel(BuildContext context, WidgetRef ref) async {
-    final bytes = await file_io.pickFile(allowedExtensions: ['xlsx']);
-    if (bytes == null) return;
-
-    final goals =
-        await ref.read(goalServiceProvider).getAllGoals();
-    final importService = ref.read(ganttExcelImportServiceProvider);
-
-    try {
-      final result = await importService.import(
-        bytes: bytes,
-        goals: goals,
-      );
-      ref.invalidate(ganttTasksProvider);
-      ref.invalidate(goalListProvider);
-      if (!context.mounted) return;
-      _showImportResultDialog(context, result);
-    } on Object catch (e) {
-      if (!context.mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('インポートに失敗しました: $e')),
-      );
-    }
-  }
-
-  void _showImportResultDialog(
-    BuildContext context,
-    GanttImportResult result,
-  ) {
-    showDialog<void>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('インポート結果'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text('更新: ${result.updatedCount}件'),
-            Text('新規作成: ${result.createdCount}件'),
-            if (result.skippedCount > 0)
-              Text('スキップ: ${result.skippedCount}件'),
-            if (result.errors.isNotEmpty) ...[
-              const SizedBox(height: 12),
-              const Text('詳細:', style: TextStyle(fontWeight: FontWeight.bold)),
-              const SizedBox(height: 4),
-              ConstrainedBox(
-                constraints: const BoxConstraints(maxHeight: 200),
-                child: SingleChildScrollView(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: result.errors
-                        .map((e) => Padding(
-                              padding: const EdgeInsets.only(bottom: 4),
-                              child: Text(e, style: const TextStyle(fontSize: 12)),
-                            ))
-                        .toList(),
-                  ),
-                ),
-              ),
-            ],
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Text('OK'),
-          ),
-        ],
-      ),
-    );
-  }
 
   Future<bool?> _confirmDelete(BuildContext context, String title) {
     return showDialog<bool>(
