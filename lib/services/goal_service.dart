@@ -17,28 +17,58 @@ class GoalService {
 
   final GoalDao _goalDao;
   final TaskDao _taskDao;
+  bool _sortOrderMigrated = false;
+
+  /// sortOrderカラムが存在しない場合に追加する.
+  Future<void> _ensureSortOrderColumn() async {
+    if (_sortOrderMigrated) return;
+    try {
+      await _goalDao.attachedDatabase.customStatement(
+        'ALTER TABLE goals ADD COLUMN sort_order INTEGER NOT NULL DEFAULT 0',
+      );
+    } on Object {
+      // カラムが既に存在する場合は無視
+    }
+    _sortOrderMigrated = true;
+  }
+
+  /// sortOrderカラム未追加による例外を防御しつつ全Goalを取得する.
+  Future<List<db.Goal>> _getAllRowsSafe() async {
+    try {
+      return await _goalDao.getAll();
+    } on Object {
+      await _ensureSortOrderColumn();
+      return _goalDao.getAll();
+    }
+  }
 
   /// 全Goalを取得する.
   Future<List<Goal>> getAllGoals() async {
-    final rows = await _goalDao.getAll();
+    final rows = await _getAllRowsSafe();
     return rows.map(_rowToGoal).toList();
   }
 
   /// IDでGoalを取得する.
   Future<Goal?> getGoal(String goalId) async {
-    final row = await _goalDao.getById(goalId);
-    return row != null ? _rowToGoal(row) : null;
+    try {
+      final row = await _goalDao.getById(goalId);
+      return row != null ? _rowToGoal(row) : null;
+    } on Object {
+      await _ensureSortOrderColumn();
+      final row = await _goalDao.getById(goalId);
+      return row != null ? _rowToGoal(row) : null;
+    }
   }
 
   /// 指定した夢に紐づくGoalを取得する.
   Future<List<Goal>> getGoalsForDream(String dreamId) async {
-    final all = await _goalDao.getAll();
+    final all = await _getAllRowsSafe();
     return all.where((g) => g.dreamId == dreamId).map(_rowToGoal).toList();
   }
 
   /// 夢に紐づかない独立Goalを取得する.
   Future<List<Goal>> getStandaloneGoals() async {
-    final all = await _goalDao.getAll();
+    final all = await _getAllRowsSafe();
     return all.where((g) => g.dreamId.isEmpty).map(_rowToGoal).toList();
   }
 
@@ -133,13 +163,6 @@ class GoalService {
   }
 
   Goal _rowToGoal(db.Goal row) {
-    // sortOrderはv7マイグレーションで追加。未適用DBではnullの可能性がある
-    int sortOrder;
-    try {
-      sortOrder = row.sortOrder;
-    } on Object {
-      sortOrder = 0;
-    }
     return Goal(
       id: row.id,
       dreamId: row.dreamId,
@@ -151,7 +174,7 @@ class GoalService {
       createdAt: row.createdAt,
       updatedAt: row.updatedAt,
       color: row.color,
-      sortOrder: sortOrder,
+      sortOrder: row.sortOrder,
     );
   }
 
