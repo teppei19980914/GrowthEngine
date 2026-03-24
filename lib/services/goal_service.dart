@@ -133,6 +133,13 @@ class GoalService {
   }
 
   Goal _rowToGoal(db.Goal row) {
+    // sortOrderはv7マイグレーションで追加。未適用DBではnullの可能性がある
+    int sortOrder;
+    try {
+      sortOrder = row.sortOrder;
+    } on Object {
+      sortOrder = 0;
+    }
     return Goal(
       id: row.id,
       dreamId: row.dreamId,
@@ -144,7 +151,7 @@ class GoalService {
       createdAt: row.createdAt,
       updatedAt: row.updatedAt,
       color: row.color,
-      sortOrder: row.sortOrder,
+      sortOrder: sortOrder,
     );
   }
 
