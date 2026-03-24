@@ -449,6 +449,14 @@ class $GoalsTable extends Goals with TableInfo<$GoalsTable, Goal> {
       type: DriftSqlType.string,
       requiredDuringInsert: false,
       defaultValue: const Constant('#4A9EFF'));
+  static const VerificationMeta _sortOrderMeta =
+      const VerificationMeta('sortOrder');
+  @override
+  late final GeneratedColumn<int> sortOrder = GeneratedColumn<int>(
+      'sort_order', aliasedName, false,
+      type: DriftSqlType.int,
+      requiredDuringInsert: false,
+      defaultValue: const Constant(0));
   static const VerificationMeta _createdAtMeta =
       const VerificationMeta('createdAt');
   @override
@@ -471,6 +479,7 @@ class $GoalsTable extends Goals with TableInfo<$GoalsTable, Goal> {
         what,
         how,
         color,
+        sortOrder,
         createdAt,
         updatedAt
       ];
@@ -529,6 +538,10 @@ class $GoalsTable extends Goals with TableInfo<$GoalsTable, Goal> {
       context.handle(
           _colorMeta, color.isAcceptableOrUnknown(data['color']!, _colorMeta));
     }
+    if (data.containsKey('sort_order')) {
+      context.handle(_sortOrderMeta,
+          sortOrder.isAcceptableOrUnknown(data['sort_order']!, _sortOrderMeta));
+    }
     if (data.containsKey('created_at')) {
       context.handle(_createdAtMeta,
           createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta));
@@ -566,6 +579,8 @@ class $GoalsTable extends Goals with TableInfo<$GoalsTable, Goal> {
           .read(DriftSqlType.string, data['${effectivePrefix}how'])!,
       color: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}color'])!,
+      sortOrder: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}sort_order'])!,
       createdAt: attachedDatabase.typeMapping
           .read(DriftSqlType.dateTime, data['${effectivePrefix}created_at'])!,
       updatedAt: attachedDatabase.typeMapping
@@ -604,6 +619,9 @@ class Goal extends DataClass implements Insertable<Goal> {
   /// 表示色（ガントチャート用）.
   final String color;
 
+  /// 表示順序（夢内での並び順、小さい方が先）.
+  final int sortOrder;
+
   /// 作成日時.
   final DateTime createdAt;
 
@@ -618,6 +636,7 @@ class Goal extends DataClass implements Insertable<Goal> {
       required this.what,
       required this.how,
       required this.color,
+      required this.sortOrder,
       required this.createdAt,
       required this.updatedAt});
   @override
@@ -631,6 +650,7 @@ class Goal extends DataClass implements Insertable<Goal> {
     map['what'] = Variable<String>(what);
     map['how'] = Variable<String>(how);
     map['color'] = Variable<String>(color);
+    map['sort_order'] = Variable<int>(sortOrder);
     map['created_at'] = Variable<DateTime>(createdAt);
     map['updated_at'] = Variable<DateTime>(updatedAt);
     return map;
@@ -646,6 +666,7 @@ class Goal extends DataClass implements Insertable<Goal> {
       what: Value(what),
       how: Value(how),
       color: Value(color),
+      sortOrder: Value(sortOrder),
       createdAt: Value(createdAt),
       updatedAt: Value(updatedAt),
     );
@@ -663,6 +684,7 @@ class Goal extends DataClass implements Insertable<Goal> {
       what: serializer.fromJson<String>(json['what']),
       how: serializer.fromJson<String>(json['how']),
       color: serializer.fromJson<String>(json['color']),
+      sortOrder: serializer.fromJson<int>(json['sortOrder']),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
       updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
     );
@@ -679,6 +701,7 @@ class Goal extends DataClass implements Insertable<Goal> {
       'what': serializer.toJson<String>(what),
       'how': serializer.toJson<String>(how),
       'color': serializer.toJson<String>(color),
+      'sortOrder': serializer.toJson<int>(sortOrder),
       'createdAt': serializer.toJson<DateTime>(createdAt),
       'updatedAt': serializer.toJson<DateTime>(updatedAt),
     };
@@ -693,6 +716,7 @@ class Goal extends DataClass implements Insertable<Goal> {
           String? what,
           String? how,
           String? color,
+          int? sortOrder,
           DateTime? createdAt,
           DateTime? updatedAt}) =>
       Goal(
@@ -704,6 +728,7 @@ class Goal extends DataClass implements Insertable<Goal> {
         what: what ?? this.what,
         how: how ?? this.how,
         color: color ?? this.color,
+        sortOrder: sortOrder ?? this.sortOrder,
         createdAt: createdAt ?? this.createdAt,
         updatedAt: updatedAt ?? this.updatedAt,
       );
@@ -718,6 +743,7 @@ class Goal extends DataClass implements Insertable<Goal> {
       what: data.what.present ? data.what.value : this.what,
       how: data.how.present ? data.how.value : this.how,
       color: data.color.present ? data.color.value : this.color,
+      sortOrder: data.sortOrder.present ? data.sortOrder.value : this.sortOrder,
       createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
       updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
     );
@@ -734,6 +760,7 @@ class Goal extends DataClass implements Insertable<Goal> {
           ..write('what: $what, ')
           ..write('how: $how, ')
           ..write('color: $color, ')
+          ..write('sortOrder: $sortOrder, ')
           ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt')
           ..write(')'))
@@ -742,7 +769,7 @@ class Goal extends DataClass implements Insertable<Goal> {
 
   @override
   int get hashCode => Object.hash(id, dreamId, why, whenTarget, whenType, what,
-      how, color, createdAt, updatedAt);
+      how, color, sortOrder, createdAt, updatedAt);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -755,6 +782,7 @@ class Goal extends DataClass implements Insertable<Goal> {
           other.what == this.what &&
           other.how == this.how &&
           other.color == this.color &&
+          other.sortOrder == this.sortOrder &&
           other.createdAt == this.createdAt &&
           other.updatedAt == this.updatedAt);
 }
@@ -768,6 +796,7 @@ class GoalsCompanion extends UpdateCompanion<Goal> {
   final Value<String> what;
   final Value<String> how;
   final Value<String> color;
+  final Value<int> sortOrder;
   final Value<DateTime> createdAt;
   final Value<DateTime> updatedAt;
   final Value<int> rowid;
@@ -780,6 +809,7 @@ class GoalsCompanion extends UpdateCompanion<Goal> {
     this.what = const Value.absent(),
     this.how = const Value.absent(),
     this.color = const Value.absent(),
+    this.sortOrder = const Value.absent(),
     this.createdAt = const Value.absent(),
     this.updatedAt = const Value.absent(),
     this.rowid = const Value.absent(),
@@ -793,6 +823,7 @@ class GoalsCompanion extends UpdateCompanion<Goal> {
     required String what,
     required String how,
     this.color = const Value.absent(),
+    this.sortOrder = const Value.absent(),
     required DateTime createdAt,
     required DateTime updatedAt,
     this.rowid = const Value.absent(),
@@ -813,6 +844,7 @@ class GoalsCompanion extends UpdateCompanion<Goal> {
     Expression<String>? what,
     Expression<String>? how,
     Expression<String>? color,
+    Expression<int>? sortOrder,
     Expression<DateTime>? createdAt,
     Expression<DateTime>? updatedAt,
     Expression<int>? rowid,
@@ -826,6 +858,7 @@ class GoalsCompanion extends UpdateCompanion<Goal> {
       if (what != null) 'what': what,
       if (how != null) 'how': how,
       if (color != null) 'color': color,
+      if (sortOrder != null) 'sort_order': sortOrder,
       if (createdAt != null) 'created_at': createdAt,
       if (updatedAt != null) 'updated_at': updatedAt,
       if (rowid != null) 'rowid': rowid,
@@ -841,6 +874,7 @@ class GoalsCompanion extends UpdateCompanion<Goal> {
       Value<String>? what,
       Value<String>? how,
       Value<String>? color,
+      Value<int>? sortOrder,
       Value<DateTime>? createdAt,
       Value<DateTime>? updatedAt,
       Value<int>? rowid}) {
@@ -853,6 +887,7 @@ class GoalsCompanion extends UpdateCompanion<Goal> {
       what: what ?? this.what,
       how: how ?? this.how,
       color: color ?? this.color,
+      sortOrder: sortOrder ?? this.sortOrder,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
       rowid: rowid ?? this.rowid,
@@ -886,6 +921,9 @@ class GoalsCompanion extends UpdateCompanion<Goal> {
     if (color.present) {
       map['color'] = Variable<String>(color.value);
     }
+    if (sortOrder.present) {
+      map['sort_order'] = Variable<int>(sortOrder.value);
+    }
     if (createdAt.present) {
       map['created_at'] = Variable<DateTime>(createdAt.value);
     }
@@ -909,6 +947,7 @@ class GoalsCompanion extends UpdateCompanion<Goal> {
           ..write('what: $what, ')
           ..write('how: $how, ')
           ..write('color: $color, ')
+          ..write('sortOrder: $sortOrder, ')
           ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt, ')
           ..write('rowid: $rowid')
@@ -3196,6 +3235,7 @@ typedef $$GoalsTableCreateCompanionBuilder = GoalsCompanion Function({
   required String what,
   required String how,
   Value<String> color,
+  Value<int> sortOrder,
   required DateTime createdAt,
   required DateTime updatedAt,
   Value<int> rowid,
@@ -3209,6 +3249,7 @@ typedef $$GoalsTableUpdateCompanionBuilder = GoalsCompanion Function({
   Value<String> what,
   Value<String> how,
   Value<String> color,
+  Value<int> sortOrder,
   Value<DateTime> createdAt,
   Value<DateTime> updatedAt,
   Value<int> rowid,
@@ -3239,6 +3280,7 @@ class $$GoalsTableTableManager extends RootTableManager<
             Value<String> what = const Value.absent(),
             Value<String> how = const Value.absent(),
             Value<String> color = const Value.absent(),
+            Value<int> sortOrder = const Value.absent(),
             Value<DateTime> createdAt = const Value.absent(),
             Value<DateTime> updatedAt = const Value.absent(),
             Value<int> rowid = const Value.absent(),
@@ -3252,6 +3294,7 @@ class $$GoalsTableTableManager extends RootTableManager<
             what: what,
             how: how,
             color: color,
+            sortOrder: sortOrder,
             createdAt: createdAt,
             updatedAt: updatedAt,
             rowid: rowid,
@@ -3265,6 +3308,7 @@ class $$GoalsTableTableManager extends RootTableManager<
             required String what,
             required String how,
             Value<String> color = const Value.absent(),
+            Value<int> sortOrder = const Value.absent(),
             required DateTime createdAt,
             required DateTime updatedAt,
             Value<int> rowid = const Value.absent(),
@@ -3278,6 +3322,7 @@ class $$GoalsTableTableManager extends RootTableManager<
             what: what,
             how: how,
             color: color,
+            sortOrder: sortOrder,
             createdAt: createdAt,
             updatedAt: updatedAt,
             rowid: rowid,
@@ -3325,6 +3370,11 @@ class $$GoalsTableFilterComposer
 
   ColumnFilters<String> get color => $state.composableBuilder(
       column: $state.table.color,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+
+  ColumnFilters<int> get sortOrder => $state.composableBuilder(
+      column: $state.table.sortOrder,
       builder: (column, joinBuilders) =>
           ColumnFilters(column, joinBuilders: joinBuilders));
 
@@ -3379,6 +3429,11 @@ class $$GoalsTableOrderingComposer
 
   ColumnOrderings<String> get color => $state.composableBuilder(
       column: $state.table.color,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+
+  ColumnOrderings<int> get sortOrder => $state.composableBuilder(
+      column: $state.table.sortOrder,
       builder: (column, joinBuilders) =>
           ColumnOrderings(column, joinBuilders: joinBuilders));
 

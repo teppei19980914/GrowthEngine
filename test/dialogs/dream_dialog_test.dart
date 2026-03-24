@@ -68,4 +68,18 @@ void main() {
 
     expect(find.text('新しい夢を追加'), findsNothing);
   });
+
+  testWidgets('コンテンツがスクロール可能である', (tester) async {
+    tester.view.physicalSize = const Size(320, 480);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+
+    await tester.pumpWidget(buildApp());
+    await tester.tap(find.text('Open'));
+    await tester.pumpAndSettle();
+
+    expect(find.byType(SingleChildScrollView), findsOneWidget);
+    expect(find.text('新しい夢を追加'), findsOneWidget);
+  });
 }

@@ -121,13 +121,16 @@ class _StudyLogDialogContentState extends State<_StudyLogDialogContent> {
 
     return AlertDialog(
       title: Text('活動ログを記録: ${widget.taskName}'),
-      content: SizedBox(
-        width: 400,
+      insetPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+      content: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 400),
         child: Form(
           key: _formKey,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
+          child: SingleChildScrollView(
+            physics: const ClampingScrollPhysics(),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // 活動日
               Text('活動日', style: theme.textTheme.titleSmall),
@@ -187,6 +190,7 @@ class _StudyLogDialogContentState extends State<_StudyLogDialogContent> {
                 maxLines: 2,
               ),
             ],
+          ),
           ),
         ),
       ),

@@ -51,6 +51,7 @@ class Goal {
     DateTime? createdAt,
     DateTime? updatedAt,
     String? color,
+    this.sortOrder = 0,
   })  : id = id ?? const Uuid().v4(),
         why = why ?? '',
         createdAt = createdAt ?? DateTime.now(),
@@ -87,6 +88,9 @@ class Goal {
   /// 表示色（ガントチャート用）.
   final String color;
 
+  /// 表示順序（夢内での並び順、小さい方が先）.
+  final int sortOrder;
+
   /// when_typeがDATEの場合、目標日をDateTime型で返す.
   ///
   /// DATEタイプでない、またはパース不可の場合はnullを返す.
@@ -107,6 +111,7 @@ class Goal {
     DateTime? createdAt,
     DateTime? updatedAt,
     String? color,
+    int? sortOrder,
   }) {
     return Goal(
       id: id ?? this.id,
@@ -119,6 +124,7 @@ class Goal {
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
       color: color ?? this.color,
+      sortOrder: sortOrder ?? this.sortOrder,
     );
   }
 
@@ -135,6 +141,7 @@ class Goal {
       'created_at': createdAt.toIso8601String(),
       'updated_at': updatedAt.toIso8601String(),
       'color': color,
+      'sort_order': sortOrder,
     };
   }
 
@@ -151,6 +158,7 @@ class Goal {
       createdAt: DateTime.parse(data['created_at'] as String),
       updatedAt: DateTime.parse(data['updated_at'] as String),
       color: (data['color'] as String?) ?? goalColors[0],
+      sortOrder: (data['sort_order'] as int?) ?? 0,
     );
   }
 

@@ -127,9 +127,11 @@ class _MonitorSubmissionDialogState extends State<_MonitorSubmissionDialog> {
           const Expanded(child: Text('モニターデータの提出')),
         ],
       ),
+      insetPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
       content: ConstrainedBox(
-        constraints: const BoxConstraints(maxWidth: 480, maxHeight: 500),
+        constraints: const BoxConstraints(maxWidth: 480),
         child: SingleChildScrollView(
+          physics: const ClampingScrollPhysics(),
           child: switch (_currentStep) {
             0 => _buildIntroPage(theme, colors),
             1 => _buildSurveyPage(theme, colors),

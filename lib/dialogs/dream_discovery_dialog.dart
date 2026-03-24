@@ -256,6 +256,7 @@ class _DreamDiscoveryDialogState extends State<_DreamDiscoveryDialog> {
 
   Widget _buildQuestionsPage(ThemeData theme, AppColors colors) {
     return SingleChildScrollView(
+      physics: const ClampingScrollPhysics(),
       padding: const EdgeInsets.fromLTRB(24, 16, 24, 8),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -312,6 +313,7 @@ class _DreamDiscoveryDialogState extends State<_DreamDiscoveryDialog> {
     final topScore = scores.values.fold(0, (a, b) => a > b ? a : b);
 
     return SingleChildScrollView(
+      physics: const ClampingScrollPhysics(),
       padding: const EdgeInsets.fromLTRB(24, 16, 24, 8),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -360,6 +362,7 @@ class _DreamDiscoveryDialogState extends State<_DreamDiscoveryDialog> {
     final templates = dreamTemplates[category] ?? [];
 
     return SingleChildScrollView(
+      physics: const ClampingScrollPhysics(),
       padding: const EdgeInsets.fromLTRB(24, 16, 24, 8),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -423,6 +426,7 @@ class _DreamDiscoveryDialogState extends State<_DreamDiscoveryDialog> {
 
   Widget _buildFormPage(ThemeData theme, AppColors colors) {
     return SingleChildScrollView(
+      physics: const ClampingScrollPhysics(),
       padding: const EdgeInsets.fromLTRB(24, 16, 24, 8),
       child: Form(
         key: _formKey,

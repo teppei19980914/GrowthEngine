@@ -119,11 +119,13 @@ class _DreamDialogContentState extends State<_DreamDialogContent> {
 
     return AlertDialog(
       title: Text(_isEdit ? '夢を編集' : '新しい夢を追加'),
+      insetPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
       content: ConstrainedBox(
         constraints: const BoxConstraints(maxWidth: 480),
         child: Form(
           key: _formKey,
           child: SingleChildScrollView(
+            physics: const ClampingScrollPhysics(),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,

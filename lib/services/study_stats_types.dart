@@ -417,6 +417,25 @@ class TimelineRange {
   int get totalDays => endDate.difference(startDate).inDays + 1;
 }
 
+/// ガントチャートのマイルストーン（夢・目標の期限）.
+class GanttMilestone {
+  /// マイルストーンを作成する.
+  const GanttMilestone({
+    required this.label,
+    required this.date,
+    required this.color,
+  });
+
+  /// 表示名.
+  final String label;
+
+  /// 期限日.
+  final DateTime date;
+
+  /// 表示色（16進数文字列、例: '#FF0000'）.
+  final String color;
+}
+
 /// ガントチャートバーの座標.
 class BarGeometry {
   /// バーの座標を作成する.

@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:yume_log/models/task.dart';
+import 'package:yume_log/services/study_stats_types.dart' show GanttMilestone;
 import 'package:yume_log/widgets/gantt/gantt_chart.dart';
 
 void main() {
   Widget buildSubject({
     List<Task> tasks = const [],
     Map<String, Color> goalColors = const {},
+    List<GanttMilestone> milestones = const [],
     OnTaskTap? onTaskTap,
   }) {
     return MaterialApp(
@@ -17,6 +19,7 @@ void main() {
           child: GanttChart(
             tasks: tasks,
             goalColors: goalColors,
+            milestones: milestones,
             onTaskTap: onTaskTap,
           ),
         ),
@@ -182,6 +185,45 @@ void main() {
       await tester.pump();
 
       expect(tappedTask, isNull);
+    });
+
+    testWidgets('renders with milestones', (tester) async {
+      final tasks = createSampleTasks();
+      final now = DateTime.now();
+      final milestones = [
+        GanttMilestone(
+          label: 'TOEIC 900点',
+          date: now.add(const Duration(days: 30)),
+          color: '#4472C4',
+        ),
+      ];
+
+      await tester.pumpWidget(buildSubject(
+        tasks: tasks,
+        goalColors: {'goal-1': Colors.blue, 'goal-2': Colors.green},
+        milestones: milestones,
+      ));
+      await tester.pumpAndSettle();
+
+      expect(find.byType(GanttChart), findsOneWidget);
+      expect(find.byType(CustomPaint), findsWidgets);
+      expect(tester.takeException(), isNull);
+    });
+
+    testWidgets('renders with milestones only (no tasks)', (tester) async {
+      final milestones = [
+        GanttMilestone(
+          label: '目標期限',
+          date: DateTime.now().add(const Duration(days: 14)),
+          color: '#ED7D31',
+        ),
+      ];
+
+      await tester.pumpWidget(buildSubject(milestones: milestones));
+      await tester.pumpAndSettle();
+
+      expect(find.byType(GanttChart), findsOneWidget);
+      expect(tester.takeException(), isNull);
     });
   });
 }

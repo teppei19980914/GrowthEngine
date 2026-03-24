@@ -38,7 +38,7 @@ class _WebTrialBannerState extends State<WebTrialBanner> {
 
   @override
   Widget build(BuildContext context) {
-    if (!kIsWeb || _dismissed) return const SizedBox.shrink();
+    if (!kIsWeb || _dismissed || isPremium) return const SizedBox.shrink();
 
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
@@ -137,7 +137,7 @@ Future<bool> showWebTrialDialogIfNeeded(
   BuildContext context,
   SharedPreferences prefs,
 ) async {
-  if (!kIsWeb) return false;
+  if (!kIsWeb || isPremium) return false;
   if (prefs.getBool(_webDialogShownKey) ?? false) return false;
 
   await prefs.setBool(_webDialogShownKey, true);

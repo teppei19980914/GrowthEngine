@@ -143,6 +143,18 @@ class SettingsPage extends ConsumerWidget {
                 subtitle: const Text('この操作は取り消せません'),
                 onTap: () => _clearAllData(context, ref),
               ),
+              // プレミアム認証済み: クラウドデータ復元（Web限定）
+              if (kIsWeb &&
+                  isPremium &&
+                  FirestoreSyncService().isSignedIn) ...[
+                const Divider(height: 1),
+                ListTile(
+                  leading: Icon(Icons.cloud_download, color: colors.success),
+                  title: const Text('クラウドからデータ復元'),
+                  subtitle: const Text('バックアップからデータを復元します'),
+                  onTap: () => _restoreFromCloud(context, ref),
+                ),
+              ],
             ],
           ),
         ),
@@ -223,18 +235,6 @@ class SettingsPage extends ConsumerWidget {
                   ),
                 ),
                 const SizedBox(height: 4),
-              ],
-              // プレミアム認証済み: データ復元ボタン（Web限定）
-              if (kIsWeb &&
-                  isPremium &&
-                  FirestoreSyncService().isSignedIn) ...[
-                const Divider(height: 1),
-                ListTile(
-                  leading: Icon(Icons.cloud_download, color: colors.success),
-                  title: const Text('クラウドからデータ復元'),
-                  subtitle: const Text('バックアップからデータを復元します'),
-                  onTap: () => _restoreFromCloud(context, ref),
-                ),
               ],
               const Divider(height: 1),
               const ListTile(
@@ -395,7 +395,7 @@ class SettingsPage extends ConsumerWidget {
   }
 
   Future<void> _importData(BuildContext context, WidgetRef ref) async {
-    if (isTrialMode) {
+    if (isTrialMode && !isPremium) {
       await showDialog<void>(
         context: context,
         builder: (context) => AlertDialog(

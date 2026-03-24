@@ -16,7 +16,7 @@ import '../services/study_stats_calculator.dart';
 import '../services/study_stats_types.dart';
 import '../theme/app_theme.dart';
 
-import '../services/trial_limit_service.dart' show isTrialMode;
+import '../services/trial_limit_service.dart' show isPremium, isTrialMode;
 import '../widgets/premium/premium_gate.dart';
 import '../widgets/stats/goal_stats_section.dart';
 
@@ -469,7 +469,7 @@ class _GoalStatsPremiumSection extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    if (!isTrialMode) {
+    if (!isTrialMode || isPremium) {
       return const GoalStatsSection();
     }
     return const PremiumSectionGate(
@@ -492,7 +492,7 @@ class _ActivityChartPremiumSection extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
     final colors = theme.appColors;
-    if (!isTrialMode) {
+    if (!isTrialMode || isPremium) {
       return _ActivityChartSection(colors: colors);
     }
     return const PremiumSectionGate(

@@ -292,6 +292,7 @@ class _TaskDiscoveryDialogState extends State<_TaskDiscoveryDialog> {
   // Page 1: 目標の選択
   Widget _buildGoalSelectionPage(ThemeData theme, AppColors colors) {
     return SingleChildScrollView(
+      physics: const ClampingScrollPhysics(),
       padding: const EdgeInsets.all(20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -408,6 +409,7 @@ class _TaskDiscoveryDialogState extends State<_TaskDiscoveryDialog> {
   Widget _buildQuestionsPage(ThemeData theme, AppColors colors) {
     final goalTitle = _selectedGoal?.what;
     return SingleChildScrollView(
+      physics: const ClampingScrollPhysics(),
       padding: const EdgeInsets.all(20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -509,6 +511,7 @@ class _TaskDiscoveryDialogState extends State<_TaskDiscoveryDialog> {
   Widget _buildTemplatePage(ThemeData theme, AppColors colors) {
     final templates = _availableTemplates;
     return SingleChildScrollView(
+      physics: const ClampingScrollPhysics(),
       padding: const EdgeInsets.all(20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -602,6 +605,7 @@ class _TaskDiscoveryDialogState extends State<_TaskDiscoveryDialog> {
   // Page 4: フォーム
   Widget _buildFormPage(ThemeData theme, AppColors colors) {
     return SingleChildScrollView(
+      physics: const ClampingScrollPhysics(),
       padding: const EdgeInsets.all(20),
       child: Form(
         key: _formKey,

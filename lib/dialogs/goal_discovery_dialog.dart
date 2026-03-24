@@ -259,6 +259,7 @@ class _GoalDiscoveryDialogState extends State<_GoalDiscoveryDialog> {
   // Page 1: 夢の選択
   Widget _buildDreamSelectionPage(ThemeData theme, AppColors colors) {
     return SingleChildScrollView(
+      physics: const ClampingScrollPhysics(),
       padding: const EdgeInsets.all(20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -386,6 +387,7 @@ class _GoalDiscoveryDialogState extends State<_GoalDiscoveryDialog> {
   Widget _buildQuestionsPage(ThemeData theme, AppColors colors) {
     final dreamTitle = _selectedDream?.title;
     return SingleChildScrollView(
+      physics: const ClampingScrollPhysics(),
       padding: const EdgeInsets.all(20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -487,6 +489,7 @@ class _GoalDiscoveryDialogState extends State<_GoalDiscoveryDialog> {
   Widget _buildTemplatePage(ThemeData theme, AppColors colors) {
     final templates = _availableTemplates;
     return SingleChildScrollView(
+      physics: const ClampingScrollPhysics(),
       padding: const EdgeInsets.all(20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -580,6 +583,7 @@ class _GoalDiscoveryDialogState extends State<_GoalDiscoveryDialog> {
   // Page 4: フォーム
   Widget _buildFormPage(ThemeData theme, AppColors colors) {
     return SingleChildScrollView(
+      physics: const ClampingScrollPhysics(),
       padding: const EdgeInsets.all(20),
       child: Form(
         key: _formKey,

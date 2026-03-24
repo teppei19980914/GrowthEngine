@@ -14,6 +14,7 @@ import '../dialogs/trial_limit_dialog.dart';
 import '../models/goal.dart';
 import '../models/task.dart';
 import '../services/book_gantt_service.dart' show bookGanttColor;
+import '../services/study_stats_types.dart' show GanttMilestone;
 import '../providers/dashboard_providers.dart';
 import '../providers/gantt_providers.dart';
 import '../providers/service_providers.dart';
@@ -165,9 +166,23 @@ class GanttPage extends ConsumerWidget {
                 // 独立タスク用カラーを追加
                 goalColors[''] = _parseColor('#94E2D5');
 
+                // マイルストーン構築（日付指定の目標）
+                final milestones = <GanttMilestone>[];
+                for (final goal in goalsData) {
+                  final targetDate = goal.getTargetDate();
+                  if (targetDate != null) {
+                    milestones.add(GanttMilestone(
+                      label: goal.what,
+                      date: targetDate,
+                      color: goal.color,
+                    ));
+                  }
+                }
+
                 return GanttChart(
                   tasks: tasks,
                   goalColors: goalColors,
+                  milestones: milestones,
                   onTaskTap: (task) {
                     if (task.goalId == bookGanttGoalId) {
                       _editBookSchedule(context, ref, task);

@@ -67,9 +67,11 @@ class _FeedbackDialogState extends State<_FeedbackDialog> {
           const Expanded(child: Text('フィードバックを送信')),
         ],
       ),
+      insetPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
       content: ConstrainedBox(
         constraints: const BoxConstraints(maxWidth: 480),
         child: SingleChildScrollView(
+          physics: const ClampingScrollPhysics(),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,

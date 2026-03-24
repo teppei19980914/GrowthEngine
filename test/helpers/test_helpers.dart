@@ -185,6 +185,21 @@ class SampleGoalListNotifier extends GoalListNotifier {
       ];
 }
 
+/// テスト用: 独立目標（夢に紐づかない）を返すGoalListNotifier.
+class StandaloneGoalListNotifier extends GoalListNotifier {
+  @override
+  Future<List<Goal>> build() async => [
+        Goal(
+          id: 'goal-s1',
+          dreamId: '',
+          whenTarget: '3ヶ月以内',
+          whenType: WhenType.period,
+          what: '独立目標テスト',
+          how: 'テスト方法',
+        ),
+      ];
+}
+
 /// テスト用: サンプルBookを返すBookListNotifier.
 class SampleBookListNotifier extends BookListNotifier {
   @override

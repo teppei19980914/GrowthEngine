@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+
 import 'package:yume_log/dialogs/study_log_dialog.dart';
 
 void main() {
@@ -66,5 +67,19 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.textContaining('活動ログを記録'), findsNothing);
+  });
+
+  testWidgets('コンテンツがスクロール可能である', (tester) async {
+    tester.view.physicalSize = const Size(320, 480);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+
+    await tester.pumpWidget(buildApp());
+    await tester.tap(find.text('Open'));
+    await tester.pumpAndSettle();
+
+    expect(find.byType(SingleChildScrollView), findsOneWidget);
+    expect(find.textContaining('活動ログを記録'), findsOneWidget);
   });
 }

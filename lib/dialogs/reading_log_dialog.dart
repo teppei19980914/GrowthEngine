@@ -142,9 +142,11 @@ class _ReadingLogDialogState extends State<_ReadingLogDialog> {
           ),
         ],
       ),
+      insetPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
       content: ConstrainedBox(
-        constraints: const BoxConstraints(maxWidth: 480, maxHeight: 500),
+        constraints: const BoxConstraints(maxWidth: 480),
         child: SingleChildScrollView(
+          physics: const ClampingScrollPhysics(),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -203,22 +205,28 @@ class _ReadingLogDialogState extends State<_ReadingLogDialog> {
                       decoration: const InputDecoration(suffixText: '分'),
                     ),
                   ),
-                  const Spacer(),
+                ],
+              ),
+              const SizedBox(height: 8),
+
+              // メモ + 記録ボタン
+              Row(
+                children: [
+                  Expanded(
+                    child: TextField(
+                      controller: _memoController,
+                      decoration: const InputDecoration(
+                        hintText: 'メモ（任意）',
+                        isDense: true,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
                   FilledButton(
                     onPressed: _addLog,
                     child: const Text('記録'),
                   ),
                 ],
-              ),
-              const SizedBox(height: 8),
-
-              // メモ
-              TextField(
-                controller: _memoController,
-                decoration: const InputDecoration(
-                  hintText: 'メモ（任意）',
-                  isDense: true,
-                ),
               ),
               const SizedBox(height: 16),
 

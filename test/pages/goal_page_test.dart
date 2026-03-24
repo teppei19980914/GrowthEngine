@@ -90,6 +90,48 @@ void main() {
     expect(find.text('なし（独立した目標）'), findsOneWidget);
   });
 
+  testWidgets('夢別にグルーピングされて夢名が表示される', (tester) async {
+    final prefs = await getPrefs();
+    await tester.pumpWidget(
+      wrapWithProviders(
+        const GoalPage(),
+        prefs: prefs,
+        db: setup.db,
+        customOverrides: [
+          goalListProvider.overrideWith(() => SampleGoalListNotifier()),
+          dreamListProvider.overrideWith(() => SampleDreamListNotifier()),
+        ],
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    // 夢名がセクションヘッダーとして表示される
+    expect(find.text('医者になる'), findsOneWidget);
+    // 目標が表示される
+    expect(find.text('Flutter活動'), findsOneWidget);
+    expect(find.text('基本情報技術者'), findsOneWidget);
+  });
+
+  testWidgets('独立目標セクションが表示される', (tester) async {
+    final prefs = await getPrefs();
+    await tester.pumpWidget(
+      wrapWithProviders(
+        const GoalPage(),
+        prefs: prefs,
+        db: setup.db,
+        customOverrides: [
+          goalListProvider
+              .overrideWith(() => StandaloneGoalListNotifier()),
+        ],
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    // 独立目標セクションが表示される
+    expect(find.text('独立した目標'), findsOneWidget);
+    expect(find.text('独立目標テスト'), findsOneWidget);
+  });
+
   testWidgets('夢がある状態で追加ボタンをタップするとダイアログが開く',
       (tester) async {
     final prefs = await getPrefs();

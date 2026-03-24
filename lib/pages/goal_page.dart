@@ -1,6 +1,7 @@
 /// 目標ページ.
 ///
-/// 目標一覧をカードリストで表示し、追加・編集・削除を提供する.
+/// 夢ごとにグルーピングした目標一覧を表示し、
+/// ドラッグ&ドロップで並び替え、追加・編集・削除を提供する.
 library;
 
 import 'package:flutter/material.dart';
@@ -66,7 +67,7 @@ class GoalPage extends ConsumerWidget {
           ),
           const SizedBox(height: 16),
 
-          // 目標リスト
+          // 目標リスト（夢別グルーピング）
           Expanded(
             child: goalsAsync.when(
               data: (goals) => dreamsAsync.when(
@@ -74,26 +75,11 @@ class GoalPage extends ConsumerWidget {
                   if (goals.isEmpty) {
                     return _buildEmptyState(theme, colors);
                   }
-                  final dreamMap = {for (final d in dreams) d.id: d};
-                  final progressAsync = ref.watch(goalProgressProvider);
-                  final progressMap = progressAsync.valueOrNull ?? {};
-                  return ListView.separated(
-                    itemCount: goals.length,
-                    separatorBuilder: (_, _) => const SizedBox(height: 8),
-                    itemBuilder: (_, index) {
-                      final goal = goals[index];
-                      final dreamTitle = goal.dreamId.isEmpty
-                          ? null
-                          : dreamMap[goal.dreamId]?.title ?? '(未設定)';
-                      final progress = progressMap[goal.id];
-                      return _GoalCard(
-                        goal: goal,
-                        dreamTitle: dreamTitle,
-                        totalTasks: progress?.total ?? 0,
-                        completedTasks: progress?.completed ?? 0,
-                        onTap: () => _editGoal(context, ref, goal),
-                      );
-                    },
+                  return _GroupedGoalList(
+                    goals: goals,
+                    dreams: dreams,
+                    ref: ref,
+                    onEditGoal: (goal) => _editGoal(context, ref, goal),
                   );
                 },
                 loading: () =>
@@ -291,18 +277,308 @@ class GoalPage extends ConsumerWidget {
   }
 }
 
+/// 夢別にグルーピングされた目標リスト.
+class _GroupedGoalList extends StatelessWidget {
+  const _GroupedGoalList({
+    required this.goals,
+    required this.dreams,
+    required this.ref,
+    required this.onEditGoal,
+  });
+
+  final List<Goal> goals;
+  final List<Dream> dreams;
+  final WidgetRef ref;
+  final void Function(Goal goal) onEditGoal;
+
+  @override
+  Widget build(BuildContext context) {
+    final dreamMap = {for (final d in dreams) d.id: d};
+    final progressAsync = ref.watch(goalProgressProvider);
+    final progressMap = progressAsync.valueOrNull ?? {};
+
+    // 夢IDでグルーピング（sortOrder順）
+    final grouped = <String, List<Goal>>{};
+    for (final goal in goals) {
+      final key = goal.dreamId.isEmpty ? '' : goal.dreamId;
+      (grouped[key] ??= []).add(goal);
+    }
+    // 各グループ内をsortOrder順にソート
+    for (final list in grouped.values) {
+      list.sort((a, b) => a.sortOrder.compareTo(b.sortOrder));
+    }
+
+    // 夢のある目標を先、独立目標は末尾
+    final dreamIds = grouped.keys.where((k) => k.isNotEmpty).toList()
+      ..sort((a, b) {
+        final da = dreamMap[a]?.title ?? '';
+        final db = dreamMap[b]?.title ?? '';
+        return da.compareTo(db);
+      });
+    final hasStandalone = grouped.containsKey('');
+
+    return ListView(
+      children: [
+        for (final dreamId in dreamIds) ...[
+          _DreamSectionHeader(dream: dreamMap[dreamId]),
+          _ReorderableGoalSection(
+            dreamId: dreamId,
+            goals: grouped[dreamId]!,
+            progressMap: progressMap,
+            onEditGoal: onEditGoal,
+            onReorder: (reordered) => _persistOrder(reordered),
+          ),
+          const SizedBox(height: 16),
+        ],
+        if (hasStandalone) ...[
+          _DreamSectionHeader(dream: null),
+          _ReorderableGoalSection(
+            dreamId: '',
+            goals: grouped['']!,
+            progressMap: progressMap,
+            onEditGoal: onEditGoal,
+            onReorder: (reordered) => _persistOrder(reordered),
+          ),
+        ],
+      ],
+    );
+  }
+
+  void _persistOrder(List<Goal> reordered) {
+    final orders = <(String, int)>[];
+    for (var i = 0; i < reordered.length; i++) {
+      orders.add((reordered[i].id, i));
+    }
+    ref.read(goalListProvider.notifier).reorderGoals(orders);
+  }
+}
+
+/// 夢セクションヘッダー.
+class _DreamSectionHeader extends StatelessWidget {
+  const _DreamSectionHeader({required this.dream});
+
+  final Dream? dream;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colors = theme.appColors;
+
+    if (dream == null) {
+      return Padding(
+        padding: const EdgeInsets.only(bottom: 8, top: 4),
+        child: Row(
+          children: [
+            Icon(Icons.flag_outlined, size: 18, color: colors.textMuted),
+            const SizedBox(width: 8),
+            Text(
+              '独立した目標',
+              style: theme.textTheme.titleSmall?.copyWith(
+                color: colors.textMuted,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
+    final cat = dream!.dreamCategory;
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8, top: 4),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(6),
+            decoration: BoxDecoration(
+              color: cat.color.withAlpha(30),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Icon(cat.icon, size: 18, color: cat.color),
+          ),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  dream!.title,
+                  style: theme.textTheme.titleSmall?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                Text(
+                  cat.label,
+                  style: theme.textTheme.labelSmall?.copyWith(
+                    color: cat.color,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// 並び替え可能な目標セクション.
+class _ReorderableGoalSection extends StatefulWidget {
+  const _ReorderableGoalSection({
+    required this.dreamId,
+    required this.goals,
+    required this.progressMap,
+    required this.onEditGoal,
+    required this.onReorder,
+  });
+
+  final String dreamId;
+  final List<Goal> goals;
+  final Map<String, ({int total, int completed})> progressMap;
+  final void Function(Goal) onEditGoal;
+  final void Function(List<Goal>) onReorder;
+
+  @override
+  State<_ReorderableGoalSection> createState() =>
+      _ReorderableGoalSectionState();
+}
+
+class _ReorderableGoalSectionState extends State<_ReorderableGoalSection> {
+  late List<Goal> _orderedGoals;
+
+  @override
+  void initState() {
+    super.initState();
+    _orderedGoals = List.of(widget.goals);
+  }
+
+  @override
+  void didUpdateWidget(_ReorderableGoalSection old) {
+    super.didUpdateWidget(old);
+    if (old.goals != widget.goals) {
+      _orderedGoals = List.of(widget.goals);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colors = theme.appColors;
+
+    return ReorderableListView.builder(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      buildDefaultDragHandles: false,
+      itemCount: _orderedGoals.length,
+      onReorder: (oldIndex, newIndex) {
+        setState(() {
+          if (newIndex > oldIndex) newIndex--;
+          final item = _orderedGoals.removeAt(oldIndex);
+          _orderedGoals.insert(newIndex, item);
+        });
+        widget.onReorder(_orderedGoals);
+      },
+      proxyDecorator: (child, index, animation) {
+        return AnimatedBuilder(
+          animation: animation,
+          builder: (context, child) => Material(
+            elevation: 4,
+            borderRadius: BorderRadius.circular(12),
+            child: child,
+          ),
+          child: child,
+        );
+      },
+      itemBuilder: (context, index) {
+        final goal = _orderedGoals[index];
+        final progress = widget.progressMap[goal.id];
+
+        return Padding(
+          key: ValueKey(goal.id),
+          padding: const EdgeInsets.only(bottom: 8),
+          child: Row(
+            children: [
+              // 順序インジケーター
+              SizedBox(
+                width: 28,
+                child: Column(
+                  children: [
+                    if (index > 0)
+                      Container(
+                        width: 2,
+                        height: 8,
+                        color: colors.border,
+                      ),
+                    Container(
+                      width: 22,
+                      height: 22,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: theme.colorScheme.primary.withAlpha(20),
+                        border: Border.all(
+                          color: theme.colorScheme.primary.withAlpha(80),
+                        ),
+                      ),
+                      alignment: Alignment.center,
+                      child: Text(
+                        '${index + 1}',
+                        style: theme.textTheme.labelSmall?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: theme.colorScheme.primary,
+                          fontSize: 10,
+                        ),
+                      ),
+                    ),
+                    if (index < _orderedGoals.length - 1)
+                      Container(
+                        width: 2,
+                        height: 8,
+                        color: colors.border,
+                      ),
+                  ],
+                ),
+              ),
+              const SizedBox(width: 4),
+              // 目標カード
+              Expanded(
+                child: _GoalCard(
+                  goal: goal,
+                  totalTasks: progress?.total ?? 0,
+                  completedTasks: progress?.completed ?? 0,
+                  onTap: () => widget.onEditGoal(goal),
+                ),
+              ),
+              // ドラッグハンドル
+              ReorderableDragStartListener(
+                index: index,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 4),
+                  child: Icon(
+                    Icons.drag_indicator,
+                    size: 20,
+                    color: colors.textMuted,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+}
+
 /// 目標カードウィジェット.
 class _GoalCard extends StatelessWidget {
   const _GoalCard({
     required this.goal,
-    required this.dreamTitle,
     required this.totalTasks,
     required this.completedTasks,
     required this.onTap,
   });
 
   final Goal goal;
-  final String? dreamTitle;
   final int totalTasks;
   final int completedTasks;
   final VoidCallback onTap;
@@ -393,31 +669,6 @@ class _GoalCard extends StatelessWidget {
                             size: 18, color: colors.textMuted),
                       ],
                     ),
-                    const SizedBox(height: 4),
-
-                    // 夢情報（紐づく夢がある場合のみ表示）
-                    if (dreamTitle != null) ...[
-                      Row(
-                        children: [
-                          Icon(
-                            Icons.auto_awesome,
-                            size: 13,
-                            color: theme.colorScheme.primary,
-                          ),
-                          const SizedBox(width: 4),
-                          Expanded(
-                            child: Text(
-                              dreamTitle!,
-                              style: theme.textTheme.labelSmall?.copyWith(
-                                color: theme.colorScheme.primary,
-                                fontWeight: FontWeight.w600,
-                              ),
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
                     const SizedBox(height: 6),
 
                     // 進捗テキスト
@@ -505,4 +756,3 @@ class _WhenBadge extends StatelessWidget {
     );
   }
 }
-

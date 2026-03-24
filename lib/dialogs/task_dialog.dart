@@ -332,6 +332,7 @@ class _TaskDialogContentState extends State<_TaskDialogContent> {
     final theme = Theme.of(context);
 
     return AlertDialog(
+      insetPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
       title: Row(
         children: [
           Expanded(child: Text(_isEdit ? 'タスクを編集' : '新しいタスクを追加')),
@@ -363,6 +364,7 @@ class _TaskDialogContentState extends State<_TaskDialogContent> {
         child: Form(
           key: _formKey,
           child: SingleChildScrollView(
+            physics: const ClampingScrollPhysics(),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -391,13 +393,15 @@ class _TaskDialogContentState extends State<_TaskDialogContent> {
                           const SizedBox(height: 4),
                           TextFormField(
                             controller: _startDateController,
-                            decoration: InputDecoration(
-                              suffixIcon: IconButton(
-                                icon: const Icon(
-                                  Icons.calendar_month,
-                                  size: 18,
-                                ),
-                                onPressed: _pickStartDate,
+                            decoration: const InputDecoration(
+                              isDense: true,
+                              suffixIcon: Icon(
+                                Icons.calendar_month,
+                                size: 18,
+                              ),
+                              suffixIconConstraints: BoxConstraints(
+                                minWidth: 32,
+                                minHeight: 0,
                               ),
                             ),
                             readOnly: true,
@@ -406,7 +410,7 @@ class _TaskDialogContentState extends State<_TaskDialogContent> {
                         ],
                       ),
                     ),
-                    const SizedBox(width: 12),
+                    const SizedBox(width: 8),
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -415,13 +419,15 @@ class _TaskDialogContentState extends State<_TaskDialogContent> {
                           const SizedBox(height: 4),
                           TextFormField(
                             controller: _endDateController,
-                            decoration: InputDecoration(
-                              suffixIcon: IconButton(
-                                icon: const Icon(
-                                  Icons.calendar_month,
-                                  size: 18,
-                                ),
-                                onPressed: _pickEndDate,
+                            decoration: const InputDecoration(
+                              isDense: true,
+                              suffixIcon: Icon(
+                                Icons.calendar_month,
+                                size: 18,
+                              ),
+                              suffixIconConstraints: BoxConstraints(
+                                minWidth: 32,
+                                minHeight: 0,
                               ),
                             ),
                             readOnly: true,

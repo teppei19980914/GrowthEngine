@@ -111,4 +111,18 @@ void main() {
     expect(find.textContaining('匿名で送信されます'), findsOneWidget);
     expect(find.byIcon(Icons.shield_outlined), findsOneWidget);
   });
+
+  testWidgets('コンテンツがスクロール可能である', (tester) async {
+    tester.view.physicalSize = const Size(400, 600);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+
+    await tester.pumpWidget(wrap());
+    await tester.tap(find.text('open'));
+    await tester.pumpAndSettle();
+
+    expect(find.byType(SingleChildScrollView), findsOneWidget);
+    expect(find.text('フィードバックを送信'), findsOneWidget);
+  });
 }

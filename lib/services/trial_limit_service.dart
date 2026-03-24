@@ -109,7 +109,7 @@ bool get canUseAdvancedStats => isPremium;
 
 /// 夢の追加が可能か判定する.
 bool canAddDream({required int currentCount, int unlockLevel = 0}) {
-  if (!isTrialMode) return true;
+  if (!isTrialMode || isPremium) return true;
   return currentCount < _currentConfig(unlockLevel).dreams;
 }
 
@@ -118,7 +118,7 @@ bool canAddGoal({
   required int currentGoalCountForDream,
   int unlockLevel = 0,
 }) {
-  if (!isTrialMode) return true;
+  if (!isTrialMode || isPremium) return true;
   return currentGoalCountForDream <
       _currentConfig(unlockLevel).goalsPerDream;
 }
@@ -128,14 +128,14 @@ bool canAddTask({
   required int currentTaskCountForGoal,
   int unlockLevel = 0,
 }) {
-  if (!isTrialMode) return true;
+  if (!isTrialMode || isPremium) return true;
   return currentTaskCountForGoal <
       _currentConfig(unlockLevel).tasksPerGoal;
 }
 
 /// 書籍の追加が可能か判定する.
 bool canAddBook({required int currentCount, int unlockLevel = 0}) {
-  if (!isTrialMode) return true;
+  if (!isTrialMode || isPremium) return true;
   return currentCount < _currentConfig(unlockLevel).books;
 }
 

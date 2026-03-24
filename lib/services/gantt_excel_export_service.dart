@@ -11,6 +11,7 @@ import 'package:intl/intl.dart';
 
 import '../models/goal.dart';
 import '../models/task.dart';
+import 'study_stats_types.dart' show GanttMilestone;
 
 /// ステータスの日本語マッピング.
 const _statusLabels = {
@@ -47,15 +48,16 @@ class GanttExcelExportService {
     required String format,
   }) {
     final goalMap = {for (final g in goals) g.id: g};
+    final milestones = _buildMilestones(goals);
     final dateStr = DateFormat('yyyyMMdd').format(DateTime.now());
 
     switch (format) {
       case 'html':
-        return _exportHtml(tasks, goalMap, dateStr);
+        return _exportHtml(tasks, goalMap, milestones, dateStr);
       case 'csv':
-        return _exportCsv(tasks, goalMap, dateStr);
+        return _exportCsv(tasks, goalMap, milestones, dateStr);
       default:
-        return _exportExcel(tasks, goalMap, dateStr);
+        return _exportExcel(tasks, goalMap, milestones, dateStr);
     }
   }
 
@@ -67,15 +69,33 @@ class GanttExcelExportService {
     return exportAs(tasks: tasks, goals: goals, format: 'excel');
   }
 
+  // ── マイルストーン構築 ──────────────────────────────────────
+
+  List<GanttMilestone> _buildMilestones(List<Goal> goals) {
+    final milestones = <GanttMilestone>[];
+    for (final goal in goals) {
+      final targetDate = goal.getTargetDate();
+      if (targetDate != null) {
+        milestones.add(GanttMilestone(
+          label: goal.what,
+          date: targetDate,
+          color: goal.color,
+        ));
+      }
+    }
+    return milestones;
+  }
+
   // ── HTML エクスポート ──────────────────────────────────────
 
   GanttExportResult _exportHtml(
     List<Task> tasks,
     Map<String, Goal> goalMap,
+    List<GanttMilestone> milestones,
     String dateStr,
   ) {
     final sorted = _sortTasks(tasks, goalMap);
-    final (earliest, latest) = _dateRange(sorted);
+    final (earliest, latest) = _dateRange(sorted, milestones);
     final totalDays = latest.difference(earliest).inDays + 1;
     final df = DateFormat('yyyy/MM/dd');
 
@@ -163,6 +183,30 @@ class GanttExcelExportService {
       buf.writeln('</tr>');
     }
 
+    // マイルストーン行
+    for (final ms in milestones) {
+      final msDay = ms.date.difference(earliest).inDays;
+      final msColor = ms.color.replaceFirst('#', '');
+      buf.write('<tr>');
+      buf.write('<td class="goal-name" style="color:#$msColor;">'
+          '\u{25C6} ${_escapeHtml(ms.label)}</td>');
+      buf.write('<td>マイルストーン</td>');
+      buf.write('<td></td><td></td>');
+      buf.write('<td>${df.format(ms.date)}</td>');
+      buf.write('<td></td>');
+      for (var d = 0; d < totalDays; d++) {
+        if (d == msDay) {
+          buf.write('<td style="background:#$msColor;text-align:center;'
+              'color:#fff;font-weight:bold;">\u{25C6}</td>');
+        } else {
+          final date = earliest.add(Duration(days: d));
+          final isWeekend = date.weekday == 6 || date.weekday == 7;
+          buf.write('<td${isWeekend ? ' class="weekend"' : ''}></td>');
+        }
+      }
+      buf.writeln('</tr>');
+    }
+
     buf
       ..writeln('</table></div>')
       ..writeln('<div class="legend">ユメログ - ガントチャートエクスポート</div>')
@@ -180,10 +224,11 @@ class GanttExcelExportService {
   GanttExportResult _exportExcel(
     List<Task> tasks,
     Map<String, Goal> goalMap,
+    List<GanttMilestone> milestones,
     String dateStr,
   ) {
     final excel = Excel.createExcel();
-    _buildGanttSheet(excel, tasks, goalMap);
+    _buildGanttSheet(excel, tasks, goalMap, milestones);
 
     if (excel.sheets.containsKey('Sheet1')) {
       excel.delete('Sheet1');
@@ -206,6 +251,7 @@ class GanttExcelExportService {
   GanttExportResult _exportCsv(
     List<Task> tasks,
     Map<String, Goal> goalMap,
+    List<GanttMilestone> milestones,
     String dateStr,
   ) {
     final sorted = _sortTasks(tasks, goalMap);
@@ -233,6 +279,19 @@ class GanttExcelExportService {
       );
     }
 
+    // マイルストーン行
+    for (final ms in milestones) {
+      buf.writeln(
+        '${_csvEscape('\u{25C6} ${ms.label}')},'
+        'マイルストーン,'
+        '${df.format(ms.date)},'
+        ','
+        ','
+        'マイルストーン,'
+        '',
+      );
+    }
+
     return GanttExportResult(
       bytes: Uint8List.fromList(utf8.encode(buf.toString())),
       fileName: 'gantt_$dateStr.csv',
@@ -246,12 +305,13 @@ class GanttExcelExportService {
     Excel excel,
     List<Task> tasks,
     Map<String, Goal> goalMap,
+    List<GanttMilestone> milestones,
   ) {
     final sheet = excel['ガントチャート'];
     if (tasks.isEmpty) return;
 
     final sortedTasks = _sortTasks(tasks, goalMap);
-    final (earliest, latest) = _dateRange(sortedTasks);
+    final (earliest, latest) = _dateRange(sortedTasks, milestones);
     final totalDays = latest.difference(earliest).inDays + 1;
 
     // ヘッダー
@@ -349,6 +409,39 @@ class GanttExcelExportService {
       }
     }
 
+    // マイルストーン行
+    final dateFmtMs = DateFormat('yyyy/MM/dd');
+    for (var m = 0; m < milestones.length; m++) {
+      final ms = milestones[m];
+      final row = sortedTasks.length + 1 + m;
+      final msColor = ms.color.replaceFirst('#', '');
+
+      sheet
+          .cell(CellIndex.indexByColumnRow(columnIndex: 0, rowIndex: row))
+          .value = TextCellValue('\u{25C6} ${ms.label}');
+      sheet
+          .cell(CellIndex.indexByColumnRow(columnIndex: 1, rowIndex: row))
+          .value = TextCellValue('マイルストーン');
+      sheet
+          .cell(CellIndex.indexByColumnRow(columnIndex: 4, rowIndex: row))
+          .value = TextCellValue(dateFmtMs.format(ms.date));
+
+      // ダイヤマーカー
+      final msDay = ms.date.difference(earliest).inDays;
+      if (msDay >= 0 && msDay < totalDays) {
+        final col = fixedHeaders.length + msDay;
+        final cell = sheet.cell(
+          CellIndex.indexByColumnRow(columnIndex: col, rowIndex: row),
+        );
+        cell.value = TextCellValue('\u{25C6}');
+        cell.cellStyle = CellStyle(
+          backgroundColorHex: ExcelColor.fromHexString('#$msColor'),
+          horizontalAlign: HorizontalAlign.Center,
+          bold: true,
+        );
+      }
+    }
+
     // 列幅
     sheet.setColumnWidth(0, 18);
     sheet.setColumnWidth(1, 22);
@@ -373,12 +466,19 @@ class GanttExcelExportService {
       });
   }
 
-  (DateTime, DateTime) _dateRange(List<Task> sorted) {
+  (DateTime, DateTime) _dateRange(
+    List<Task> sorted, [
+    List<GanttMilestone> milestones = const [],
+  ]) {
     var earliest = sorted.first.startDate;
     var latest = sorted.first.endDate;
     for (final task in sorted) {
       if (task.startDate.isBefore(earliest)) earliest = task.startDate;
       if (task.endDate.isAfter(latest)) latest = task.endDate;
+    }
+    for (final ms in milestones) {
+      if (ms.date.isBefore(earliest)) earliest = ms.date;
+      if (ms.date.isAfter(latest)) latest = ms.date;
     }
     return (earliest, latest);
   }

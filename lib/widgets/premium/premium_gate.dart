@@ -42,7 +42,7 @@ class PremiumGate extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (!isTrialMode) {
+    if (!isTrialMode || isPremium) {
       return previewChild ?? const SizedBox.expand();
     }
 
@@ -100,7 +100,7 @@ class PremiumSectionGate extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (!isTrialMode) return const SizedBox.shrink();
+    if (!isTrialMode || isPremium) return const SizedBox.shrink();
 
     final theme = Theme.of(context);
     final colors = theme.appColors;

@@ -82,4 +82,11 @@ class GoalListNotifier extends AsyncNotifier<List<Goal>> {
     await service.deleteGoal(goalId);
     ref.invalidateSelf();
   }
+
+  /// 目標の並び順を更新する.
+  Future<void> reorderGoals(List<(String goalId, int sortOrder)> orders) async {
+    final service = ref.read(goalServiceProvider);
+    await service.updateGoalOrders(orders);
+    ref.invalidateSelf();
+  }
 }

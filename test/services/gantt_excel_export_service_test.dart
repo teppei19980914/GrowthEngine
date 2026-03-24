@@ -132,8 +132,8 @@ void main() {
       final excel = Excel.decodeBytes(result.bytes);
       final sheet = excel.tables['ガントチャート']!;
 
-      // ヘッダー + 3タスク
-      expect(sheet.maxRows, 4);
+      // ヘッダー(1) + タスク(3) + マイルストーン(2) = 6行
+      expect(sheet.maxRows, 6);
     });
 
     test('目標が見つからないタスクは「不明」と表示される', () {
@@ -197,6 +197,75 @@ void main() {
       final csv = utf8.decode(result.bytes);
       expect(csv, contains('目標名'));
       expect(csv, contains('タスク名'));
+    });
+  });
+
+  group('マイルストーン', () {
+    test('HTMLにマイルストーン行が含まれる', () {
+      final result = service.exportAs(
+        tasks: createTestTasks(),
+        goals: createTestGoals(),
+        format: 'html',
+      );
+      final html = utf8.decode(result.bytes);
+      // goal-1 has whenType=date, whenTarget='2026-12-31' => milestone
+      expect(html, contains('マイルストーン'));
+      expect(html, contains('TOEIC 900点'));
+    });
+
+    test('CSVにマイルストーン行が含まれる', () {
+      final result = service.exportAs(
+        tasks: createTestTasks(),
+        goals: createTestGoals(),
+        format: 'csv',
+      );
+      final csv = utf8.decode(result.bytes);
+      expect(csv, contains('マイルストーン'));
+    });
+
+    test('Excelにマイルストーン行が含まれる', () {
+      final tasks = createTestTasks();
+      final goals = createTestGoals();
+      final result = service.exportAs(
+        tasks: tasks,
+        goals: goals,
+        format: 'excel',
+      );
+
+      final excel = Excel.decodeBytes(result.bytes);
+      final sheet = excel.tables['ガントチャート']!;
+      // ヘッダー(1) + タスク(3) + マイルストーン(2) = 6行
+      expect(sheet.maxRows, 6);
+    });
+
+    test('日付指定でない目標はマイルストーンに含まれない', () {
+      final goals = [
+        Goal(
+          id: 'goal-p',
+          dreamId: 'dream-1',
+          whenTarget: '3ヶ月以内',
+          whenType: WhenType.period,
+          what: '期間目標',
+          how: 'テスト',
+          color: '#4472C4',
+        ),
+      ];
+      final tasks = [
+        Task(
+          id: 'task-p',
+          goalId: 'goal-p',
+          title: 'テスト',
+          startDate: DateTime(2026, 3, 1),
+          endDate: DateTime(2026, 3, 31),
+        ),
+      ];
+      final result = service.exportAs(
+        tasks: tasks,
+        goals: goals,
+        format: 'csv',
+      );
+      final csv = utf8.decode(result.bytes);
+      expect(csv, isNot(contains('マイルストーン')));
     });
   });
 

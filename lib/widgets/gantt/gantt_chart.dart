@@ -20,6 +20,7 @@ class GanttChart extends StatefulWidget {
   const GanttChart({
     required this.tasks,
     required this.goalColors,
+    this.milestones = const [],
     this.onTaskTap,
     super.key,
   });
@@ -29,6 +30,9 @@ class GanttChart extends StatefulWidget {
 
   /// GoalID→カラーのマップ.
   final Map<String, Color> goalColors;
+
+  /// マイルストーン一覧（夢・目標の期限）.
+  final List<GanttMilestone> milestones;
 
   /// タスクタップ時のコールバック.
   final OnTaskTap? onTaskTap;
@@ -51,7 +55,8 @@ class _GanttChartState extends State<GanttChart> {
   @override
   void didUpdateWidget(GanttChart oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (oldWidget.tasks != widget.tasks) {
+    if (oldWidget.tasks != widget.tasks ||
+        oldWidget.milestones != widget.milestones) {
       _updateTimeline();
     }
   }
@@ -60,6 +65,10 @@ class _GanttChartState extends State<GanttChart> {
     final dates = widget.tasks
         .map((t) => (t.startDate, t.endDate))
         .toList();
+    // マイルストーン日付もタイムライン計算に含める
+    for (final m in widget.milestones) {
+      dates.add((m.date, m.date));
+    }
     _timeline = _calculator.calculateTimeline(dates);
   }
 
@@ -107,6 +116,7 @@ class _GanttChartState extends State<GanttChart> {
                   painter: _GanttPainter(
                     tasks: widget.tasks,
                     goalColors: widget.goalColors,
+                    milestones: widget.milestones,
                     calculator: _calculator,
                     timeline: _timeline,
                     hoveredRow: _hoveredRow,
@@ -131,6 +141,7 @@ class _GanttPainter extends CustomPainter {
   _GanttPainter({
     required this.tasks,
     required this.goalColors,
+    required this.milestones,
     required this.calculator,
     required this.timeline,
     required this.hoveredRow,
@@ -144,6 +155,7 @@ class _GanttPainter extends CustomPainter {
 
   final List<Task> tasks;
   final Map<String, Color> goalColors;
+  final List<GanttMilestone> milestones;
   final GanttCalculator calculator;
   final TimelineRange timeline;
   final int? hoveredRow;
@@ -158,6 +170,7 @@ class _GanttPainter extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     _drawGrid(canvas, size);
     _drawHeader(canvas, size);
+    _drawMilestones(canvas, size);
     _drawTodayLine(canvas, size);
     _drawBars(canvas);
   }
@@ -329,6 +342,52 @@ class _GanttPainter extends CustomPainter {
     }
   }
 
+  void _drawMilestones(Canvas canvas, Size size) {
+    for (final milestone in milestones) {
+      final x = calculator.dateToX(milestone.date, timeline) +
+          calculator.pixelsPerDay / 2;
+      final colorHex = milestone.color.replaceFirst('#', '');
+      final color = Color(int.parse('FF$colorHex', radix: 16));
+
+      // 縦の破線
+      final linePaint = Paint()
+        ..color = color.withAlpha(100)
+        ..strokeWidth = 1.5;
+      const dashHeight = 6.0;
+      const gapHeight = 4.0;
+      var y = calculator.headerHeight.toDouble();
+      while (y < size.height) {
+        canvas.drawLine(
+          Offset(x, y),
+          Offset(x, (y + dashHeight).clamp(0, size.height)),
+          linePaint,
+        );
+        y += dashHeight + gapHeight;
+      }
+
+      // ダイヤモンドマーカー（ヘッダー下部）
+      const diamondSize = 8.0;
+      final markerY = calculator.headerHeight.toDouble() - diamondSize - 4;
+      final path = Path()
+        ..moveTo(x, markerY - diamondSize)
+        ..lineTo(x + diamondSize, markerY)
+        ..lineTo(x, markerY + diamondSize)
+        ..lineTo(x - diamondSize, markerY)
+        ..close();
+      canvas.drawPath(path, Paint()..color = color);
+
+      // ラベル
+      _drawText(
+        canvas,
+        milestone.label,
+        Offset(x + diamondSize + 2, markerY - 6),
+        color,
+        9,
+        fontWeight: FontWeight.w600,
+      );
+    }
+  }
+
   void _drawText(
     Canvas canvas,
     String text,
@@ -354,6 +413,7 @@ class _GanttPainter extends CustomPainter {
   @override
   bool shouldRepaint(_GanttPainter oldDelegate) {
     return oldDelegate.tasks != tasks ||
+        oldDelegate.milestones != milestones ||
         oldDelegate.hoveredRow != hoveredRow ||
         oldDelegate.timeline != timeline;
   }

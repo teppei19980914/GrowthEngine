@@ -66,9 +66,11 @@ class _InquiryDialogState extends State<_InquiryDialog> {
           const Expanded(child: Text('お問い合わせ')),
         ],
       ),
+      insetPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
       content: ConstrainedBox(
         constraints: const BoxConstraints(maxWidth: 480),
         child: SingleChildScrollView(
+          physics: const ClampingScrollPhysics(),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,

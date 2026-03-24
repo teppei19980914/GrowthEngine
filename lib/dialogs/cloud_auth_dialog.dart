@@ -128,6 +128,7 @@ class _CloudAuthDialogState extends State<_CloudAuthDialog> {
         child: Form(
           key: _formKey,
           child: SingleChildScrollView(
+            physics: const ClampingScrollPhysics(),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,

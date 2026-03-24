@@ -4,7 +4,7 @@ library;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../models/goal.dart';
-import '../models/task.dart';
+import '../models/task.dart' show Task, bookGanttGoalId;
 import 'service_providers.dart';
 
 /// ガントチャートの表示モード.
@@ -76,25 +76,49 @@ class GanttViewStateNotifier extends Notifier<GanttViewState> {
 }
 
 /// ガントチャート用タスク一覧Provider.
+///
+/// 目標名でグルーピングし、各グループ内は開始日の昇順でソートする.
 final ganttTasksProvider = FutureProvider<List<Task>>((ref) async {
   final viewState = ref.watch(ganttViewStateProvider);
   final taskService = ref.watch(taskServiceProvider);
   final bookGanttService = ref.watch(bookGanttServiceProvider);
 
+  List<Task> tasks;
   switch (viewState.mode) {
     case GanttViewMode.allTasks:
-      final tasks = await taskService.getAllTasks();
+      final allTasks = await taskService.getAllTasks();
       final scheduledBooks = await bookGanttService.getScheduledBooks();
       final bookTasks = bookGanttService.booksToTasks(scheduledBooks);
-      return [...tasks, ...bookTasks];
+      tasks = [...allTasks, ...bookTasks];
     case GanttViewMode.byGoal:
       final goalId = viewState.selectedGoalId;
       if (goalId == null) return [];
-      return taskService.getTasksForGoal(goalId);
+      tasks = await taskService.getTasksForGoal(goalId);
     case GanttViewMode.allBooks:
       final scheduledBooks = await bookGanttService.getScheduledBooks();
-      return bookGanttService.booksToTasks(scheduledBooks);
+      tasks = bookGanttService.booksToTasks(scheduledBooks);
   }
+
+  // 目標名でグルーピング→開始日の昇順でソート
+  final goalService = ref.watch(goalServiceProvider);
+  final goals = await goalService.getAllGoals();
+  final goalNameMap = <String, String>{
+    for (final g in goals) g.id: g.what,
+  };
+
+  String goalSortKey(String goalId) {
+    if (goalId == bookGanttGoalId) return '\uFFFF書籍'; // 書籍は末尾
+    if (goalId.isEmpty) return '\uFFFF独立タスク'; // 独立タスクも末尾寄り
+    return goalNameMap[goalId] ?? '\uFFFF不明';
+  }
+
+  tasks.sort((a, b) {
+    final goalCmp = goalSortKey(a.goalId).compareTo(goalSortKey(b.goalId));
+    if (goalCmp != 0) return goalCmp;
+    return a.startDate.compareTo(b.startDate);
+  });
+
+  return tasks;
 });
 
 /// 目標一覧Provider（セレクタ用）.

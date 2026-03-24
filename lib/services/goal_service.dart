@@ -99,6 +99,16 @@ class GoalService {
     return updated;
   }
 
+  /// 目標の並び順を一括更新する.
+  Future<void> updateGoalOrders(List<(String goalId, int sortOrder)> orders) async {
+    for (final (goalId, sortOrder) in orders) {
+      final existing = await _goalDao.getById(goalId);
+      if (existing == null) continue;
+      final updated = _rowToGoal(existing).copyWith(sortOrder: sortOrder);
+      await _goalDao.updateGoal(_goalToCompanion(updated));
+    }
+  }
+
   /// Goalを削除する（紐づくTaskもカスケード削除）.
   Future<bool> deleteGoal(String goalId) async {
     await _taskDao.deleteByGoalId(goalId);
@@ -134,6 +144,7 @@ class GoalService {
       createdAt: row.createdAt,
       updatedAt: row.updatedAt,
       color: row.color,
+      sortOrder: row.sortOrder,
     );
   }
 
@@ -147,6 +158,7 @@ class GoalService {
       what: Value(goal.what),
       how: Value(goal.how),
       color: Value(goal.color),
+      sortOrder: Value(goal.sortOrder),
       createdAt: Value(goal.createdAt),
       updatedAt: Value(goal.updatedAt),
     );

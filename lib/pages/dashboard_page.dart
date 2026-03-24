@@ -573,7 +573,8 @@ class _BookshelfContent extends ConsumerWidget {
                     // 本の列
                     SizedBox(
                       height: 100,
-                      child: Padding(
+                      child: SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
                         padding: const EdgeInsets.symmetric(horizontal: 4),
                         child: Row(
                           crossAxisAlignment: CrossAxisAlignment.end,
@@ -590,7 +591,6 @@ class _BookshelfContent extends ConsumerWidget {
                                       book: b, colors: colors),
                                 ),
                               ),
-                            const Spacer(),
                           ],
                         ),
                       ),

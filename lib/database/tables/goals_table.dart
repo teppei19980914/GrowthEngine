@@ -29,6 +29,9 @@ class Goals extends Table {
   /// 表示色（ガントチャート用）.
   TextColumn get color => text().withDefault(const Constant('#4A9EFF'))();
 
+  /// 表示順序（夢内での並び順、小さい方が先）.
+  IntColumn get sortOrder => integer().withDefault(const Constant(0))();
+
   /// 作成日時.
   DateTimeColumn get createdAt => dateTime()();
 
