@@ -26,6 +26,7 @@ import 'package:yume_log/widgets/stats/goal_stats_section.dart';
 import 'package:yume_log/models/book.dart';
 import 'package:yume_log/models/task.dart';
 import 'package:yume_log/pages/stats_page.dart';
+import 'package:yume_log/app.dart' show disableInboxCheckForTest;
 import 'package:yume_log/providers/gantt_providers.dart';
 
 /// テスト用のProviderScope overridesを作成する.
@@ -300,6 +301,7 @@ class TestSetup {
   void setUp() {
     driftRuntimeOptions.dontWarnAboutMultipleDatabases = true;
     SharedPreferences.setMockInitialValues({'onboarding_completed': true});
+    disableInboxCheckForTest();
     db = AppDatabase(NativeDatabase.memory());
   }
 

@@ -117,6 +117,68 @@ class NotificationService {
     return created;
   }
 
+  /// 期限リマインダー通知を生成する.
+  ///
+  /// タスク・目標の期限が7日以内または超過の場合に自動生成する.
+  /// 日付ベースの dedupKey で同じ期限通知は1日1回のみ.
+  Future<List<Notification>> checkAndCreateReminders({
+    required List<({String id, String title, DateTime deadline, bool isGoal})>
+        deadlines,
+  }) async {
+    final enabled = await notificationsEnabled;
+    if (!enabled) return [];
+
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final created = <Notification>[];
+
+    for (final item in deadlines) {
+      final dueDate = DateTime(
+        item.deadline.year,
+        item.deadline.month,
+        item.deadline.day,
+      );
+      final daysLeft = dueDate.difference(today).inDays;
+
+      String? title;
+      String? message;
+      String? dedupSuffix;
+
+      if (daysLeft < 0) {
+        dedupSuffix = 'overdue:${today.toIso8601String().substring(0, 10)}';
+        title = '${item.title}が期限を過ぎています';
+        message = '期限を${-daysLeft}日超過しています。確認してください。';
+      } else if (daysLeft == 0) {
+        dedupSuffix = 'due_today';
+        title = '${item.title}の期限は今日です';
+        message = '今日が期限日です。最後の追い込みを！';
+      } else if (daysLeft <= 7) {
+        dedupSuffix = 'due_7days';
+        title = '${item.title}の期限まであと$daysLeft日';
+        message = '期限が近づいています。計画を確認しましょう。';
+      }
+
+      if (title == null || dedupSuffix == null) continue;
+
+      final kind = item.isGoal ? 'goal' : 'task';
+      final dedupKey = 'reminder:$kind:${item.id}:$dedupSuffix';
+      final exists = await _notificationDao.existsByDedupKey(dedupKey);
+      if (exists) continue;
+
+      final notification = Notification(
+        notificationType: NotificationType.reminder,
+        title: title,
+        message: message!,
+        dedupKey: dedupKey,
+      );
+      await _notificationDao.insertNotification(
+        _notificationToCompanion(notification),
+      );
+      created.add(notification);
+    }
+    return created;
+  }
+
   /// システム通知をJSON文字列から読み込む.
   Future<List<Notification>> loadSystemNotificationsFromJson(
     String jsonStr,

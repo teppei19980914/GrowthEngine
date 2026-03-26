@@ -88,6 +88,13 @@ const widgetRegistry = <String, WidgetMetadata>{
     defaultSpan: 1,
     allowedSpans: [1, 2],
   ),
+  'inbox_preview': WidgetMetadata(
+    widgetType: 'inbox_preview',
+    displayName: '受信ボックス',
+    icon: '\uD83D\uDCEC',
+    defaultSpan: 2,
+    allowedSpans: [1, 2],
+  ),
 };
 
 /// ダッシュボードのレイアウト設定を管理するサービス.

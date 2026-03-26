@@ -208,7 +208,15 @@ class _CloudAuthDialogState extends State<_CloudAuthDialog> {
                   ),
                   validator: (v) {
                     if (v == null || v.trim().isEmpty) return '必須項目です';
-                    if (!v.contains('@')) return '有効なメールアドレスを入力してください';
+                    final emailRegex = RegExp(
+                      r'^[a-zA-Z0-9.!#$%&*+/=?^_`{|}~-]+@'
+                      r'[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}'
+                      r'[a-zA-Z0-9])?(?:\.[a-zA-Z0-9]'
+                      r'(?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$',
+                    );
+                    if (!emailRegex.hasMatch(v.trim())) {
+                      return '有効なメールアドレスを入力してください';
+                    }
                     return null;
                   },
                 ),

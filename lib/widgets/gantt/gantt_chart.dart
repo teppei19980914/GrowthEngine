@@ -67,10 +67,13 @@ class GanttChart extends StatefulWidget {
   final OnTaskTap? onTaskTap;
 
   @override
-  State<GanttChart> createState() => _GanttChartState();
+  State<GanttChart> createState() => GanttChartState();
 }
 
-class _GanttChartState extends State<GanttChart> {
+/// GanttChartの外部操作インターフェース.
+///
+/// [GlobalKey] 経由で [scrollToDate] を呼び出し、指定日付にスクロールできる.
+class GanttChartState extends State<GanttChart> {
   final _calculator = GanttCalculator();
   late TimelineRange _timeline;
   late List<_GoalGroup> _groups;
@@ -108,6 +111,25 @@ class _GanttChartState extends State<GanttChart> {
         _labelVerticalController.offset != _verticalController.offset) {
       _labelVerticalController.jumpTo(_verticalController.offset);
     }
+  }
+
+  /// 指定日付の位置にスクロールする.
+  void scrollToDate(DateTime date) {
+    if (!mounted || !_horizontalController.hasClients) return;
+    final targetX = _calculator.dateToX(
+      DateTime(date.year, date.month, date.day),
+      _timeline,
+    );
+    final viewWidth = (context.size?.width ?? 400) - _labelColumnWidth;
+    final offset = (targetX - viewWidth / 3).clamp(
+      0.0,
+      _horizontalController.position.maxScrollExtent,
+    );
+    _horizontalController.animateTo(
+      offset,
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.easeInOut,
+    );
   }
 
   void _scrollToToday() {
@@ -509,7 +531,7 @@ class _TimelineHeaderPainter extends CustomPainter {
     required this.textColor,
     required this.mutedColor,
     required this.todayColor,
-  });
+  }) : _todayPaint = Paint()..color = todayColor..strokeWidth = 2;
 
   final GanttCalculator calculator;
   final TimelineRange timeline;
@@ -519,6 +541,7 @@ class _TimelineHeaderPainter extends CustomPainter {
   final Color textColor;
   final Color mutedColor;
   final Color todayColor;
+  final Paint _todayPaint;
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -551,7 +574,7 @@ class _TimelineHeaderPainter extends CustomPainter {
     // 今日線
     final todayX = calculator.calculateTodayX(timeline);
     canvas.drawLine(Offset(todayX, 0), Offset(todayX, size.height),
-        Paint()..color = todayColor..strokeWidth = 2);
+        _todayPaint);
 
     // マイルストーン
     for (final ms in milestones) {
@@ -599,7 +622,8 @@ class _TimelineBodyPainter extends CustomPainter {
     required this.textColor,
     required this.todayColor,
     required this.hoverColor,
-  });
+  })  : _gridPaint = Paint()..color = gridColor.withAlpha(30)..strokeWidth = 0.5,
+        _todayPaint = Paint()..color = todayColor..strokeWidth = 2;
 
   final List<Task> tasks;
   final List<_GoalGroup> groups;
@@ -612,6 +636,9 @@ class _TimelineBodyPainter extends CustomPainter {
   final Color textColor;
   final Color todayColor;
   final Color hoverColor;
+
+  final Paint _gridPaint;
+  final Paint _todayPaint;
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -639,18 +666,18 @@ class _TimelineBodyPainter extends CustomPainter {
     }
 
     // グリッド
-    final gridPaint = Paint()..color = gridColor.withAlpha(30)..strokeWidth = 0.5;
     for (var i = 0; i <= tasks.length; i++) {
       final y = i * rowH;
-      canvas.drawLine(Offset(0, y), Offset(size.width, y), gridPaint);
+      canvas.drawLine(Offset(0, y), Offset(size.width, y), _gridPaint);
     }
+    final weekendPaint = Paint()..color = gridColor.withAlpha(15);
     for (final (date, x) in calculator.getDayPositions(timeline)) {
       if (date.weekday >= 6) {
         canvas.drawRect(
             Rect.fromLTWH(x, 0, calculator.pixelsPerDay, size.height),
-            Paint()..color = gridColor.withAlpha(15));
+            weekendPaint);
       }
-      canvas.drawLine(Offset(x, 0), Offset(x, size.height), gridPaint);
+      canvas.drawLine(Offset(x, 0), Offset(x, size.height), _gridPaint);
     }
 
     // マイルストーン破線
@@ -671,7 +698,7 @@ class _TimelineBodyPainter extends CustomPainter {
     // 今日線
     final todayX = calculator.calculateTodayX(timeline);
     canvas.drawLine(Offset(todayX, 0), Offset(todayX, size.height),
-        Paint()..color = todayColor..strokeWidth = 2);
+        _todayPaint);
 
     // タスクバー
     for (var i = 0; i < tasks.length; i++) {

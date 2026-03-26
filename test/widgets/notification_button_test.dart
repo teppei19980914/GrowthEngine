@@ -26,7 +26,7 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    expect(find.byIcon(Icons.notifications_outlined), findsOneWidget);
+    expect(find.byIcon(Icons.inbox_outlined), findsOneWidget);
     // バッジ（数字）は表示されない
     expect(find.text('0'), findsNothing);
   });
@@ -65,7 +65,7 @@ void main() {
     expect(find.text('9+'), findsOneWidget);
   });
 
-  testWidgets('ボタンタップで通知ポップアップが開く', (tester) async {
+  testWidgets('ボタンタップで受信ボックスポップアップが開く', (tester) async {
     final prefs = await getPrefs();
     await tester.pumpWidget(
       wrapWithProviders(
@@ -76,11 +76,11 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    await tester.tap(find.byIcon(Icons.notifications_outlined));
+    await tester.tap(find.byIcon(Icons.inbox_outlined));
     await tester.pumpAndSettle();
 
-    expect(find.text('通知'), findsOneWidget);
-    expect(find.text('新しい通知はここに届きます'), findsOneWidget);
+    expect(find.text('受信ボックス'), findsOneWidget);
+    expect(find.text('受信ボックスは空です'), findsOneWidget);
   });
 
   testWidgets('通知がある場合リストに表示される', (tester) async {
@@ -105,7 +105,7 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    await tester.tap(find.byIcon(Icons.notifications_outlined));
+    await tester.tap(find.byIcon(Icons.inbox_outlined));
     await tester.pumpAndSettle();
 
     expect(find.text('累計1時間達成！'), findsOneWidget);

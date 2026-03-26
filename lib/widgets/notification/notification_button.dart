@@ -1,6 +1,7 @@
-/// 通知ボタンウィジェット.
+/// 受信ボックスボタンウィジェット.
 ///
-/// AppBarに配置する通知アイコンボタン。未読バッジを表示する.
+/// AppBarに配置する受信ボックスアイコン。未読バッジを表示する.
+/// タップで受信ボックスポップアップを開く.
 library;
 
 import 'package:flutter/material.dart';
@@ -24,7 +25,7 @@ final allNotificationsProvider =
   return service.getAllNotifications();
 });
 
-/// 通知ボタン.
+/// 受信ボックスボタン.
 class NotificationButton extends ConsumerWidget {
   /// NotificationButtonを作成する.
   const NotificationButton({super.key});
@@ -37,9 +38,9 @@ class NotificationButton extends ConsumerWidget {
     return Stack(
       children: [
         IconButton(
-          icon: const Icon(Icons.notifications_outlined),
-          onPressed: () => _showNotificationPopup(context, ref),
-          tooltip: '通知',
+          icon: const Icon(Icons.inbox_outlined),
+          onPressed: () => _showInboxPopup(context, ref),
+          tooltip: '受信ボックス',
         ),
         if (count > 0)
           Positioned(
@@ -67,46 +68,52 @@ class NotificationButton extends ConsumerWidget {
     );
   }
 
-  void _showNotificationPopup(BuildContext context, WidgetRef ref) {
+  void _showInboxPopup(BuildContext context, WidgetRef ref) {
     showDialog<void>(
       context: context,
-      builder: (context) => const _NotificationPopup(),
+      builder: (context) => const _InboxPopup(),
     );
   }
 }
 
-/// 通知ポップアップダイアログ.
-class _NotificationPopup extends ConsumerWidget {
-  const _NotificationPopup();
+/// 受信ボックスポップアップ.
+class _InboxPopup extends ConsumerWidget {
+  const _InboxPopup();
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final notifAsync = ref.watch(allNotificationsProvider);
     final theme = Theme.of(context);
     final colors = theme.appColors;
-    final dateFormat = DateFormat('MM/dd HH:mm');
 
     return AlertDialog(
+      insetPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
+      titlePadding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+      contentPadding: const EdgeInsets.fromLTRB(0, 8, 0, 0),
       title: Row(
         children: [
-          const Icon(Icons.notifications_outlined, size: 22),
+          Icon(Icons.inbox, size: 22, color: colors.accent),
           const SizedBox(width: 8),
-          const Text('通知'),
+          const Text('受信ボックス'),
           const Spacer(),
-          TextButton(
+          TextButton.icon(
             onPressed: () async {
               final service = ref.read(notificationServiceProvider);
               await service.markAllAsRead();
               ref.invalidate(unreadCountProvider);
               ref.invalidate(allNotificationsProvider);
             },
-            child: const Text('全て既読'),
+            icon: const Icon(Icons.done_all, size: 16),
+            label: const Text('全て既読'),
+            style: TextButton.styleFrom(
+              visualDensity: VisualDensity.compact,
+            ),
           ),
         ],
       ),
       content: SizedBox(
-        width: 400,
-        height: 400,
+        width: 480,
+        height: 420,
         child: notifAsync.when(
           data: (notifications) {
             if (notifications.isEmpty) {
@@ -114,64 +121,197 @@ class _NotificationPopup extends ConsumerWidget {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Icon(Icons.notifications_none,
+                    Icon(Icons.inbox_outlined,
                         size: 48, color: colors.textMuted),
                     const SizedBox(height: 8),
-                    Text('新しい通知はここに届きます',
+                    Text('受信ボックスは空です',
                         style: TextStyle(color: colors.textMuted)),
                   ],
                 ),
               );
             }
 
-            return ListView.separated(
+            return ListView.builder(
               itemCount: notifications.length,
-              separatorBuilder: (_, _) => const Divider(height: 1),
-              itemBuilder: (_, index) {
+              itemBuilder: (context, index) {
                 final n = notifications[index];
-                return ListTile(
-                  dense: true,
-                  leading: Icon(
-                    n.notificationType == model.NotificationType.achievement
-                        ? Icons.emoji_events
-                        : Icons.info_outline,
-                    color: n.isRead ? colors.textMuted : colors.warning,
-                    size: 20,
-                  ),
-                  title: Text(
-                    n.title,
-                    style: TextStyle(
-                      fontWeight: n.isRead ? FontWeight.normal : FontWeight.bold,
-                      fontSize: 13,
-                    ),
-                  ),
-                  subtitle: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(n.message, style: const TextStyle(fontSize: 11)),
-                      Text(
-                        dateFormat.format(n.createdAt),
-                        style: TextStyle(
-                          fontSize: 10,
-                          color: colors.textMuted,
-                        ),
-                      ),
-                    ],
-                  ),
-                  onTap: () async {
-                    if (!n.isRead) {
-                      final service = ref.read(notificationServiceProvider);
-                      await service.markAsRead(n.id);
-                      ref.invalidate(unreadCountProvider);
-                      ref.invalidate(allNotificationsProvider);
-                    }
-                  },
-                );
+                return _InboxItem(notification: n);
               },
             );
           },
           loading: () => const Center(child: CircularProgressIndicator()),
           error: (_, _) => const Center(child: Text('エラーが発生しました')),
+        ),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.of(context).pop(),
+          child: const Text('閉じる'),
+        ),
+      ],
+    );
+  }
+}
+
+/// 受信ボックスの1件分のアイテム.
+class _InboxItem extends ConsumerWidget {
+  const _InboxItem({required this.notification});
+
+  final model.Notification notification;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final theme = Theme.of(context);
+    final colors = theme.appColors;
+    final isUnread = !notification.isRead;
+    final dateFormat = DateFormat('MM/dd');
+    final n = notification;
+
+    // 通知種別に応じたアイコン・色
+    final (IconData icon, Color iconColor) = switch (n.notificationType) {
+      model.NotificationType.reminder => (
+          Icons.alarm,
+          isUnread ? colors.error : colors.textMuted,
+        ),
+      model.NotificationType.achievement => (
+          Icons.emoji_events,
+          isUnread ? colors.warning : colors.textMuted,
+        ),
+      model.NotificationType.system => (
+          Icons.campaign,
+          isUnread ? colors.accent : colors.textMuted,
+        ),
+    };
+
+    return Container(
+      decoration: BoxDecoration(
+        color: isUnread ? colors.accent.withAlpha(12) : null,
+        border: Border(
+          bottom: BorderSide(color: colors.border.withAlpha(40)),
+        ),
+      ),
+      child: ListTile(
+        dense: true,
+        leading: Icon(icon, color: iconColor, size: 20),
+        title: Text(
+          n.title,
+          style: TextStyle(
+            fontWeight: isUnread ? FontWeight.bold : FontWeight.normal,
+            fontSize: 13,
+          ),
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+        ),
+        subtitle: Text(
+          n.message,
+          style: TextStyle(fontSize: 11, color: colors.textSecondary),
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+        ),
+        trailing: Text(
+          dateFormat.format(n.createdAt),
+          style: TextStyle(fontSize: 10, color: colors.textMuted),
+        ),
+        onTap: () => _onTap(context, ref),
+      ),
+    );
+  }
+
+  Future<void> _onTap(BuildContext context, WidgetRef ref) async {
+    // 既読にする
+    if (!notification.isRead) {
+      final service = ref.read(notificationServiceProvider);
+      await service.markAsRead(notification.id);
+      ref.invalidate(unreadCountProvider);
+      ref.invalidate(allNotificationsProvider);
+    }
+
+    if (!context.mounted) return;
+
+    // リマインダー → 該当の編集画面に遷移（将来拡張ポイント）
+    // 現段階ではメッセージ詳細を表示
+    await showDialog<void>(
+      context: context,
+      builder: (context) => _NotificationDetailDialog(
+        notification: notification,
+      ),
+    );
+  }
+}
+
+/// 通知詳細ダイアログ.
+class _NotificationDetailDialog extends StatelessWidget {
+  const _NotificationDetailDialog({required this.notification});
+
+  final model.Notification notification;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colors = theme.appColors;
+    final dateFormat = DateFormat('yyyy/MM/dd HH:mm');
+    final n = notification;
+
+    final (IconData icon, Color iconColor) = switch (n.notificationType) {
+      model.NotificationType.reminder => (Icons.alarm, colors.error),
+      model.NotificationType.achievement => (
+          Icons.emoji_events,
+          colors.warning,
+        ),
+      model.NotificationType.system => (Icons.campaign, colors.accent),
+    };
+
+    final typeLabel = switch (n.notificationType) {
+      model.NotificationType.reminder => 'リマインド',
+      model.NotificationType.achievement => '実績',
+      model.NotificationType.system => 'お知らせ',
+    };
+
+    return AlertDialog(
+      title: Row(
+        children: [
+          Icon(icon, color: iconColor, size: 22),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Text(n.title, style: theme.textTheme.titleSmall),
+          ),
+        ],
+      ),
+      content: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 400),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // カテゴリ + 日時
+            Row(
+              children: [
+                Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                  decoration: BoxDecoration(
+                    color: iconColor.withAlpha(25),
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                  child: Text(
+                    typeLabel,
+                    style: TextStyle(
+                      fontSize: 11,
+                      color: iconColor,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+                const Spacer(),
+                Text(
+                  dateFormat.format(n.createdAt),
+                  style: TextStyle(fontSize: 11, color: colors.textMuted),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            Text(n.message, style: theme.textTheme.bodyMedium),
+          ],
         ),
       ),
       actions: [

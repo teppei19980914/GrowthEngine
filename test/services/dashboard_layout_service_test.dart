@@ -24,10 +24,15 @@ void main() {
     });
 
     group('getAvailableWidgets', () {
-      test('全ウィジェット使用中は空', () {
+      test('デフォルトレイアウト使用中は未使用ウィジェットのみ返す', () {
         final layout = service.getDefaultLayout();
         final available = service.getAvailableWidgets(layout);
-        expect(available, isEmpty);
+        final layoutTypes = layout.map((w) => w.widgetType).toSet();
+        // レジストリにありデフォルトに含まれないウィジェットのみ
+        final expected = widgetRegistry.keys
+            .where((k) => !layoutTypes.contains(k))
+            .length;
+        expect(available.length, expected);
       });
 
       test('一部ウィジェット使用中は残りを返す', () {
@@ -168,8 +173,8 @@ void main() {
   });
 
   group('widgetRegistry', () {
-    test('11種のウィジェットが登録されている', () {
-      expect(widgetRegistry.length, 11);
+    test('12種のウィジェットが登録されている', () {
+      expect(widgetRegistry.length, 12);
     });
 
     test('各ウィジェットにメタデータがある', () {

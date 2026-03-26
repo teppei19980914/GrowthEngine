@@ -8,18 +8,21 @@ import '../services/sync_manager.dart';
 import 'service_providers.dart';
 
 /// 目標ごとのタスク進捗（goalId → {total, completed}）.
+///
+/// 全タスクを一括取得してグルーピングすることでN+1クエリを回避する.
 final goalProgressProvider =
     FutureProvider<Map<String, ({int total, int completed})>>((ref) async {
   final taskService = ref.watch(taskServiceProvider);
-  final goalService = ref.watch(goalServiceProvider);
-  final goals = await goalService.getAllGoals();
+  final allTasks = await taskService.getAllTasks();
   final result = <String, ({int total, int completed})>{};
 
-  for (final goal in goals) {
-    final tasks = await taskService.getTasksForGoal(goal.id);
-    final completed =
-        tasks.where((t) => t.progress >= 100).length;
-    result[goal.id] = (total: tasks.length, completed: completed);
+  for (final task in allTasks) {
+    final current = result[task.goalId];
+    final isCompleted = task.progress >= 100;
+    result[task.goalId] = (
+      total: (current?.total ?? 0) + 1,
+      completed: (current?.completed ?? 0) + (isCompleted ? 1 : 0),
+    );
   }
   return result;
 });

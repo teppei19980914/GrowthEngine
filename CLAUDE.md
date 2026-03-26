@@ -79,6 +79,32 @@ flutter build web --release --base-href "/GrowthEngine/"
 - SonarCloud レポートは `sonarcloud-reports/latest-report.txt` に自動保存される
 - UIテストレポートは `integration_test_reports/latest-report.txt` に自動保存される
 
+## リリース前チェックリスト
+
+実装完了後、コミット前に以下の3項目を必ず実施すること:
+
+### 1. セキュリティチェック
+
+- **XSS対策**: ユーザー入力をHTML/CSS/JSに埋め込む箇所は必ずサニタイズする（`_escapeHtml()`, `_sanitizeHexColor()` 等）
+- **インジェクション対策**: Drift ORM のパラメータ化クエリを使用し、生SQLは禁止
+- **入力バリデーション**: 全ダイアログの入力フィールドに適切なバリデーション（必須チェック、形式チェック、長さ上限）を設定する
+- **インポート検証**: 外部JSON/ファイルの読み込み時はサイズ上限・型チェック・フォーマット検証を行う
+- **機密情報**: API キー・シークレットをソースコードにハードコードしない。Firebase API Key は Web API Key として許容するが、サーバーキーは禁止
+
+### 2. パフォーマンスチェック
+
+- **N+1クエリ禁止**: ループ内でDB問い合わせしない。一括取得してからメモリ上でフィルタ/グルーピングする
+- **CustomPainter最適化**: `Paint` オブジェクトはコンストラクタでキャッシュし、`paint()` 内でのインスタンス生成を最小化する
+- **Provider設計**: 1つのウィジェットが watch する Provider は最小限に。頻繁に参照されるデータは合成 Provider にまとめる
+- **RepaintBoundary**: 重い描画領域（ガントチャート、グラフ等）は `RepaintBoundary` で隔離する
+- **非同期処理**: 独立した非同期操作は `Future.wait()` で並列化する
+
+### 3. 単体テスト
+
+- 新規・変更したロジックに対応するテストを必ず追加する
+- `flutter analyze` でエラー0件を確認する
+- `flutter test` で全テスト合格を確認する（テスト数の増減を確認）
+
 ## 技術スタック
 
 - Flutter (Dart) - Web ターゲット

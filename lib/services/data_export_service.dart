@@ -63,7 +63,13 @@ class DataExportService {
   /// JSON文字列からデータをインポートする.
   ///
   /// 既存データを全て削除してから新しいデータを挿入する.
+  /// インポートファイルの最大サイズ（10MB）.
+  static const _maxImportSize = 10 * 1024 * 1024;
+
   Future<ImportResult> importData(String jsonString) async {
+    if (jsonString.length > _maxImportSize) {
+      throw ArgumentError('インポートファイルが大きすぎます（上限10MB）');
+    }
     final Map<String, dynamic> data;
     try {
       data = json.decode(jsonString) as Map<String, dynamic>;

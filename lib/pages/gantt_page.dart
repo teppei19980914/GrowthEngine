@@ -29,12 +29,19 @@ import '../widgets/tutorial/tutorial_banner.dart';
 import '../widgets/tutorial/tutorial_target_keys.dart';
 
 /// ガントチャートページ.
-class GanttPage extends ConsumerWidget {
+class GanttPage extends ConsumerStatefulWidget {
   /// GanttPageを作成する.
   const GanttPage({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<GanttPage> createState() => _GanttPageState();
+}
+
+class _GanttPageState extends ConsumerState<GanttPage> {
+  final _chartKey = GlobalKey<GanttChartState>();
+
+  @override
+  Widget build(BuildContext context) {
     // プレミアム機能: Web体験版ではゲートを表示
     if (!canUseGanttChart) {
       return const PremiumGate(
@@ -122,7 +129,58 @@ class GanttPage extends ConsumerWidget {
               ),
             ],
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 8),
+
+          // 日付範囲セレクタ + ジャンプ
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            crossAxisAlignment: WrapCrossAlignment.center,
+            children: [
+              // 日付範囲セレクタ
+              SegmentedButton<GanttDateRange>(
+                segments: [
+                  for (final range in GanttDateRange.values)
+                    ButtonSegment(
+                      value: range,
+                      label: Text(range.label),
+                    ),
+                ],
+                selected: {viewState.dateRange},
+                onSelectionChanged: (selected) {
+                  ref
+                      .read(ganttViewStateProvider.notifier)
+                      .setDateRange(selected.first);
+                },
+                style: ButtonStyle(
+                  visualDensity: VisualDensity.compact,
+                  textStyle: WidgetStatePropertyAll(
+                    theme.textTheme.labelSmall,
+                  ),
+                ),
+              ),
+              // 今日ボタン
+              OutlinedButton.icon(
+                onPressed: () =>
+                    _chartKey.currentState?.scrollToDate(DateTime.now()),
+                icon: const Icon(Icons.today, size: 16),
+                label: const Text('今日'),
+                style: OutlinedButton.styleFrom(
+                  visualDensity: VisualDensity.compact,
+                ),
+              ),
+              // 日付ジャンプ
+              OutlinedButton.icon(
+                onPressed: () => _pickJumpDate(context),
+                icon: const Icon(Icons.calendar_month, size: 16),
+                label: const Text('日付へ移動'),
+                style: OutlinedButton.styleFrom(
+                  visualDensity: VisualDensity.compact,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
 
           // ガントチャート
           Expanded(
@@ -184,6 +242,7 @@ class GanttPage extends ConsumerWidget {
                 }
 
                 return GanttChart(
+                  key: _chartKey,
                   tasks: tasks,
                   goalColors: goalColors,
                   goalNames: goalNames,
@@ -207,6 +266,18 @@ class GanttPage extends ConsumerWidget {
         ],
       ),
     );
+  }
+
+  Future<void> _pickJumpDate(BuildContext context) async {
+    final picked = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(2020),
+      lastDate: DateTime(2050),
+    );
+    if (picked != null) {
+      _chartKey.currentState?.scrollToDate(picked);
+    }
   }
 
   Color _parseColor(String hex) {

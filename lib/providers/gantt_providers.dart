@@ -19,12 +19,36 @@ enum GanttViewMode {
   allBooks,
 }
 
+/// ガントチャートの日付範囲プリセット.
+enum GanttDateRange {
+  /// 直近3ヶ月.
+  months3('直近3ヶ月', 3),
+
+  /// 直近6ヶ月.
+  months6('直近6ヶ月', 6),
+
+  /// 直近1年.
+  year1('直近1年', 12),
+
+  /// 全期間.
+  all('全期間', 0);
+
+  const GanttDateRange(this.label, this.months);
+
+  /// 表示ラベル.
+  final String label;
+
+  /// 月数（0は全期間）.
+  final int months;
+}
+
 /// ガントチャートの表示状態.
 class GanttViewState {
   /// GanttViewStateを作成する.
   const GanttViewState({
     this.mode = GanttViewMode.allTasks,
     this.selectedGoalId,
+    this.dateRange = GanttDateRange.months3,
   });
 
   /// 表示モード.
@@ -33,14 +57,19 @@ class GanttViewState {
   /// 選択中のGoal ID（byGoalモード時）.
   final String? selectedGoalId;
 
+  /// 日付範囲フィルタ.
+  final GanttDateRange dateRange;
+
   /// コピーを作成する.
   GanttViewState copyWith({
     GanttViewMode? mode,
     String? selectedGoalId,
+    GanttDateRange? dateRange,
   }) {
     return GanttViewState(
       mode: mode ?? this.mode,
       selectedGoalId: selectedGoalId ?? this.selectedGoalId,
+      dateRange: dateRange ?? this.dateRange,
     );
   }
 }
@@ -58,7 +87,10 @@ class GanttViewStateNotifier extends Notifier<GanttViewState> {
 
   /// 全タスク表示に切り替える.
   void showAllTasks() {
-    state = const GanttViewState(mode: GanttViewMode.allTasks);
+    state = GanttViewState(
+      mode: GanttViewMode.allTasks,
+      dateRange: state.dateRange,
+    );
   }
 
   /// 目標別表示に切り替える.
@@ -66,12 +98,21 @@ class GanttViewStateNotifier extends Notifier<GanttViewState> {
     state = GanttViewState(
       mode: GanttViewMode.byGoal,
       selectedGoalId: goalId,
+      dateRange: state.dateRange,
     );
   }
 
   /// 書籍別表示に切り替える.
   void showAllBooks() {
-    state = const GanttViewState(mode: GanttViewMode.allBooks);
+    state = GanttViewState(
+      mode: GanttViewMode.allBooks,
+      dateRange: state.dateRange,
+    );
+  }
+
+  /// 日付範囲を変更する.
+  void setDateRange(GanttDateRange range) {
+    state = state.copyWith(dateRange: range);
   }
 }
 
@@ -97,6 +138,23 @@ final ganttTasksProvider = FutureProvider<List<Task>>((ref) async {
     case GanttViewMode.allBooks:
       final scheduledBooks = await bookGanttService.getScheduledBooks();
       tasks = bookGanttService.booksToTasks(scheduledBooks);
+  }
+
+  // 日付範囲フィルタ適用
+  if (viewState.dateRange != GanttDateRange.all) {
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final rangeStart = DateTime(
+      today.year,
+      today.month - viewState.dateRange.months,
+      today.day,
+    );
+    final rangeEnd = today.add(
+      Duration(days: viewState.dateRange.months * 30),
+    );
+    tasks = tasks.where((t) =>
+        !t.endDate.isBefore(rangeStart) && !t.startDate.isAfter(rangeEnd),
+    ).toList();
   }
 
   // 目標名でグルーピング→開始日の昇順でソート

@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:yume_log/app.dart';
+import 'package:yume_log/app.dart' show YumeLogApp, disableInboxCheckForTest;
 import 'package:yume_log/database/app_database.dart' hide Book, Dream, Goal, Task;
 import 'package:yume_log/models/goal.dart';
 import 'package:yume_log/providers/dashboard_providers.dart';
@@ -162,6 +162,7 @@ void main() {
 
   setUp(() {
     driftRuntimeOptions.dontWarnAboutMultipleDatabases = true;
+    disableInboxCheckForTest();
     db = AppDatabase(NativeDatabase.memory());
   });
 

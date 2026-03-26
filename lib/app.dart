@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import 'data/announcements.dart';
 import 'dialogs/app_guide_dialog.dart';
 import 'services/sync_manager.dart';
 import 'dialogs/help_dialog.dart';
@@ -35,9 +36,16 @@ import 'widgets/navigation/app_drawer.dart';
 import 'widgets/milestone/milestone_button.dart';
 import 'widgets/contact/contact_button.dart';
 import 'services/tutorial_service.dart';
+import 'widgets/notification/notification_button.dart';
 import 'widgets/tutorial/tutorial_banner.dart';
 import 'widgets/tutorial/tutorial_overlay.dart';
 import 'widgets/tutorial/tutorial_target_keys.dart';
+
+/// テスト環境で受信ボックスチェックを無効化するフラグ.
+bool _disableInboxCheck = false;
+
+/// テスト用: 受信ボックスの自動チェックを無効化する.
+void disableInboxCheckForTest() => _disableInboxCheck = true;
 
 /// ページタイトルマップ.
 const _pageTitles = <String, String>{
@@ -166,9 +174,70 @@ class _AppShellState extends ConsumerState<_AppShell> {
   bool _releaseNotesChecked = false;
   bool _monitorChecked = false;
   bool _cloudAuthChecked = false;
+  bool _inboxChecked = false;
 
   static const _seenVersionKey = 'release_notes_seen_version';
   static const _monitorSubmittedKey = 'monitor_data_submitted';
+
+  /// 受信ボックスのチェック（リマインダー自動生成 + 開発者通知読み込み）.
+  void _checkInbox() {
+    if (_inboxChecked) return;
+    _inboxChecked = true;
+
+    // 初回レンダリング完了後に実行（UIをブロックしない）
+    if (!_disableInboxCheck) {
+      Future.delayed(const Duration(seconds: 2), _loadInboxAsync);
+    }
+  }
+
+  Future<void> _loadInboxAsync() async {
+    try {
+      if (!mounted) return;
+      final notifService = ref.read(notificationServiceProvider);
+
+      // 1. 期限リマインダーのチェック
+      final taskService = ref.read(taskServiceProvider);
+      final goalService = ref.read(goalServiceProvider);
+      final allTasks = await taskService.getAllTasks();
+      final allGoals = await goalService.getAllGoals();
+
+      final deadlines =
+          <({String id, String title, DateTime deadline, bool isGoal})>[];
+      for (final task in allTasks) {
+        if (task.progress < 100) {
+          deadlines.add((
+            id: task.id,
+            title: task.title,
+            deadline: task.endDate,
+            isGoal: false,
+          ));
+        }
+      }
+      for (final goal in allGoals) {
+        final targetDate = goal.getTargetDate();
+        if (targetDate != null) {
+          deadlines.add((
+            id: goal.id,
+            title: goal.what,
+            deadline: targetDate,
+            isGoal: true,
+          ));
+        }
+      }
+      await notifService.checkAndCreateReminders(deadlines: deadlines);
+
+      // 2. 開発者通知の読み込み
+      await notifService.loadSystemNotificationsFromJson(announcements);
+
+      // Provider再読み込み
+      if (mounted) {
+        ref.invalidate(unreadCountProvider);
+        ref.invalidate(allNotificationsProvider);
+      }
+    } on Object {
+      // 受信ボックスチェック失敗はアプリ起動に影響させない
+    }
+  }
 
   /// クラウド同期の初期化（匿名認証ベース）.
   ///
@@ -402,6 +471,9 @@ class _AppShellState extends ConsumerState<_AppShell> {
     // モニターデータ提出の確認
     _checkMonitorSubmission();
 
+    // 受信ボックス: リマインダー・お知らせチェック
+    _checkInbox();
+
     // クラウド認証の確認
     _checkCloudAuth();
 
@@ -455,6 +527,7 @@ class _AppShellState extends ConsumerState<_AppShell> {
                 tooltip: 'ヘルプ',
                 onPressed: () => showHelpDialog(context),
               ),
+              const NotificationButton(),
               const ContactButton(),
               const MilestoneButton(),
             ],

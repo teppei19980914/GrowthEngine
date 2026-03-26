@@ -186,7 +186,7 @@ class GanttExcelExportService {
     // マイルストーン行
     for (final ms in milestones) {
       final msDay = ms.date.difference(earliest).inDays;
-      final msColor = ms.color.replaceFirst('#', '');
+      final msColor = _sanitizeHexColor(ms.color);
       buf.write('<tr>');
       buf.write('<td class="goal-name" style="color:#$msColor;">'
           '\u{25C6} ${_escapeHtml(ms.label)}</td>');
@@ -414,7 +414,7 @@ class GanttExcelExportService {
     for (var m = 0; m < milestones.length; m++) {
       final ms = milestones[m];
       final row = sortedTasks.length + 1 + m;
-      final msColor = ms.color.replaceFirst('#', '');
+      final msColor = _sanitizeHexColor(ms.color);
 
       sheet
           .cell(CellIndex.indexByColumnRow(columnIndex: 0, rowIndex: row))
@@ -506,10 +506,17 @@ class GanttExcelExportService {
     return goalMap[goalId]?.what ?? '不明';
   }
 
-  String _goalHexColor(String goalId, Map<String, Goal> goalMap) {
-    final color = goalMap[goalId]?.color;
-    if (color != null) return color.replaceFirst('#', '');
+  static final _hexColorPattern = RegExp(r'^[0-9a-fA-F]{6}$');
+
+  String _sanitizeHexColor(String raw) {
+    final cleaned = raw.replaceFirst('#', '');
+    if (_hexColorPattern.hasMatch(cleaned)) return cleaned;
     return '89B4FA';
+  }
+
+  String _goalHexColor(String goalId, Map<String, Goal> goalMap) {
+    final color = goalMap[goalId]?.color ?? '';
+    return _sanitizeHexColor(color);
   }
 
   String _lightenHex(String hex) {

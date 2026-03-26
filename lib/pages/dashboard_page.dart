@@ -5,8 +5,10 @@ library;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intl/intl.dart' show DateFormat;
 import '../data/constellations.dart';
 import '../models/book.dart';
+import '../models/notification.dart' as model;
 import '../providers/book_providers.dart';
 import '../providers/constellation_providers.dart';
 import '../providers/dashboard_providers.dart';
@@ -16,6 +18,7 @@ import '../widgets/tutorial/tutorial_banner.dart';
 import '../widgets/web/web_trial_banner.dart';
 import '../providers/service_providers.dart';
 import '../services/dashboard_layout_service.dart';
+import '../widgets/notification/notification_button.dart';
 import '../services/study_stats_types.dart';
 import '../theme/app_theme.dart';
 import '../dialogs/onboarding_dialog.dart';
@@ -333,6 +336,7 @@ class _DashboardWidgetCard extends ConsumerWidget {
       'consistency' => _ConsistencyContent(colors: colors),
       'daily_chart' => _DailyChartContent(colors: colors),
       'constellation_preview' => const _ConstellationPreviewContent(),
+      'inbox_preview' => const _InboxPreviewContent(),
       _ => Center(
           child: Text(
             config.widgetType,
@@ -1101,6 +1105,134 @@ class _ConstellationPreviewContent extends ConsumerWidget {
       },
       loading: () => const _WidgetLoading(),
       error: (_, _) => const _WidgetError(),
+    );
+  }
+}
+
+/// 受信ボックスプレビュー.
+class _InboxPreviewContent extends ConsumerWidget {
+  const _InboxPreviewContent();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final notifAsync = ref.watch(allNotificationsProvider);
+    final theme = Theme.of(context);
+    final colors = theme.appColors;
+    final dateFormat = DateFormat('MM/dd');
+
+    return notifAsync.when(
+      data: (notifications) {
+        final unread = notifications.where((n) => !n.isRead).length;
+        final preview = notifications.take(5).toList();
+
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Row(
+              children: [
+                Icon(Icons.inbox, size: 18, color: colors.accent),
+                const SizedBox(width: 6),
+                Text('受信ボックス', style: theme.textTheme.titleSmall),
+                const Spacer(),
+                if (unread > 0)
+                  Container(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                    decoration: BoxDecoration(
+                      color: colors.error,
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Text(
+                      '$unread件の未読',
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 10,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            if (preview.isEmpty)
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 12),
+                child: Center(
+                  child: Text('新しい通知はありません',
+                      style: TextStyle(
+                        color: colors.textMuted,
+                        fontSize: 12,
+                      )),
+                ),
+              )
+            else
+              for (final n in preview)
+                _InboxPreviewItem(notification: n, dateFormat: dateFormat),
+          ],
+        );
+      },
+      loading: () => const _WidgetLoading(),
+      error: (_, _) => const _WidgetError(),
+    );
+  }
+}
+
+/// 受信ボックスプレビューの1件.
+class _InboxPreviewItem extends StatelessWidget {
+  const _InboxPreviewItem({
+    required this.notification,
+    required this.dateFormat,
+  });
+
+  final model.Notification notification;
+  final DateFormat dateFormat;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).appColors;
+    final n = notification;
+    final isUnread = !n.isRead;
+
+    final (IconData icon, Color iconColor) = switch (n.notificationType) {
+      model.NotificationType.reminder => (
+          Icons.alarm,
+          isUnread ? colors.error : colors.textMuted,
+        ),
+      model.NotificationType.achievement => (
+          Icons.emoji_events,
+          isUnread ? colors.warning : colors.textMuted,
+        ),
+      model.NotificationType.system => (
+          Icons.campaign,
+          isUnread ? colors.accent : colors.textMuted,
+        ),
+    };
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 3),
+      child: Row(
+        children: [
+          Icon(icon, size: 14, color: iconColor),
+          const SizedBox(width: 6),
+          Expanded(
+            child: Text(
+              n.title,
+              style: TextStyle(
+                fontSize: 12,
+                fontWeight: isUnread ? FontWeight.bold : FontWeight.normal,
+              ),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+          const SizedBox(width: 4),
+          Text(
+            dateFormat.format(n.createdAt),
+            style: TextStyle(fontSize: 10, color: colors.textMuted),
+          ),
+        ],
+      ),
     );
   }
 }

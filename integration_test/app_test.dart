@@ -551,15 +551,15 @@ void main() {
     expect(find.text('実績'), findsOneWidget);
   });
 
-  testWidgets('通知ボタンをタップすると通知パネルが開く', (tester) async {
+  testWidgets('受信ボックスボタンをタップすると受信ボックスが開く', (tester) async {
     await tester.pumpWidget(await buildApp());
     await tester.pumpAndSettle();
 
-    await tester.tap(find.byIcon(Icons.notifications_outlined));
+    await tester.tap(find.byIcon(Icons.inbox_outlined));
     await tester.pumpAndSettle();
 
-    expect(find.text('通知'), findsOneWidget);
-    expect(find.text('通知はありません'), findsOneWidget);
+    expect(find.text('受信ボックス'), findsOneWidget);
+    expect(find.text('受信ボックスは空です'), findsOneWidget);
   });
 
   testWidgets('夢カードの編集メニューをタップすると編集ダイアログが開く', (tester) async {

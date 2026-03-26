@@ -9,7 +9,10 @@ enum NotificationType {
   system('system'),
 
   /// 実績達成通知.
-  achievement('achievement');
+  achievement('achievement'),
+
+  /// 期限リマインド通知.
+  reminder('reminder');
 
   const NotificationType(this.value);
 

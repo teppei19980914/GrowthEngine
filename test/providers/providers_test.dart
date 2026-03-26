@@ -287,6 +287,42 @@ void main() {
       expect(copied.selectedGoalId, isNull);
     });
 
+    test('GanttViewState初期値の日付範囲はmonths3', () {
+      final state = container.read(ganttViewStateProvider);
+      expect(state.dateRange, GanttDateRange.months3);
+    });
+
+    test('日付範囲を変更できる', () {
+      container
+          .read(ganttViewStateProvider.notifier)
+          .setDateRange(GanttDateRange.year1);
+      expect(
+        container.read(ganttViewStateProvider).dateRange,
+        GanttDateRange.year1,
+      );
+    });
+
+    test('表示モード切替で日付範囲が維持される', () {
+      container
+          .read(ganttViewStateProvider.notifier)
+          .setDateRange(GanttDateRange.months6);
+      container.read(ganttViewStateProvider.notifier).showAllBooks();
+      expect(
+        container.read(ganttViewStateProvider).dateRange,
+        GanttDateRange.months6,
+      );
+      container.read(ganttViewStateProvider.notifier).showByGoal('g1');
+      expect(
+        container.read(ganttViewStateProvider).dateRange,
+        GanttDateRange.months6,
+      );
+      container.read(ganttViewStateProvider.notifier).showAllTasks();
+      expect(
+        container.read(ganttViewStateProvider).dateRange,
+        GanttDateRange.months6,
+      );
+    });
+
     test('ganttTasksProviderはタスク一覧を返す', () async {
       final tasks = await container.read(ganttTasksProvider.future);
       expect(tasks, isEmpty);
