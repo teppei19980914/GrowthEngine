@@ -3,11 +3,14 @@
 /// 左に固定の目標ラベル列、右にスクロール可能なタイムラインを表示する.
 /// タスクは目標ごとにグルーピングされ、グループ帯で視覚的に分類される.
 /// 目標列・ヘッダー行は常時固定表示される.
+/// 横スクロールは共有ScrollControllerで同期し、指追従を実現する.
 library;
 
 import 'dart:math' as math;
 
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:intl/intl.dart' hide TextDirection;
 
 import '../../models/task.dart';
@@ -73,8 +76,14 @@ class _GanttChartState extends State<GanttChart> {
   late List<_GoalGroup> _groups;
   int? _hoveredRow;
 
-  // InteractiveViewer による2軸同時スクロール
-  final _transformController = TransformationController();
+  // 共有ScrollController方式: 横スクロール（ヘッダー・ボディ同期）
+  final _horizontalController = ScrollController();
+  // 共有ScrollController方式: 縦スクロール（左列・ボディ同期）
+  final _verticalController = ScrollController();
+  // ヘッダー横スクロールはbodyに追従する（手動同期）
+  final _headerHorizontalController = ScrollController();
+  // 左列縦スクロールはbodyに追従する（手動同期）
+  final _labelVerticalController = ScrollController();
 
   static const double _labelColumnWidth = 140;
 
@@ -82,30 +91,46 @@ class _GanttChartState extends State<GanttChart> {
   void initState() {
     super.initState();
     _rebuild();
+    _horizontalController.addListener(_syncHeaderHorizontal);
+    _verticalController.addListener(_syncLabelVertical);
     _scrollToToday();
+  }
+
+  void _syncHeaderHorizontal() {
+    if (_headerHorizontalController.hasClients &&
+        _headerHorizontalController.offset != _horizontalController.offset) {
+      _headerHorizontalController.jumpTo(_horizontalController.offset);
+    }
+  }
+
+  void _syncLabelVertical() {
+    if (_labelVerticalController.hasClients &&
+        _labelVerticalController.offset != _verticalController.offset) {
+      _labelVerticalController.jumpTo(_verticalController.offset);
+    }
   }
 
   void _scrollToToday() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!mounted) return;
+      if (!mounted || !_horizontalController.hasClients) return;
       final todayX = _calculator.calculateTodayX(_timeline);
-      // 画面幅の1/3の位置に今日を表示する
       final viewWidth = (context.size?.width ?? 400) - _labelColumnWidth;
-      final offsetX = -(todayX - viewWidth / 3);
-      _transformController.value = Matrix4.identity()
-        ..setTranslationRaw(offsetX.clamp(-_maxScrollX(), 0.0), 0.0, 0.0);
+      final targetOffset = (todayX - viewWidth / 3).clamp(
+        0.0,
+        _horizontalController.position.maxScrollExtent,
+      );
+      _horizontalController.jumpTo(targetOffset);
     });
-  }
-
-  double _maxScrollX() {
-    final sceneWidth = _calculator.calculateSceneWidth(_timeline);
-    final viewWidth = (context.size?.width ?? 400) - _labelColumnWidth;
-    return (sceneWidth - viewWidth).clamp(0.0, double.infinity);
   }
 
   @override
   void dispose() {
-    _transformController.dispose();
+    _horizontalController.removeListener(_syncHeaderHorizontal);
+    _verticalController.removeListener(_syncLabelVertical);
+    _horizontalController.dispose();
+    _verticalController.dispose();
+    _headerHorizontalController.dispose();
+    _labelVerticalController.dispose();
     super.dispose();
   }
 
@@ -120,12 +145,11 @@ class _GanttChartState extends State<GanttChart> {
   }
 
   void _rebuild() {
+    // タイムライン範囲はタスクの開始日〜終了日のみで決定する.
+    // マイルストーンは範囲内にあれば表示されるが、範囲を引き延ばさない.
     final dates = widget.tasks
         .map((t) => (t.startDate, t.endDate))
         .toList();
-    for (final m in widget.milestones) {
-      dates.add((m.date, m.date));
-    }
     _timeline = _calculator.calculateTimeline(dates);
     _groups = _buildGroups();
   }
@@ -188,7 +212,8 @@ class _GanttChartState extends State<GanttChart> {
     final sceneWidth = _calculator.calculateSceneWidth(_timeline);
     final bodyHeight =
         widget.tasks.length * _calculator.rowHeight.toDouble();
-    final effectiveBodyHeight = math.max(bodyHeight, _calculator.rowHeight.toDouble());
+    final effectiveBodyHeight =
+        math.max(bodyHeight, _calculator.rowHeight.toDouble());
     final headerH = _calculator.headerHeight.toDouble();
 
     return Column(
@@ -207,21 +232,12 @@ class _GanttChartState extends State<GanttChart> {
               ),
               // 右上: タイムラインヘッダー（横スクロール追従）
               Expanded(
-                child: RepaintBoundary(
-                child: ClipRect(
-                  child: ListenableBuilder(
-                    listenable: _transformController,
-                    builder: (context, child) {
-                      final dx = _transformController.value.storage[12];
-                      return Transform.translate(
-                        offset: Offset(dx, 0),
-                        child: child,
-                      );
-                    },
-                    child: OverflowBox(
-                      alignment: Alignment.topLeft,
-                      maxWidth: sceneWidth,
-                      minWidth: sceneWidth,
+                child: IgnorePointer(
+                  child: SingleChildScrollView(
+                    controller: _headerHorizontalController,
+                    scrollDirection: Axis.horizontal,
+                    physics: const NeverScrollableScrollPhysics(),
+                    child: RepaintBoundary(
                       child: CustomPaint(
                         size: Size(sceneWidth, headerH),
                         painter: _TimelineHeaderPainter(
@@ -239,7 +255,6 @@ class _GanttChartState extends State<GanttChart> {
                   ),
                 ),
               ),
-              ),
             ],
           ),
         ),
@@ -252,21 +267,11 @@ class _GanttChartState extends State<GanttChart> {
               // 左列: 目標ラベル（縦スクロール追従、横は固定）
               SizedBox(
                 width: _labelColumnWidth,
-                child: RepaintBoundary(
-                child: ClipRect(
-                  child: ListenableBuilder(
-                    listenable: _transformController,
-                    builder: (context, child) {
-                      final dy = _transformController.value.storage[13];
-                      return Transform.translate(
-                        offset: Offset(0, dy),
-                        child: child,
-                      );
-                    },
-                    child: OverflowBox(
-                      alignment: Alignment.topLeft,
-                      maxHeight: effectiveBodyHeight,
-                      minHeight: effectiveBodyHeight,
+                child: IgnorePointer(
+                  child: SingleChildScrollView(
+                    controller: _labelVerticalController,
+                    physics: const NeverScrollableScrollPhysics(),
+                    child: RepaintBoundary(
                       child: CustomPaint(
                         size: Size(_labelColumnWidth, effectiveBodyHeight),
                         painter: _LabelBodyPainter(
@@ -283,17 +288,18 @@ class _GanttChartState extends State<GanttChart> {
                     ),
                   ),
                 ),
-                ),
               ),
 
-              // 右列: タイムラインボディ（InteractiveViewerで2軸同時スクロール）
+              // 右列: タイムラインボディ（ネイティブスクロール）
               Expanded(
-                child: RepaintBoundary(
-                  child: InteractiveViewer(
-                    transformationController: _transformController,
-                    constrained: false,
-                    scaleEnabled: false,
-                    child: MouseRegion(
+                child: Listener(
+                  onPointerSignal: _onPointerSignal,
+                  child: SingleChildScrollView(
+                    controller: _verticalController,
+                    child: SingleChildScrollView(
+                      controller: _horizontalController,
+                      scrollDirection: Axis.horizontal,
+                      child: MouseRegion(
                       onHover: (event) {
                         final row = _hitTestRow(event.localPosition);
                         if (row != _hoveredRow) {
@@ -313,25 +319,28 @@ class _GanttChartState extends State<GanttChart> {
                             widget.onTaskTap!(widget.tasks[row]);
                           }
                         },
-                        child: CustomPaint(
-                          size: Size(sceneWidth, effectiveBodyHeight),
-                          painter: _TimelineBodyPainter(
-                            tasks: widget.tasks,
-                            groups: _groups,
-                            goalColors: widget.goalColors,
-                            milestones: widget.milestones,
-                            calculator: _calculator,
-                            timeline: _timeline,
-                            hoveredRow: _hoveredRow,
-                            gridColor: colors.border,
-                            textColor: colors.textPrimary,
-                            todayColor: colors.error,
-                            hoverColor: colors.bgHover,
+                        child: RepaintBoundary(
+                          child: CustomPaint(
+                            size: Size(sceneWidth, effectiveBodyHeight),
+                            painter: _TimelineBodyPainter(
+                              tasks: widget.tasks,
+                              groups: _groups,
+                              goalColors: widget.goalColors,
+                              milestones: widget.milestones,
+                              calculator: _calculator,
+                              timeline: _timeline,
+                              hoveredRow: _hoveredRow,
+                              gridColor: colors.border,
+                              textColor: colors.textPrimary,
+                              todayColor: colors.error,
+                              hoverColor: colors.bgHover,
+                            ),
                           ),
                         ),
                       ),
                     ),
                   ),
+                ),
                 ),
               ),
             ],
@@ -339,6 +348,19 @@ class _GanttChartState extends State<GanttChart> {
         ),
       ],
     );
+  }
+
+  /// Shift+マウスホイールで横スクロール（Excel同様の操作感）.
+  void _onPointerSignal(PointerSignalEvent event) {
+    if (event is PointerScrollEvent &&
+        HardwareKeyboard.instance.logicalKeysPressed
+            .any((key) => key == LogicalKeyboardKey.shiftLeft ||
+                          key == LogicalKeyboardKey.shiftRight)) {
+      final dx = event.scrollDelta.dy;
+      final current = _horizontalController.offset;
+      final max = _horizontalController.position.maxScrollExtent;
+      _horizontalController.jumpTo((current + dx).clamp(0.0, max));
+    }
   }
 }
 

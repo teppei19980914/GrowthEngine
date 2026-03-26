@@ -237,7 +237,7 @@ void main() {
       expect(tester.takeException(), isNull);
     });
 
-    testWidgets('uses InteractiveViewer for seamless two-axis scrolling',
+    testWidgets('uses ScrollController for seamless scrolling',
         (tester) async {
       final tasks = createSampleTasks();
 
@@ -247,13 +247,13 @@ void main() {
       ));
       await tester.pumpAndSettle();
 
-      // InteractiveViewer がウィジェットツリーに存在することを確認
+      // SingleChildScrollView がウィジェットツリーに存在することを確認
       expect(
         find.descendant(
           of: find.byType(GanttChart),
-          matching: find.byType(InteractiveViewer),
+          matching: find.byType(SingleChildScrollView),
         ),
-        findsOneWidget,
+        findsWidgets,
       );
     });
   });
