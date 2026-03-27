@@ -125,6 +125,7 @@ class DashboardLayoutService {
   /// デフォルトレイアウトを取得する.
   List<DashboardWidgetConfig> getDefaultLayout() {
     return const [
+      DashboardWidgetConfig(widgetType: 'inbox_preview', columnSpan: 2),
       DashboardWidgetConfig(widgetType: 'today_banner', columnSpan: 2),
       DashboardWidgetConfig(widgetType: 'total_time_card', columnSpan: 1),
       DashboardWidgetConfig(widgetType: 'study_days_card', columnSpan: 1),

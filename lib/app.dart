@@ -5,11 +5,12 @@ library;
 
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import 'data/announcements.dart';
 import 'dialogs/app_guide_dialog.dart';
+import 'services/firestore_sync_service.dart' show FirestoreSyncService;
 import 'services/sync_manager.dart';
 import 'dialogs/help_dialog.dart';
 import 'dialogs/monitor_submission_dialog.dart';
@@ -30,7 +31,8 @@ import 'providers/goal_providers.dart';
 import 'providers/service_providers.dart';
 import 'providers/theme_provider.dart';
 import 'services/remote_config_service.dart';
-import 'services/trial_limit_service.dart' show isPremium, setInvitePremium;
+import 'services/trial_limit_service.dart'
+    show isPremium, setInvitePremium, setDeveloperMode;
 import 'theme/app_theme.dart';
 import 'widgets/navigation/app_drawer.dart';
 import 'widgets/milestone/milestone_button.dart';
@@ -226,8 +228,13 @@ class _AppShellState extends ConsumerState<_AppShell> {
       }
       await notifService.checkAndCreateReminders(deadlines: deadlines);
 
-      // 2. 開発者通知の読み込み
-      await notifService.loadSystemNotificationsFromJson(announcements);
+      // 2. 開発者通知の読み込み（assets/announcements.json）
+      try {
+        final jsonStr = await rootBundle.loadString('assets/announcements.json');
+        await notifService.loadSystemNotificationsFromJson(jsonStr);
+      } on Object {
+        // アセット読み込み失敗（テスト環境等）は無視
+      }
 
       // Provider再読み込み
       if (mounted) {
@@ -262,6 +269,13 @@ class _AppShellState extends ConsumerState<_AppShell> {
       AppLifecycleListener(
         onHide: () => syncManager.syncOnExit(),
         onPause: () => syncManager.syncOnExit(),
+      );
+
+      // 開発者判定: 認証メールが開発者のものなら全機能解放
+      final syncService = FirestoreSyncService();
+      await syncService.ensureSignedIn();
+      setDeveloperMode(
+        enabled: syncService.email == 'teppei09141998@gmail.com',
       );
 
       // 起動時の初回同期

@@ -6,6 +6,7 @@ library;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
 import '../../models/notification.dart' as model;
@@ -228,8 +229,21 @@ class _InboxItem extends ConsumerWidget {
 
     if (!context.mounted) return;
 
-    // リマインダー → 該当の編集画面に遷移（将来拡張ポイント）
-    // 現段階ではメッセージ詳細を表示
+    // リマインダー → ポップアップを閉じてガントチャート/目標ページに遷移
+    if (notification.notificationType == model.NotificationType.reminder) {
+      final isGoal = notification.dedupKey.startsWith('reminder:goal:');
+      // 受信ボックスポップアップを閉じる → さらに親ダイアログも閉じる
+      Navigator.of(context).pop(); // InboxPopup を閉じる
+      if (!context.mounted) return;
+      if (isGoal) {
+        context.go('/goals');
+      } else {
+        context.go('/gantt');
+      }
+      return;
+    }
+
+    // 実績・お知らせ → メッセージ詳細を表示
     await showDialog<void>(
       context: context,
       builder: (context) => _NotificationDetailDialog(

@@ -179,16 +179,25 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
               if (to > from) to--;
               notifier.reorder(from, to);
             },
+            buildDefaultDragHandles: false,
             itemBuilder: (context, index) {
               final config = layout[index];
               final meta = widgetRegistry[config.widgetType];
               return ListTile(
                 key: ValueKey('edit_$index'),
-                leading: Text(meta?.icon ?? '?', style: const TextStyle(fontSize: 20)),
-                title: Text(meta?.displayName ?? config.widgetType),
-                subtitle: Text(
-                  'スパン: ${config.columnSpan}',
-                  style: Theme.of(context).textTheme.labelSmall,
+                leading: ReorderableDragStartListener(
+                  index: index,
+                  child: const Icon(Icons.drag_handle, size: 24),
+                ),
+                title: Row(
+                  children: [
+                    Text(meta?.icon ?? '?',
+                        style: const TextStyle(fontSize: 18)),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(meta?.displayName ?? config.widgetType),
+                    ),
+                  ],
                 ),
                 trailing: Row(
                   mainAxisSize: MainAxisSize.min,

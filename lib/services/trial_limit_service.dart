@@ -75,7 +75,11 @@ bool get isTrialMode => kIsWeb || _testTrialMode;
 /// Web体験版では有料プランへのアップグレードが必要.
 /// 招待コード有効時はプロバイダ経由で判定する.
 bool get isPremium =>
-    !isTrialMode || _invitePremium || _subscriptionPremium || _trialPremium;
+    !isTrialMode ||
+    _invitePremium ||
+    _subscriptionPremium ||
+    _trialPremium ||
+    _developerMode;
 
 /// 招待コードによるプレミアム状態（プロバイダから設定される）.
 bool _invitePremium = false;
@@ -99,6 +103,17 @@ bool _trialPremium = false;
 /// 無料トライアルによるプレミアム状態を設定する.
 void setTrialPremium({required bool enabled}) {
   _trialPremium = enabled;
+}
+
+/// 開発者モード（認証メールが開発者のもの）.
+bool _developerMode = false;
+
+/// 開発者モードかどうか.
+bool get isDeveloperMode => _developerMode;
+
+/// 開発者メールアドレスによるプレミアム状態を設定する.
+void setDeveloperMode({required bool enabled}) {
+  _developerMode = enabled;
 }
 
 /// ガントチャート機能が利用可能か.

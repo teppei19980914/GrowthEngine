@@ -11,14 +11,14 @@ void main() {
 
   group('DashboardLayoutService', () {
     group('getDefaultLayout', () {
-      test('デフォルトレイアウトは11ウィジェット', () {
+      test('デフォルトレイアウトは12ウィジェット', () {
         final layout = service.getDefaultLayout();
-        expect(layout.length, 11);
+        expect(layout.length, 12);
       });
 
-      test('最初のウィジェットはtoday_banner', () {
+      test('最初のウィジェットはinbox_preview', () {
         final layout = service.getDefaultLayout();
-        expect(layout.first.widgetType, 'today_banner');
+        expect(layout.first.widgetType, 'inbox_preview');
         expect(layout.first.columnSpan, 2);
       });
     });
