@@ -422,6 +422,150 @@ Claude Code との協働で実感した効果:
 
 ---
 
-> **最終更新日**: 2026年3月17日
+## 13. InteractiveViewer のスクロール遅延（Web/タブレット）
+
+### 状況
+
+ガントチャートで `InteractiveViewer` + `TransformationController` + `ListenableBuilder` を使った2軸スクロールを実装したところ、タブレット端末で**指の動きと画面の動きが同期しない**問題が発生。ユーザーがスクロールし終わってから画面が追従する、ぎこちない挙動になった。
+
+### 原因
+
+`InteractiveViewer` はジェスチャ処理後に `TransformationController` を更新し、`ListenableBuilder` がヘッダー/左列を再描画する。この間接的な同期方式は **1-2フレームの遅延** を生み、タッチデバイスで顕著になる。
+
+### 解決策
+
+`InteractiveViewer` を完全に廃止し、**共有 ScrollController 方式**に移行した。
+
+```dart
+// ボディの横スクロールが動くと、ヘッダーも同期
+_horizontalController.addListener(() {
+  _headerHorizontalController.jumpTo(_horizontalController.offset);
+});
+```
+
+さらに Web ブラウザ特有の問題として、Shift+ホイール時にブラウザが `scrollDelta.dx` にデルタを格納する（`dy` が 0 になる）ことを発見し、`dx`/`dy` の両方を判定するよう対応。
+
+### 教訓
+
+> **InteractiveViewer はタッチデバイスでの高頻度スクロールには向かない。**
+> Flutter 標準の ScrollController を共有する方式のほうが、フレームワークのネイティブスクロール物理演算をそのまま活用でき、指追従が完全同期する。
+
+---
+
+## 14. rootBundle.loadString がテスト環境でハングする
+
+### 状況
+
+アプリ起動時に `rootBundle.loadString('assets/announcements.json')` で開発者通知を読み込む処理を追加したところ、**テストが全て `did not complete` でタイムアウト**するようになった。
+
+### 原因
+
+`rootBundle.loadString` はテスト環境（`TestWidgetsFlutterBinding`）で永遠にブロックされる。`pumpAndSettle` はすべてのタイマーとマイクロタスクの完了を待つため、ハングする。`Future.delayed` や `.timeout()` も fake async clock では機能しない。
+
+### 解決策
+
+アセットファイルからの読み込みを廃止し、**Dart 定数として管理**する方式に変更。
+
+```dart
+// Before: テストでハングする
+final jsonStr = await rootBundle.loadString('assets/announcements.json');
+
+// After: テストでも問題なし（Dart定数）
+const announcements = '[]';
+```
+
+最終的に `announcements.json` は戻したが、テスト環境では `disableInboxCheckForTest()` フラグで読み込み自体をスキップする設計にした。
+
+### 教訓
+
+> **アプリ起動パスにアセット読み込みを入れる場合、テストへの影響を必ず検証する。**
+> テスト環境では `rootBundle` が本番と異なる挙動をする。起動時の非同期処理にはテスト用のスキップ機構を必ず用意する。
+
+---
+
+## 15. ラベル外出し時のテスト大量破壊
+
+### 状況
+
+アプリ内の全ラベルを `app_labels.dart` に外出しした際、**テストコード内でハードコードされた旧文言がテストの期待値として残り、大量のテストが失敗**した。CIデプロイも連続で失敗。
+
+### 原因
+
+ラベルの外出し作業では「ソースコード側」は確実に置換されるが、「テストコード側」の文字列一致アサーション（`expect(find.text('旧文言'), findsOneWidget)`）が見落とされがち。
+
+### 解決策
+
+1. ラベル変更後に `grep` でテストディレクトリを横展開検索するルールを確立
+2. Stop Hook に自動チェックを追加（セッション終了時にAIが横展開漏れを確認）
+3. デプロイ前にローカルで `flutter test` を必ず実行するルールを追加
+
+```bash
+# 旧文言がテストに残っていないか検索
+grep -rn '旧文言' test/ --include='*.dart'
+```
+
+### 教訓
+
+> **ラベルの一括変更は「ソース」と「テスト」の両方を必ずセットで修正する。**
+> 変更後の横展開チェック（`grep`）を習慣化し、CIに頼る前にローカルで検証する。
+
+---
+
+## 16. データエクスポート/インポートでのフィールド欠落
+
+### 状況
+
+夢のカテゴリを「キャリア」に設定したのに、クラウド同期後に「その他」に戻ってしまう問題が報告された。
+
+### 原因
+
+`data_export_service.dart` の `_dreamToMap()` で **`category` フィールドがエクスポート対象に含まれていなかった**。アップロード時にカテゴリが保存されず、ダウンロード時にデフォルト `'other'` が適用された。
+
+```dart
+// Before: category が欠落
+Map<String, dynamic> _dreamToMap(db.Dream dream) {
+  return {
+    'id': dream.id,
+    'title': dream.title,
+    'description': dream.description,
+    'why': dream.why,
+    // category が無い！
+  };
+}
+```
+
+### 解決策
+
+`_dreamToMap` と `_dreamFromMap` の両方に `category` フィールドを追加。
+
+### 教訓
+
+> **エクスポート/インポートの実装時は、モデルの全フィールドが網羅されているか必ず照合する。**
+> テーブルにカラムを追加したら、エクスポート/インポートのマッピングも必ず更新する。チェックリストに「export/import の同期」を含めるべき。
+
+---
+
+## 17. プレミアム判定のタイミング問題
+
+### 状況
+
+開発者モード（メールアドレス判定）でプレミアムプランのはずなのに、**アプリ起動直後に体験版制限バナーが一瞬表示される**問題が発生。他画面からダッシュボードに戻ると消える。
+
+### 原因
+
+`setDeveloperMode()` は `_checkCloudAuth()` 内の `addPostFrameCallback` で非同期実行されるため、**最初の画面描画時点ではまだ `isPremium = false`**。バナーウィジェットの `build()` は初回描画で `isPremium` を参照するが、この時点では判定が完了していない。
+
+### 解決策
+
+`setDeveloperMode()` 完了後に `setState(() {})` を呼び、`_AppShell` の再ビルドをトリガーすることで、バナーが最新の `isPremium` を読み取れるようにした。
+
+### 教訓
+
+> **グローバルフラグ（`isPremium` 等）はリアクティブではない。**
+> フラグ変更後にUIの再ビルドをトリガーする仕組みが必要。Riverpod Provider で管理するほうが安全だが、既存の `trial_limit_service` がグローバル関数ベースのため、局所的な `setState` で対応した。
+
+---
+
+> **最終更新日**: 2026年3月30日
 >
 > **作成**: 須山 哲平 + Claude Code（AI ペアプログラミング）

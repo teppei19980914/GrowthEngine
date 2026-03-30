@@ -10,7 +10,6 @@ import 'dart:math' as math;
 
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:intl/intl.dart' hide TextDirection;
 
 import '../../l10n/app_labels.dart';
@@ -406,26 +405,28 @@ class GanttChartState extends State<GanttChart> {
   /// ガントチャートは横幅が常に広いため:
   /// - 通常ホイール → 横スクロール
   /// - Shift+ホイール → 縦スクロール
+  ///
+  /// Web ブラウザは Shift+ホイールを横スクロールとして扱い、
+  /// scrollDelta.dx にデルタを格納するため、dx も考慮する.
   void _onPointerSignal(PointerSignalEvent event) {
     if (event is! PointerScrollEvent) return;
 
-    final isShift = HardwareKeyboard.instance.logicalKeysPressed.any(
-      (key) =>
-          key == LogicalKeyboardKey.shiftLeft ||
-          key == LogicalKeyboardKey.shiftRight,
-    );
-    final delta = event.scrollDelta.dy;
+    final dy = event.scrollDelta.dy;
+    final dx = event.scrollDelta.dx;
 
-    if (isShift) {
-      // Shift+ホイール → 縦スクロール
+    // Shift+ホイール: ブラウザが dx にデルタを入れる → 縦スクロールに変換
+    if (dx != 0 && dy == 0) {
       final current = _verticalController.offset;
       final max = _verticalController.position.maxScrollExtent;
-      _verticalController.jumpTo((current + delta).clamp(0.0, max));
-    } else {
-      // 通常ホイール → 横スクロール
+      _verticalController.jumpTo((current + dx).clamp(0.0, max));
+      return;
+    }
+
+    // 通常ホイール → 横スクロール
+    if (dy != 0) {
       final current = _horizontalController.offset;
       final max = _horizontalController.position.maxScrollExtent;
-      _horizontalController.jumpTo((current + delta).clamp(0.0, max));
+      _horizontalController.jumpTo((current + dy).clamp(0.0, max));
     }
   }
 }
@@ -518,17 +519,25 @@ class _LabelBodyPainter extends CustomPainter {
         Offset(0, topY), Offset(size.width, topY),
         Paint()..color = group.color.withAlpha(60)..strokeWidth = 1,
       );
-      // 目標名（グループ先頭行）
-      _drawText(canvas, group.name,
-          Offset(10, topY + 3),
-          group.color, 10,
-          fontWeight: FontWeight.w600, maxWidth: size.width - 16);
-
-      // 各行にタスク名を表示
+      // 各行にタスク名を表示（先頭行は目標名+タスク名の2段表示）
       for (var r = group.startRow; r <= group.endRow; r++) {
-        if (r < tasks.length) {
+        if (r >= tasks.length) continue;
+        final y = r * rowH;
+
+        if (r == group.startRow) {
+          // 先頭行: 上段に目標名、下段にタスク名
+          _drawText(canvas, group.name,
+              Offset(10, y + 2),
+              group.color, 9,
+              fontWeight: FontWeight.w600, maxWidth: size.width - 16);
           _drawText(canvas, tasks[r].title,
-              Offset(10, r * rowH + rowH / 2 - 5),
+              Offset(10, y + rowH / 2 + 2),
+              textColor, 9,
+              maxWidth: size.width - 16);
+        } else {
+          // 2行目以降: タスク名のみ中央表示
+          _drawText(canvas, tasks[r].title,
+              Offset(10, y + rowH / 2 - 5),
               textColor, 10,
               maxWidth: size.width - 16);
         }

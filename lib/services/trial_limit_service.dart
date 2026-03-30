@@ -25,23 +25,24 @@ void setTrialModeForTest({required bool enabled}) {
 /// レベル別の制限値.
 ///
 /// レベル0: 初期, レベル1: FB1回, レベル2: FB2回, レベル3: 基本機能無制限.
-/// プレミアム機能（ガントチャート等）はレベルに関わらず体験版では利用不可.
+/// 目標数は「夢ごと」ではなく「全体」で制限する.
+/// プレミアム機能（スケジュール等）はレベルに関わらず体験版では利用不可.
 const _levelLimits = <int, _LevelConfig>{
-  0: _LevelConfig(dreams: 1, goalsPerDream: 2, tasksPerGoal: 3, books: 3),
-  1: _LevelConfig(dreams: 2, goalsPerDream: 3, tasksPerGoal: 5, books: 4),
-  2: _LevelConfig(dreams: 3, goalsPerDream: 4, tasksPerGoal: 8, books: 5),
+  0: _LevelConfig(dreams: 1, goals: 3, tasksPerGoal: 3, books: 3),
+  1: _LevelConfig(dreams: 2, goals: 5, tasksPerGoal: 5, books: 4),
+  2: _LevelConfig(dreams: 3, goals: 8, tasksPerGoal: 8, books: 5),
 };
 
 class _LevelConfig {
   const _LevelConfig({
     required this.dreams,
-    required this.goalsPerDream,
+    required this.goals,
     required this.tasksPerGoal,
     required this.books,
   });
 
   final int dreams;
-  final int goalsPerDream;
+  final int goals;
   final int tasksPerGoal;
   final int books;
 }
@@ -52,18 +53,18 @@ _LevelConfig _currentConfig(int level) {
     // レベル3以上: 基本機能無制限（十分大きな値）
     return const _LevelConfig(
       dreams: 999,
-      goalsPerDream: 999,
+      goals: 999,
       tasksPerGoal: 999,
       books: 999,
     );
   }
   return _levelLimits[level] ??
-      const _LevelConfig(dreams: 1, goalsPerDream: 2, tasksPerGoal: 3, books: 3);
+      const _LevelConfig(dreams: 1, goals: 3, tasksPerGoal: 3, books: 3);
 }
 
 /// 体験版の制限値（レベル0のデフォルト値、表示用）.
 int get trialMaxDreams => _levelLimits[0]!.dreams;
-int get trialMaxGoalsPerDream => _levelLimits[0]!.goalsPerDream;
+int get trialMaxGoals => _levelLimits[0]!.goals;
 int get trialMaxTasksPerGoal => _levelLimits[0]!.tasksPerGoal;
 int get trialMaxBooks => _levelLimits[0]!.books;
 
@@ -129,14 +130,13 @@ bool canAddDream({required int currentCount, int unlockLevel = 0}) {
   return currentCount < _currentConfig(unlockLevel).dreams;
 }
 
-/// 目標の追加が可能か判定する.
+/// 目標の追加が可能か判定する（全体の目標数で判定）.
 bool canAddGoal({
-  required int currentGoalCountForDream,
+  required int currentGoalCount,
   int unlockLevel = 0,
 }) {
   if (!isTrialMode || isPremium) return true;
-  return currentGoalCountForDream <
-      _currentConfig(unlockLevel).goalsPerDream;
+  return currentGoalCount < _currentConfig(unlockLevel).goals;
 }
 
 /// タスクの追加が可能か判定する.
@@ -158,9 +158,8 @@ bool canAddBook({required int currentCount, int unlockLevel = 0}) {
 /// 指定レベルでの夢の上限数.
 int maxDreams(int unlockLevel) => _currentConfig(unlockLevel).dreams;
 
-/// 指定レベルでの目標の上限数.
-int maxGoalsPerDream(int unlockLevel) =>
-    _currentConfig(unlockLevel).goalsPerDream;
+/// 指定レベルでの目標の上限数（全体）.
+int maxGoals(int unlockLevel) => _currentConfig(unlockLevel).goals;
 
 /// 指定レベルでのタスクの上限数.
 int maxTasksPerGoal(int unlockLevel) =>
@@ -179,7 +178,7 @@ String trialLimitDescription({int unlockLevel = 0}) {
     unlockLevel,
     feedbackMaxLevel,
     config.dreams,
-    config.goalsPerDream,
+    config.goals,
     config.books,
   );
 }

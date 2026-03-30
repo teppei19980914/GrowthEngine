@@ -625,7 +625,10 @@ class _GanttPageState extends ConsumerState<GanttPage> {
 
     if (format == null || !context.mounted) return;
 
-    final goals = await ref.read(goalServiceProvider).getAllGoals();
+    // 画面に表示されているタスクに関連する目標のみに絞る
+    final allGoals = await ref.read(goalServiceProvider).getAllGoals();
+    final visibleGoalIds = tasks.map((t) => t.goalId).toSet();
+    final goals = allGoals.where((g) => visibleGoalIds.contains(g.id)).toList();
     final exportService = ref.read(ganttExcelExportServiceProvider);
 
     try {

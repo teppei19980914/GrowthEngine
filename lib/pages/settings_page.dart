@@ -214,6 +214,12 @@ class SettingsPage extends ConsumerWidget {
                 subtitle: Text(appVersion),
               ),
               const Divider(height: 1),
+              const ListTile(
+                leading: Icon(Icons.update),
+                title: Text(AppLabels.settingsLastDeploy),
+                subtitle: Text(deployedAt),
+              ),
+              const Divider(height: 1),
               ListTile(
                 leading: const Icon(Icons.flutter_dash),
                 title: const Text('Flutter'),

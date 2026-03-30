@@ -41,6 +41,8 @@ migrate_working_dir/
 *.js.map
 *.js.deps
 sqlite3.dll
+release_config.json
+test_driver/
 
 # Symbolication related
 app.*.symbols

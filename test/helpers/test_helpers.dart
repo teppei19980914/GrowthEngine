@@ -261,29 +261,29 @@ Future<void> navigateViaDrawerInTest(
   await tester.tap(find.byIcon(Icons.menu));
   await tester.pumpAndSettle();
 
-  // まずListView内から探す（スクロール対応）
-  final drawerListView = find.descendant(
+  // Drawer内のテキストを探す（スクロール対応）
+  final drawerTarget = find.descendant(
     of: find.byType(Drawer),
-    matching: find.byType(ListView),
-  );
-  final listViewTarget = find.descendant(
-    of: drawerListView,
     matching: find.text(label),
   );
 
-  if (listViewTarget.evaluate().isNotEmpty) {
-    // ListView内にある場合はスクロールしてタップ
+  // スクロールして表示させてからタップ
+  try {
     await tester.scrollUntilVisible(
-      listViewTarget,
+      drawerTarget,
       100,
       scrollable: find.descendant(
         of: find.byType(Drawer),
         matching: find.byType(Scrollable),
-      ),
+      ).first,
     );
-    await tester.tap(listViewTarget);
+  } on StateError {
+    // Scrollable が見つからない場合はそのままタップ試行
+  }
+
+  if (drawerTarget.evaluate().isNotEmpty) {
+    await tester.tap(drawerTarget.first);
   } else {
-    // ListView外（設定など固定領域）の場合はDrawer内から直接タップ
     final drawerTarget = find.descendant(
       of: find.byType(Drawer),
       matching: find.text(label),

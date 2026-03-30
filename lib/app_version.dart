@@ -10,6 +10,12 @@ library;
 /// pubspec.yaml の version と一致させること.
 const appVersion = '1.0.0';
 
+/// 最終デプロイ日時.
+///
+/// GitHub Actions の deploy.yml が自動的に書き換える.
+/// ローカル開発時は手動更新不要（'---' が表示される）.
+const deployedAt = '---';
+
 /// リリース履歴（新しい順）.
 ///
 /// バージョン更新時は先頭にエントリを追加する.

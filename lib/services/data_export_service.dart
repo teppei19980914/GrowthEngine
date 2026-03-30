@@ -218,6 +218,7 @@ class DataExportService {
       'title': dream.title,
       'description': dream.description,
       'why': dream.why,
+      'category': dream.category,
       'created_at': dream.createdAt.toIso8601String(),
       'updated_at': dream.updatedAt.toIso8601String(),
     };
@@ -229,6 +230,7 @@ class DataExportService {
       title: Value(map['title'] as String? ?? ''),
       description: Value(map['description'] as String? ?? ''),
       why: Value(map['why'] as String? ?? ''),
+      category: Value(map['category'] as String? ?? 'other'),
       createdAt: Value(DateTime.parse(map['created_at'] as String)),
       updatedAt: Value(DateTime.parse(map['updated_at'] as String)),
     );

@@ -154,14 +154,13 @@ class GoalPage extends ConsumerWidget {
     if (!isTutorial) {
       final goals = await ref.read(goalListProvider.future);
       final level = ref.read(unlockLevelProvider);
-      final totalMax = maxDreams(level) * maxGoalsPerDream(level);
-      if (goals.length >= totalMax) {
+      if (!canAddGoal(currentGoalCount: goals.length, unlockLevel: level)) {
         if (!context.mounted) return;
         await showTrialLimitDialog(
           context,
           itemName: AppLabels.pageGoals,
           currentCount: goals.length,
-          maxCount: totalMax,
+          maxCount: maxGoals(level),
           feedbackService: ref.read(feedbackServiceProvider),
         );
         ref.invalidate(feedbackServiceProvider);

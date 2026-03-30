@@ -127,8 +127,10 @@ final ganttTasksProvider = FutureProvider<List<Task>>((ref) async {
   List<Task> tasks;
   switch (viewState.mode) {
     case GanttViewMode.allTasks:
-      final allTasks = await taskService.getAllTasks();
-      final scheduledBooks = await bookGanttService.getScheduledBooks();
+      final tasksFuture = taskService.getAllTasks();
+      final booksFuture = bookGanttService.getScheduledBooks();
+      final allTasks = await tasksFuture;
+      final scheduledBooks = await booksFuture;
       final bookTasks = bookGanttService.booksToTasks(scheduledBooks);
       tasks = [...allTasks, ...bookTasks];
     case GanttViewMode.byGoal:

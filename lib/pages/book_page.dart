@@ -233,50 +233,45 @@ class _ShelfRow extends StatelessWidget {
 
 /// 木目調の棚板を描画するCustomPainter.
 class _ShelfBoardPainter extends CustomPainter {
+  static final _boardPaint = Paint()..color = const Color(0xFF5D4037);
+  static final _grainPaint = Paint()
+    ..color = const Color(0xFF4E342E)
+    ..strokeWidth = 0.8;
+  static final _highlightPaint = Paint()
+    ..color = const Color(0xFF8D6E63)
+    ..strokeWidth = 1.5;
+  static final _shadowPaint = Paint()..color = const Color(0xFF3E2723);
+  static final _frontPaint = Paint()..color = const Color(0xFF6D4C41);
+
   @override
   void paint(Canvas canvas, Size size) {
     // 棚板本体（木目ベース色）
-    final boardPaint = Paint()
-      ..color = const Color(0xFF5D4037);
     final boardRect = Rect.fromLTWH(0, 0, size.width, size.height - 2);
-    canvas.drawRect(boardRect, boardPaint);
-
-    // 木目のライン
-    final grainPaint = Paint()
-      ..color = const Color(0xFF4E342E)
-      ..strokeWidth = 0.8;
+    canvas.drawRect(boardRect, _boardPaint);
     for (var y = 2.0; y < size.height - 2; y += 3) {
       canvas.drawLine(
         Offset(0, y),
         Offset(size.width, y + 0.5),
-        grainPaint,
+        _grainPaint,
       );
     }
 
     // 明るいハイライト（上端）
-    final highlightPaint = Paint()
-      ..color = const Color(0xFF8D6E63)
-      ..strokeWidth = 1.5;
     canvas.drawLine(
       const Offset(0, 0.5),
       Offset(size.width, 0.5),
-      highlightPaint,
+      _highlightPaint,
     );
-
     // 棚板の影（下端）
-    final shadowPaint = Paint()
-      ..color = const Color(0xFF3E2723);
     canvas.drawRect(
       Rect.fromLTWH(0, size.height - 2, size.width, 2),
-      shadowPaint,
+      _shadowPaint,
     );
 
     // 棚板の前面（厚み表現）
-    final frontPaint = Paint()
-      ..color = const Color(0xFF6D4C41);
     canvas.drawRect(
       Rect.fromLTWH(0, size.height - 4, size.width, 2),
-      frontPaint,
+      _frontPaint,
     );
   }
 

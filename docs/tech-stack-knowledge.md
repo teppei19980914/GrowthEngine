@@ -495,6 +495,112 @@ Checkout → Flutter Setup → pub get → flutter analyze → flutter test --co
 
 ---
 
-> **最終更新日**: 2026年3月17日
+## 追加ナレッジ（2026年3月 追記）
+
+### スクロール方式の選定
+
+| 方式 | 利点 | 欠点 | 採用 |
+|---|---|---|---|
+| InteractiveViewer | 2軸ズーム対応 | タッチ遅延（1-2フレーム） | 不採用 |
+| **共有ScrollController** | **ネイティブ物理演算、指追従が完全同期** | 横/縦を別々に管理 | **採用** |
+| TwoDimensionalScrollView | Flutter公式2Dスクロール | 固定ヘッダー非対応、未成熟 | 不採用 |
+
+**選定理由**: ガントチャートでは横スクロールが最頻出操作。InteractiveViewer はジェスチャ→Controller→Listener の間接同期で遅延が発生するため、ScrollController の直接共有方式がベスト。
+
+### ラベル管理の設計
+
+| 方式 | 利点 | 欠点 | 採用 |
+|---|---|---|---|
+| JSONファイル外出し | 非開発者でも編集可能 | 型安全性なし、テストでアセット読み込みがハング | 不採用 |
+| Flutter Intl (ARB) | 公式多言語対応 | 設定が重い、単一言語では過剰 | 不採用 |
+| **Dart静的定数クラス** | **型安全、const 対応、コンパイル時エラー検出** | Dart知識が必要 | **採用** |
+
+**選定理由**: `app_labels.dart` に `static const` で全UIテキストを集約。変数名のtypoはコンパイルエラーで検出でき、`const` ウィジェットも維持可能。約550定数を1ファイルで管理。
+
+### 通知システムの設計
+
+| 方式 | 利点 | 欠点 | 採用 |
+|---|---|---|---|
+| Firebase Cloud Messaging | プッシュ通知対応 | インフラ依存、Web制約あり | 不採用 |
+| **アプリ内DB + JSONアセット** | **インフラ非依存、即時反映** | プッシュ通知不可 | **採用** |
+
+**設計**: 3種類の通知（リマインダー/実績/開発者通知）を `notifications` テーブルで統合管理。開発者通知は `announcements.json` とDBを完全同期する方式（JSONを正として毎回全削除→再作成）。
+
+### クラウド同期の設計
+
+| 方式 | 利点 | 欠点 | 採用 |
+|---|---|---|---|
+| リアルタイム同期 (Firestore listener) | 常時最新 | 帯域消費大、オフライン複雑 | 不採用 |
+| **タイムスタンプ比較 + 全量同期** | **シンプル、確実** | リアルタイム性なし | **採用** |
+
+**設計**: アプリ起動時にクラウドの `updatedAt` とローカルの `cloud_last_sync_ms`（SharedPreferences）を比較。クラウドが新しければダウンロード、ローカルが新しければアップロード。データ変更時は3秒デバウンスで自動アップロード。
+
+### 体験版制限の設計
+
+| 方式 | 初期検討 | 最終採用 |
+|---|---|---|
+| 目標の制限単位 | 各夢ごとN個 | **全体でN個**（ユーザーに分かりやすい） |
+| 解除方式 | 課金のみ | **フィードバック送信で段階解除** + プレミアム契約 |
+| 開発者モード | なし | **認証メールアドレスで判定** |
+
+**レベル別制限値**:
+
+| Level | 夢 | 目標 | タスク/目標 | 書籍 |
+|---|---|---|---|---|
+| 0 | 1 | 3 | 3 | 3 |
+| 1 | 2 | 5 | 5 | 4 |
+| 2 | 3 | 8 | 8 | 5 |
+| 3+ | 無制限 | 無制限 | 無制限 | 無制限 |
+
+### Claude Code 習熟度レベル
+
+| Level | 構成 | 効果 |
+|---|---|---|
+| 1 | Raw Prompting | 毎回手順を手動入力 |
+| 2 | CLAUDE.md | ルール自動読み込み |
+| **3** | **+ Skills** | **オンデマンド手順注入（トークン-64%）** |
+| **4** | **+ Hooks** | **品質チェック100%自動化** |
+| **5** | **+ Agents** | **並行レビュー（トークン-70%）** |
+
+**実測値**: Level 2 → Level 5 で毎セッション読み込み量 16,574 → 5,161 bytes（-69%）。月間トークン消費 282,800 → 90,000（-68%）。
+
+### CustomPainter の最適化パターン
+
+```dart
+// NG: paint() 内で毎フレーム生成
+void paint(Canvas canvas, Size size) {
+  final paint = Paint()..color = Colors.red;  // 毎回 new
+  canvas.drawLine(..., paint);
+}
+
+// OK: コンストラクタまたは static final でキャッシュ
+class MyPainter extends CustomPainter {
+  static final _paint = Paint()..color = Colors.red;
+
+  void paint(Canvas canvas, Size size) {
+    canvas.drawLine(..., _paint);  // 再利用
+  }
+}
+```
+
+### N+1 クエリの回避パターン
+
+```dart
+// NG: ループ内でDB問い合わせ
+for (final goal in goals) {
+  final tasks = await taskDao.getByGoalId(goal.id);  // N回
+}
+
+// OK: 一括取得→メモリ上でグルーピング
+final allTasks = await taskService.getAllTasks();  // 1回
+final tasksByGoal = <String, List<Task>>{};
+for (final task in allTasks) {
+  tasksByGoal.putIfAbsent(task.goalId, () => []).add(task);
+}
+```
+
+---
+
+> **最終更新日**: 2026年3月30日
 >
 > **作成**: 須山 哲平 + Claude Code（AI ペアプログラミング）

@@ -17,7 +17,7 @@ class AppLabels {
   static const pageHome = 'ホーム';
   static const pageDreams = '夢';
   static const pageGoals = '目標';
-  static const pageSchedule = '活動予定';
+  static const pageSchedule = 'スケジュール';
   static const pageBooks = '書籍';
   static const pageConstellations = '星座';
   static const pageStats = '統計';
@@ -241,6 +241,7 @@ class AppLabels {
   static const settingsUpgradeTitle = 'もっと自由に、もっと先へ';
   static const settingsUpgradeDesc = 'ワンコインで全機能を利用可能';
   static const settingsVersion = 'バージョン';
+  static const settingsLastDeploy = '最終更新日';
   static const settingsPlatform = 'クロスプラットフォーム対応';
   static const settingsPlan = 'ご利用プラン';
   static const settingsAccount = 'アカウント';
@@ -462,7 +463,7 @@ class AppLabels {
           int goals, int books) =>
       '現在の制限（レベル$level / $maxLevel）:\n'
       '- 夢: $dreams個まで\n'
-      '- 目標: 各夢$goals個まで\n'
+      '- 目標: $goals個まで\n'
       '- 書籍: $books冊まで';
 
   // ── 使い方ガイド ──────────────────────────────────────────
@@ -1068,7 +1069,7 @@ class AppLabels {
       '基本機能の制限は完全に解除されています。'
       '活動予定等のプレミアム機能はプレミアムプランをご利用ください。';
   static String webTrialLimitDesc(int level, int maxLevel, int dreams, int goals, int books) =>
-      '夢$dreams個・目標$goals個/夢・書籍$books冊まで'
+      '夢$dreams個・目標$goals個・書籍$books冊まで'
       '（レベル$level / $maxLevel）。'
       '活動予定等のプレミアム機能はプレミアムプランをご利用ください。';
   static const webTrialDialogIntro =
@@ -1089,7 +1090,7 @@ class AppLabels {
   static const webTrialLimitUnlocked = '制限は完全に解除されています。';
   static String webTrialLimitDetail(int level, int maxLevel, int dreams, int goals, int books) =>
       'スタータープランの登録上限（レベル$level / $maxLevel）: '
-      '夢$dreams個、目標$goals個/夢、書籍$books冊';
+      '夢$dreams個、目標$goals個、書籍$books冊';
   static const webTrialUpgradeNote =
       'プレミアムプランにアップグレードすると、活動予定・'
       '高度な統計等のプレミアム機能も含め全機能を制限なくご利用いただけます。';

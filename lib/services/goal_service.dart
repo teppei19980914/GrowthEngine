@@ -131,8 +131,12 @@ class GoalService {
 
   /// 目標の並び順を一括更新する.
   Future<void> updateGoalOrders(List<(String goalId, int sortOrder)> orders) async {
+    // 全目標を一括取得してN+1を回避
+    final allGoals = await _goalDao.getAll();
+    final goalMap = {for (final g in allGoals) g.id: g};
+
     for (final (goalId, sortOrder) in orders) {
-      final existing = await _goalDao.getById(goalId);
+      final existing = goalMap[goalId];
       if (existing == null) continue;
       final updated = _rowToGoal(existing).copyWith(sortOrder: sortOrder);
       await _goalDao.updateGoal(_goalToCompanion(updated));

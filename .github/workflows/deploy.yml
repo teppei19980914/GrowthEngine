@@ -98,6 +98,11 @@ jobs:
 
       - run: flutter pub get
 
+      - name: Stamp deploy timestamp
+        run: |
+          DEPLOY_TIME=$(TZ=Asia/Tokyo date '+%Y-%m-%d %H:%M')
+          sed -i "s|const deployedAt = '.*';|const deployedAt = '$DEPLOY_TIME';|" lib/app_version.dart
+
       - run: flutter build web --release --base-href "/GrowthEngine/"
 
       - uses: actions/upload-pages-artifact@v3
@@ -106,48 +111,3 @@ jobs:
 
       - id: deployment
         uses: actions/deploy-pages@v4
-
-      - name: Update Gist release notes
-        if: success()
-        env:
-          GIST_TOKEN: ${{ secrets.GIST_TOKEN }}
-          GIST_ID: d68bbdb601a9d0e409244c141f25e3fc
-        run: |
-          # release_config.json が存在しない場合はスキップ
-          if [ ! -f release_config.json ]; then
-            echo "release_config.json not found, skipping Gist update"
-            exit 0
-          fi
-
-          # 現在のGist内容を取得
-          CURRENT=$(curl -s \
-            -H "Authorization: Bearer $GIST_TOKEN" \
-            -H "Accept: application/vnd.github.v3+json" \
-            "https://api.github.com/gists/$GIST_ID")
-
-          # 最初のJSONファイル名を取得
-          FILENAME=$(echo "$CURRENT" | jq -r '.files | keys[] | select(endswith(".json"))' | head -1)
-          if [ -z "$FILENAME" ]; then
-            echo "No JSON file found in Gist"
-            exit 0
-          fi
-
-          # 現在のGist JSONコンテンツを取得
-          GIST_CONTENT=$(echo "$CURRENT" | jq -r ".files[\"$FILENAME\"].content")
-
-          # release_config.json の内容を読み取り
-          RELEASE_CONFIG=$(cat release_config.json)
-
-          # Gist JSONにreleaseセクションをマージ
-          UPDATED=$(echo "$GIST_CONTENT" | jq --argjson release "$RELEASE_CONFIG" '.release = $release')
-
-          # Gistを更新
-          jq -n --arg filename "$FILENAME" --arg content "$UPDATED" \
-            '{files: {($filename): {content: $content}}}' | \
-          curl -s -X PATCH \
-            -H "Authorization: Bearer $GIST_TOKEN" \
-            -H "Accept: application/vnd.github.v3+json" \
-            "https://api.github.com/gists/$GIST_ID" \
-            -d @- > /dev/null
-
-          echo "Gist updated with release $(jq -r .version release_config.json)"
