@@ -179,11 +179,11 @@ class AppLabels {
   static const bookCatHobby = '趣味・実用';
   static const bookCatOther = 'その他';
 
-  // ── 読書活動予定 ──────────────────────────────────────────
-  static const scheduleDialogAdd = '読書活動予定を追加';
-  static const scheduleDialogEdit = '読書活動予定を編集';
-  static const scheduleAddButton = '読書活動予定を追加';
-  static const scheduleDeleteConfirm = '活動予定削除';
+  // ── 読書スケジュール ──────────────────────────────────────────
+  static const scheduleDialogAdd = '読書スケジュールを追加';
+  static const scheduleDialogEdit = '読書スケジュールを編集';
+  static const scheduleAddButton = '読書スケジュールを追加';
+  static const scheduleDeleteConfirm = 'スケジュール削除';
   static const scheduleNewBook = '新しい書籍を作成';
   static const scheduleStatus = 'ステータス';
   static const scheduleProgress = '進捗率';
@@ -200,7 +200,7 @@ class AppLabels {
   static const logMinRequired = '活動時間は1分以上で入力してください';
   static const logRecordActivity = '活動時間を記録';
 
-  // ── 活動予定（旧活動予定） ──────────────────────────────
+  // ── スケジュール（旧スケジュール） ──────────────────────────────
   static const ganttAllTasks = '全タスク';
   static const ganttByGoal = '目標別';
   static const ganttAllBooks = '全書籍';
@@ -210,7 +210,7 @@ class AppLabels {
   static const ganttEmptyTitle = '最初のタスクを追加しよう';
   static const ganttEmptySubtitle = '目標を選択してタスクを追加しましょう';
   static const ganttEditTask = 'タスクを編集';
-  static const ganttEditSchedule = '活動予定を編集';
+  static const ganttEditSchedule = 'スケジュールを編集';
   static const ganttLabelGoal = '目標';
 
   // ── 日付範囲 ────────────────────────────────────────────────
@@ -388,9 +388,9 @@ class AppLabels {
   static const tutorialAddGoal = '右上の「目標を追加」ボタンをタップしてください';
   static const tutorialAddGoalHint =
       '夢に紐づく具体的な目標を設定します。What・When・Howを入力してください';
-  static const tutorialGoToSchedule = '画面下の「活動予定」タブをタップしてください';
+  static const tutorialGoToSchedule = '画面下の「スケジュール」タブをタップしてください';
   static const tutorialGoToScheduleHint =
-      '下部ナビゲーションバーのタイムラインアイコンが「活動予定」ページです';
+      '下部ナビゲーションバーのタイムラインアイコンが「スケジュール」ページです';
   static const tutorialAddTask =
       'ドロップダウンから目標を選び「タスクを追加」をタップ';
   static const tutorialAddTaskHint =
@@ -406,7 +406,7 @@ class AppLabels {
   static const tutorialInputFields = '各項目を入力して「追加」をタップしてください';
   static const tutorialEditLater = '説明やWhyは後から編集できます';
   static const tutorialGanttPremiumMsg =
-      '活動予定で目標達成までの道のりを可視化しよう！';
+      'スケジュールで目標達成までの道のりを可視化しよう！';
   static const tutorialGanttPremiumUpgrade =
       'プレミアムプランにアップグレードするとタスク管理・進捗トラッキングなど全機能をご利用いただけます';
 
@@ -431,10 +431,10 @@ class AppLabels {
   // ── 読了レビュー ──────────────────────────────────────────
   static String reviewTitle(String bookTitle) => '読了レビュー: $bookTitle';
 
-  // ── 書籍活動予定 ──────────────────────────────────────────
+  // ── 書籍スケジュール ──────────────────────────────────────────
   static const scheduleDeleteConfirmTitle = '確認';
   static const scheduleDeleteConfirmMsg =
-      'この書籍の活動予定を削除しますか？\n（書籍自体は削除されません）';
+      'この書籍のスケジュールを削除しますか？\n（書籍自体は削除されません）';
 
   // ── 実績通知テンプレート ──────────────────────────────────────
   static String achievementTotalHoursTitle(int value) => '累計$value時間達成！';
@@ -475,10 +475,10 @@ class AppLabels {
   static const guideGoalSub = '具体的なステップ';
   static const guideDecompose = '分解';
   static const guideExecute = '実行';
-  static const guideScheduleSub = '活動予定管理・進捗記録';
+  static const guideScheduleSub = 'スケジュール管理・進捗記録';
   static const guideRelatedScreens = '連携する画面';
   static const guideBookSub = '何を読むか\nどう読んだか';
-  static const guideScheduleBookSub = 'いつ読むか\n活動予定管理';
+  static const guideScheduleBookSub = 'いつ読むか\nスケジュール管理';
   static const guideReadingPlan = '読書計画';
   static const guideGoalWhatSub = '何を達成するか';
   static const guideScheduleTaskSub = 'いつ・どのくらい\nやるか';
@@ -492,7 +492,7 @@ class AppLabels {
   // ── 使い方ガイドステップ ──────────────────────────────────────
   static const guideStepDream = '夢を登録する';
   static const guideStepGoal = '目標を設定する';
-  static const guideStepSchedule = '活動予定でタスク管理';
+  static const guideStepSchedule = 'スケジュールでタスク管理';
   static const guideStepBook = '書籍を管理する';
   static const guideStepStats = '統計で振り返る';
   static const guideStepConstellation = '星座で成長を実感';
@@ -543,7 +543,7 @@ class AppLabels {
   static const upgradeFeature1Desc = '夢・目標・タスク・書籍を好きなだけ登録';
   static const upgradeFeature2Title = 'やるべきことが一目でわかる';
   static const upgradeFeature2Desc =
-      '活動予定で全体像を把握し、迷わず行動できる';
+      'スケジュールで全体像を把握し、迷わず行動できる';
   static const upgradeFeature3Title = '自分の成長が見える';
   static const upgradeFeature3Desc = '活動統計で努力の積み重ねを実感できる';
   static const upgradeFeature4Title = 'あなたの声が、新機能になる';
@@ -726,15 +726,15 @@ class AppLabels {
       'また、「やりたいこと発見ガイド」を使えば、'
       '質問に答えるだけでやりたいことを見つける手助けができます。\n'
       '夢ページの「発見ガイド」ボタンからお試しください。';
-  static const helpFaqScheduleQ = '活動予定とは何ですか？';
+  static const helpFaqScheduleQ = 'スケジュールとは何ですか？';
   static const helpFaqScheduleA =
-      'タスクの活動予定を横棒グラフで表示する機能です。'
+      'タスクのスケジュールを横棒グラフで表示する機能です。'
       '各タスクの開始日・終了日・進捗を視覚的に確認でき、'
-      'プロジェクト全体の活動予定管理に役立ちます。\n'
+      'プロジェクト全体のスケジュール管理に役立ちます。\n'
       'プレミアムプランでご利用いただけます。';
   static const helpFaqActivityLogQ = '活動ログはどうやって記録しますか？';
   static const helpFaqActivityLogA =
-      '活動予定のタスクをタップし、「活動時間を記録」を選択します。'
+      'スケジュールのタスクをタップし、「活動時間を記録」を選択します。'
       '手動で時間を入力するか、タイマー機能を使って記録できます。\n'
       'ホームの「活動を記録」ボタンからも記録できます。';
   static const helpFaqConstellationQ = '星座はどうすれば完成しますか？';
@@ -874,7 +874,7 @@ class AppLabels {
   static const helpPlanDreamLimit = '夢: 1個まで';
   static const helpPlanGoalLimit = '目標: 夢1つにつき2個まで';
   static const helpPlanBookLimit = '書籍: 3冊まで';
-  static const helpPlanLockedFeatures = '活動予定・詳細統計: 利用不可';
+  static const helpPlanLockedFeatures = 'スケジュール・詳細統計: 利用不可';
   static const helpPlanFeedbackUnlock =
       'アプリの感想送信で段階的に登録上限が緩和されます';
   static const helpPlanPremiumName = 'プレミアムプラン';
@@ -898,7 +898,7 @@ class AppLabels {
   static const guideStepGoalP5 = '「追加」をタップ';
   static const guideStepGoalExample =
       '夢を細分化し、具体的な行動目標に落とし込みましょう';
-  static const guideStepScheduleP1 = '画面下部の「活動予定」タブをタップ';
+  static const guideStepScheduleP1 = '画面下部の「スケジュール」タブをタップ';
   static const guideStepScheduleP2 = '上部のドロップダウンで目標を選択';
   static const guideStepScheduleP3 = '「＋ タスク追加」ボタンをタップ';
   static const guideStepScheduleP4 = 'タスク名・開始日・終了日を入力して追加';
@@ -908,7 +908,7 @@ class AppLabels {
   static const guideStepBookP1 = 'ハンバーガーメニューから「書籍」を選択';
   static const guideStepBookP2 = '「＋ 書籍を追加」ボタンをタップ';
   static const guideStepBookP3 = 'タイトルを入力して追加';
-  static const guideStepBookP4 = 'カレンダーアイコンで読書活動予定を設定';
+  static const guideStepBookP4 = 'カレンダーアイコンで読書スケジュールを設定';
   static const guideStepBookP5 = '読了時にチェックアイコンで要約・感想を記録';
   static const guideStepBookExample = '読書の進捗管理と振り返りに活用できます';
   static const guideStepStatsP1 = 'ハンバーガーメニューから「統計」を選択';
@@ -1031,17 +1031,17 @@ class AppLabels {
       '$completed/$total 星座完成';
   static String dashUnreadCount(int count) => '$count件の未読';
 
-  // ── 活動予定追加 ──────────────────────────────────────────
+  // ── スケジュール追加 ──────────────────────────────────────────
   static const ganttPremiumPoint1 = 'タスクの日程をタイムラインでビジュアル管理';
   static const ganttPremiumPoint2 = 'Excel書き出しでさらに活用・共有';
-  static const ganttPremiumPoint3 = '読書活動予定を一元管理';
+  static const ganttPremiumPoint3 = '読書スケジュールを一元管理';
   static const ganttPremiumPoint4 = '目標別・書籍別のフィルタリング表示';
   static const ganttBookLabel = '書籍';
   static const ganttIndependentTask = '独立タスク';
   static const ganttEditTaskOption = 'タスクを編集';
   static const ganttRecordActivity = '活動時間を記録';
   static String ganttActivityTitle(String title) => '活動時間 - $title';
-  static const ganttEditScheduleOption = '活動予定を編集';
+  static const ganttEditScheduleOption = 'スケジュールを編集';
   static const ganttRecordReading = '読書時間を記録';
   static const ganttViewAllTasks = '全タスク';
   static const ganttViewBooks = '書籍タスク';
@@ -1067,11 +1067,11 @@ class AppLabels {
   static String webTrialInviteDays(int days) => '残り$days日';
   static const webTrialUnlimitedDesc =
       '基本機能の制限は完全に解除されています。'
-      '活動予定等のプレミアム機能はプレミアムプランをご利用ください。';
+      'スケジュール等のプレミアム機能はプレミアムプランをご利用ください。';
   static String webTrialLimitDesc(int level, int maxLevel, int dreams, int goals, int books) =>
       '夢$dreams個・目標$goals個・書籍$books冊まで'
       '（レベル$level / $maxLevel）。'
-      '活動予定等のプレミアム機能はプレミアムプランをご利用ください。';
+      'スケジュール等のプレミアム機能はプレミアムプランをご利用ください。';
   static const webTrialDialogIntro =
       'このアプリはスタータープランです。デスクトップ版のインストール前に'
       '機能をお試しいただけます。';
@@ -1092,7 +1092,7 @@ class AppLabels {
       'スタータープランの登録上限（レベル$level / $maxLevel）: '
       '夢$dreams個、目標$goals個、書籍$books冊';
   static const webTrialUpgradeNote =
-      'プレミアムプランにアップグレードすると、活動予定・'
+      'プレミアムプランにアップグレードすると、スケジュール・'
       '高度な統計等のプレミアム機能も含め全機能を制限なくご利用いただけます。';
   static const webTrialSettingsNote = 'この情報は設定画面からいつでも確認できます。';
 
@@ -1139,7 +1139,7 @@ class AppLabels {
   static const milestoneFirstGoal = '最初の実績を目指そう';
   static String milestoneNextGoal(String label) => '次の目標: $label';
 
-  // ── 活動予定内部ラベル ──────────────────────────────────
+  // ── スケジュール内部ラベル ──────────────────────────────────
   static const ganttHeaderGoal = '目標';
   static const weekDays = ['月', '火', '水', '木', '金', '土', '日'];
 
