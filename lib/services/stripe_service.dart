@@ -86,7 +86,7 @@ class StripeService {
     try {
       final response = await _httpClient.post(
         Uri.parse(stripeEndpointUrl),
-        headers: {'Content-Type': 'application/json'},
+        headers: {'Content-Type': 'text/plain'},
         body: jsonEncode({
           'userKey': userKey ?? '',
         }),
@@ -96,7 +96,7 @@ class StripeService {
 
       final json = jsonDecode(response.body) as Map<String, dynamic>;
       return json['url'] as String?;
-    } on Exception {
+    } on Object {
       return null;
     }
   }
@@ -119,7 +119,7 @@ class StripeService {
     try {
       final response = await _httpClient.post(
         Uri.parse(stripeEndpointUrl),
-        headers: {'Content-Type': 'application/json'},
+        headers: {'Content-Type': 'text/plain'},
         body: jsonEncode({
           'action': 'portal',
           'userKey': userKey ?? '',
@@ -130,7 +130,7 @@ class StripeService {
 
       final json = jsonDecode(response.body) as Map<String, dynamic>;
       return json['url'] as String?;
-    } on Exception {
+    } on Object {
       return null;
     }
   }
@@ -146,7 +146,7 @@ class StripeService {
     try {
       final response = await _httpClient.post(
         Uri.parse(stripeEndpointUrl),
-        headers: {'Content-Type': 'application/json'},
+        headers: {'Content-Type': 'text/plain'},
         body: jsonEncode({
           'action': 'status',
           'userKey': userKey ?? '',
@@ -166,7 +166,7 @@ class StripeService {
       }
 
       return active;
-    } on Exception {
+    } on Object {
       return null;
     }
   }

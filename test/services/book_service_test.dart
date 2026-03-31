@@ -185,6 +185,59 @@ void main() {
       });
     });
 
+    group('updateBookInfo', () {
+      test('メモ（description）が更新される', () async {
+        final book = await service.createBook('テスト書籍');
+        final updated = await service.updateBookInfo(
+          book.id,
+          title: 'テスト書籍',
+          category: BookCategory.other,
+          why: 'テスト理由',
+          description: 'テストメモ',
+        );
+        expect(updated!.why, 'テスト理由');
+        expect(updated.description, 'テストメモ');
+
+        // DBに永続化されているか確認
+        final fetched = await service.getBook(book.id);
+        expect(fetched!.why, 'テスト理由');
+        expect(fetched.description, 'テストメモ');
+      });
+
+      test('updateBookInfo後にupdateStatusしてもメモが消えない', () async {
+        final book = await service.createBook('テスト書籍');
+
+        // 1. メモを更新
+        await service.updateBookInfo(
+          book.id,
+          title: 'テスト書籍',
+          category: BookCategory.other,
+          why: 'なぜ読むのか',
+          description: '内容メモ',
+        );
+
+        // 2. ステータスを更新（_editBookと同じ順序）
+        await service.updateStatus(book.id, BookStatus.reading);
+
+        // 3. メモが残っているか確認
+        final fetched = await service.getBook(book.id);
+        expect(fetched!.status, BookStatus.reading);
+        expect(fetched.why, 'なぜ読むのか');
+        expect(fetched.description, '内容メモ');
+      });
+
+      test('存在しないIDでnull', () async {
+        final result = await service.updateBookInfo(
+          'nonexistent',
+          title: 'テスト',
+          category: BookCategory.other,
+          why: '',
+          description: '',
+        );
+        expect(result, isNull);
+      });
+    });
+
     group('updateBook', () {
       test('書籍を更新する', () async {
         final book = await service.createBook('テスト書籍');

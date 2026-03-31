@@ -1,6 +1,6 @@
 @echo off
 chcp 65001 >nul
-echo Starting YumeLog Windows App...
+echo Starting YumeLog on Chrome...
 cd /d "%~dp0"
-flutter run -d windows
+flutter run -d chrome --web-port=8080
 pause

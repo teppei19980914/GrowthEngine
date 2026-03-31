@@ -92,7 +92,7 @@ class _MonitorSubmissionDialogState extends State<_MonitorSubmissionDialog> {
       final response = await http
           .post(
             Uri.parse(feedbackEndpointUrl),
-            headers: {'Content-Type': 'application/json'},
+            headers: {'Content-Type': 'text/plain'},
             body: payload,
           )
           .timeout(const Duration(seconds: 30));

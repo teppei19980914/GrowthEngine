@@ -92,6 +92,11 @@ class _BookDialogContentState extends State<_BookDialogContent> {
 
   @override
   Widget build(BuildContext context) {
+    final screenHeight = MediaQuery.sizeOf(context).height;
+    final keyboardHeight = MediaQuery.viewInsetsOf(context).bottom;
+    // ダイアログの最大高さ: 画面高さからキーボード・タイトル・ボタン分を引く
+    final maxContentHeight = screenHeight - keyboardHeight - 200;
+
     return AlertDialog(
       title: Row(
         children: [
@@ -101,81 +106,82 @@ class _BookDialogContentState extends State<_BookDialogContent> {
         ],
       ),
       insetPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-      content: ConstrainedBox(
-        constraints: const BoxConstraints(maxWidth: 400),
+      content: SizedBox(
+        width: 400,
+        height: maxContentHeight.clamp(200, 480).toDouble(),
         child: Form(
           key: _formKey,
-          child: SingleChildScrollView(
-            physics: const ClampingScrollPhysics(),
-            padding: EdgeInsets.only(
-              bottom: MediaQuery.viewInsetsOf(context).bottom,
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                TextFormField(
-                  controller: _titleController,
-                  decoration: InputDecoration(
-                    labelText: '${AppLabels.bookTitle} *',
-                    hintText: AppLabels.bookHintTitle,
-                  ),
-                  validator: (v) =>
-                      (v == null || v.trim().isEmpty) ? AppLabels.validBookTitle : null,
-                  autofocus: !_isEdit,
-                ),
-                const SizedBox(height: 16),
-                DropdownButtonFormField<BookCategory>(
-                  initialValue: _selectedCategory,
-                  decoration: const InputDecoration(
-                    labelText: AppLabels.bookCategory,
-                  ),
-                  items: BookCategory.values
-                      .map((c) => DropdownMenuItem(
-                            value: c,
-                            child: Text(c.label),
-                          ))
-                      .toList(),
-                  onChanged: (v) {
-                    if (v != null) setState(() => _selectedCategory = v);
-                  },
-                ),
-                if (_isEdit) ...[
-                  const SizedBox(height: 16),
-                  DropdownButtonFormField<BookStatus>(
-                    initialValue: _selectedStatus,
-                    decoration: const InputDecoration(
-                      labelText: AppLabels.scheduleStatus,
+          child: Scrollbar(
+            thumbVisibility: true,
+            child: SingleChildScrollView(
+              physics: const ClampingScrollPhysics(),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  TextFormField(
+                    controller: _titleController,
+                    decoration: InputDecoration(
+                      labelText: '${AppLabels.bookTitle} *',
+                      hintText: AppLabels.bookHintTitle,
                     ),
-                    items: BookStatus.values
-                        .map((s) => DropdownMenuItem(
-                              value: s,
-                              child: Text(s.label),
+                    validator: (v) =>
+                        (v == null || v.trim().isEmpty) ? AppLabels.validBookTitle : null,
+                    autofocus: !_isEdit,
+                  ),
+                  const SizedBox(height: 16),
+                  DropdownButtonFormField<BookCategory>(
+                    initialValue: _selectedCategory,
+                    decoration: const InputDecoration(
+                      labelText: AppLabels.bookCategory,
+                    ),
+                    items: BookCategory.values
+                        .map((c) => DropdownMenuItem(
+                              value: c,
+                              child: Text(c.label),
                             ))
                         .toList(),
                     onChanged: (v) {
-                      if (v != null) setState(() => _selectedStatus = v);
+                      if (v != null) setState(() => _selectedCategory = v);
                     },
                   ),
+                  if (_isEdit) ...[
+                    const SizedBox(height: 16),
+                    DropdownButtonFormField<BookStatus>(
+                      initialValue: _selectedStatus,
+                      decoration: const InputDecoration(
+                        labelText: AppLabels.scheduleStatus,
+                      ),
+                      items: BookStatus.values
+                          .map((s) => DropdownMenuItem(
+                                value: s,
+                                child: Text(s.label),
+                              ))
+                          .toList(),
+                      onChanged: (v) {
+                        if (v != null) setState(() => _selectedStatus = v);
+                      },
+                    ),
+                  ],
+                  const SizedBox(height: 16),
+                  TextFormField(
+                    controller: _whyController,
+                    decoration: const InputDecoration(
+                      labelText: AppLabels.bookWhy,
+                      hintText: AppLabels.bookHintWhy,
+                    ),
+                    maxLines: 2,
+                  ),
+                  const SizedBox(height: 16),
+                  TextFormField(
+                    controller: _descriptionController,
+                    decoration: const InputDecoration(
+                      labelText: AppLabels.bookMemo,
+                      hintText: AppLabels.bookHintMemo,
+                    ),
+                    maxLines: 3,
+                  ),
                 ],
-                const SizedBox(height: 16),
-                TextFormField(
-                  controller: _whyController,
-                  decoration: const InputDecoration(
-                    labelText: AppLabels.bookWhy,
-                    hintText: AppLabels.bookHintWhy,
-                  ),
-                  maxLines: 2,
-                ),
-                const SizedBox(height: 16),
-                TextFormField(
-                  controller: _descriptionController,
-                  decoration: const InputDecoration(
-                    labelText: AppLabels.bookMemo,
-                    hintText: AppLabels.bookHintMemo,
-                  ),
-                  maxLines: 3,
-                ),
-              ],
+              ),
             ),
           ),
         ),
