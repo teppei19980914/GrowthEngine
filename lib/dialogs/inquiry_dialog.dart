@@ -7,6 +7,7 @@ library;
 import 'package:flutter/material.dart';
 
 import '../l10n/app_labels.dart';
+import '../widgets/app_snackbar.dart';
 import '../services/inquiry_service.dart';
 
 /// お問い合わせダイアログを表示する.
@@ -274,11 +275,7 @@ class _InquiryDialogState extends State<_InquiryDialog> {
 
     if (result.success) {
       Navigator.of(context).pop(true);
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text(AppLabels.inquirySuccess),
-        ),
-      );
+      showSuccessSnackBar(context, AppLabels.inquirySuccess);
     } else {
       setState(() {
         _submitting = false;

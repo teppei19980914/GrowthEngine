@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 import '../l10n/app_labels.dart';
+import '../widgets/app_snackbar.dart';
 import '../services/task_study_log_logic.dart';
 import '../theme/app_theme.dart';
 
@@ -91,9 +92,7 @@ class _ReadingLogDialogState extends State<_ReadingLogDialog> {
     final minutes = int.tryParse(_minutesController.text) ?? 0;
     final total = hours * 60 + minutes;
     if (total <= 0) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text(AppLabels.readingLogMinRequired)),
-      );
+      showInfoSnackBar(context, AppLabels.readingLogMinRequired);
       return;
     }
 

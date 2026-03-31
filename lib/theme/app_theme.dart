@@ -304,12 +304,21 @@ class AppTheme {
 
       // SnackBar
       snackBarTheme: SnackBarThemeData(
-        backgroundColor: colors.bgSurface,
-        contentTextStyle: TextStyle(color: colors.textPrimary),
+        backgroundColor: brightness == Brightness.dark
+            ? const Color(0xFF45475A) // ダーク: bgHover（背景より明るい）
+            : const Color(0xFF4C4F69), // ライト: textPrimary（濃い色）
+        contentTextStyle: TextStyle(
+          color: brightness == Brightness.dark
+              ? colors.textPrimary
+              : Colors.white,
+          fontWeight: FontWeight.w500,
+        ),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(8),
+          side: BorderSide(color: colors.accent, width: 2),
         ),
         behavior: SnackBarBehavior.floating,
+        elevation: 8,
       ),
 
       // TabBar

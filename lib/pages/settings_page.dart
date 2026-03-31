@@ -30,6 +30,7 @@ import '../services/trial_limit_service.dart'
     show isTrialMode, isPremium, isDeveloperMode;
 import '../l10n/app_labels.dart';
 import '../theme/app_theme.dart';
+import '../widgets/app_snackbar.dart';
 
 /// 通知有効/無効Provider.
 final _notificationsEnabledProvider = FutureProvider<bool>((ref) async {
@@ -56,9 +57,7 @@ class SettingsPage extends ConsumerWidget {
       portalOpenPending = true;
       await launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
     } else if (context.mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text(AppLabels.errorRetryLater)),
-      );
+      showErrorSnackBar(context, AppLabels.errorRetryLater);
     }
   }
 
@@ -303,9 +302,7 @@ class SettingsPage extends ConsumerWidget {
 
       if (json == null) {
         if (!context.mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text(AppLabels.cloudNoBackup)),
-        );
+        showInfoSnackBar(context, AppLabels.cloudNoBackup);
         return;
       }
 
@@ -318,14 +315,10 @@ class SettingsPage extends ConsumerWidget {
       ref.invalidate(bookListProvider);
 
       if (!context.mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text(AppLabels.cloudRestored)),
-      );
+      showSuccessSnackBar(context, AppLabels.cloudRestored);
     } on Exception catch (e) {
       if (!context.mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(AppLabels.settingsRestoreError('$e'))),
-      );
+      showErrorSnackBar(context, AppLabels.settingsRestoreError('$e'));
     }
   }
 
@@ -374,15 +367,11 @@ class SettingsPage extends ConsumerWidget {
 
       if (!context.mounted) return;
       if (saved) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(AppLabels.settingsExportSuccess(fileName))),
-        );
+        showSuccessSnackBar(context, AppLabels.settingsExportSuccess(fileName));
       }
     } on Exception catch (e) {
       if (!context.mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(AppLabels.settingsExportError('$e'))),
-      );
+      showErrorSnackBar(context, AppLabels.settingsExportError('$e'));
     }
   }
 
@@ -416,13 +405,7 @@ class SettingsPage extends ConsumerWidget {
 
     if (!validation.valid) {
       if (!context.mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            AppLabels.importError(validation.errorMessage ?? ''),
-          ),
-        ),
-      );
+      showErrorSnackBar(context, AppLabels.importError(validation.errorMessage ?? ''));
       return;
     }
 
@@ -467,24 +450,16 @@ class SettingsPage extends ConsumerWidget {
       ref.invalidate(bookListProvider);
 
       if (!context.mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            AppLabels.settingsImportResult(
+      showSuccessSnackBar(context, AppLabels.settingsImportResult(
               dreams: result.dreamCount,
               goals: result.goalCount,
               tasks: result.taskCount,
               books: result.bookCount,
               logs: result.studyLogCount,
-            ),
-          ),
-        ),
-      );
+            ));
     } on Exception catch (e) {
       if (!context.mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(AppLabels.importError('$e'))),
-      );
+      showErrorSnackBar(context, AppLabels.importError('$e'));
     }
   }
 
@@ -525,14 +500,10 @@ class SettingsPage extends ConsumerWidget {
       ref.invalidate(bookListProvider);
 
       if (!context.mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text(AppLabels.settingsDeleteSuccess)),
-      );
+      showSuccessSnackBar(context, AppLabels.settingsDeleteSuccess);
     } on Exception catch (e) {
       if (!context.mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(AppLabels.settingsDeleteError('$e'))),
-      );
+      showErrorSnackBar(context, AppLabels.settingsDeleteError('$e'));
     }
   }
 }
@@ -594,22 +565,16 @@ Future<void> _linkAccountAction(BuildContext context, WidgetRef ref) async {
         ref.invalidate(bookListProvider);
       }
       if (!context.mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text(AppLabels.cloudLoginRestored)),
-      );
+      showSuccessSnackBar(context, AppLabels.cloudLoginRestored);
     } on Exception {
       if (!context.mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text(AppLabels.cloudLoginRestoreFailed)),
-      );
+      showErrorSnackBar(context, AppLabels.cloudLoginRestoreFailed);
     }
   } else {
     final json = await exportService.exportData();
     await syncService.uploadData(json);
     if (!context.mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text(AppLabels.cloudAccountLinked)),
-    );
+    showSuccessSnackBar(context, AppLabels.cloudAccountLinked);
   }
   (context as Element).markNeedsBuild();
 }

@@ -11,6 +11,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../l10n/app_labels.dart';
+import '../widgets/app_snackbar.dart';
 import '../services/remote_config_service.dart';
 import '../services/stripe_service.dart';
 import '../services/trial_limit_service.dart';
@@ -66,13 +67,7 @@ class _UpgradeDialogState extends State<_UpgradeDialog> {
     setTrialPremium(enabled: true);
     if (mounted) {
       Navigator.of(context).pop();
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            AppLabels.upgradeTrialStarted(trialDurationDays),
-          ),
-        ),
-      );
+      showSuccessSnackBar(context, AppLabels.upgradeTrialStarted(trialDurationDays));
     }
   }
 
@@ -99,16 +94,12 @@ class _UpgradeDialogState extends State<_UpgradeDialog> {
         if (mounted) Navigator.of(context).pop();
       } else {
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text(AppLabels.upgradeCheckoutFailed)),
-          );
+          showErrorSnackBar(context, AppLabels.upgradeCheckoutFailed);
         }
       }
     } on Exception {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text(AppLabels.errorRetryLater)),
-        );
+        showErrorSnackBar(context, AppLabels.errorRetryLater);
       }
     } finally {
       if (mounted) setState(() => _isLoading = false);

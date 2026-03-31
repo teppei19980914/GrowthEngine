@@ -31,6 +31,7 @@ import '../theme/app_theme.dart';
 import '../widgets/gantt/gantt_chart.dart';
 import '../widgets/premium/premium_gate.dart';
 import '../widgets/tutorial/tutorial_banner.dart';
+import '../widgets/app_snackbar.dart';
 import '../widgets/tutorial/tutorial_target_keys.dart';
 
 /// ガントチャートページ.
@@ -594,9 +595,7 @@ class _GanttPageState extends ConsumerState<GanttPage> {
     final tasks = ref.read(ganttTasksProvider).valueOrNull ?? [];
     if (tasks.isEmpty) {
       if (!context.mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text(AppLabels.exportNoTasks)),
-      );
+      showInfoSnackBar(context, AppLabels.exportNoTasks);
       return;
     }
 
@@ -662,15 +661,11 @@ class _GanttPageState extends ConsumerState<GanttPage> {
       );
       if (!context.mounted) return;
       if (saved) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(AppLabels.exportSuccess(result.fileName))),
-        );
+        showSuccessSnackBar(context, AppLabels.exportSuccess(result.fileName));
       }
     } on Object catch (e) {
       if (!context.mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(AppLabels.exportError('$e'))),
-      );
+      showErrorSnackBar(context, AppLabels.exportError('$e'));
     }
   }
 

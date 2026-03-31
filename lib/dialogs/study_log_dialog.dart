@@ -8,6 +8,7 @@ import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 
 import '../l10n/app_labels.dart';
+import '../widgets/app_snackbar.dart';
 
 /// StudyLogDialog の入力結果.
 class StudyLogDialogResult {
@@ -102,9 +103,7 @@ class _StudyLogDialogContentState extends State<_StudyLogDialogContent> {
     final totalMinutes = hours * 60 + minutes;
 
     if (totalMinutes <= 0) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text(AppLabels.logMinRequired)),
-      );
+      showInfoSnackBar(context, AppLabels.logMinRequired);
       return;
     }
 

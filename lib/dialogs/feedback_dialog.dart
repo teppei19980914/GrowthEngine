@@ -7,6 +7,7 @@ library;
 import 'package:flutter/material.dart';
 
 import '../l10n/app_labels.dart';
+import '../widgets/app_snackbar.dart';
 import '../services/feedback_service.dart';
 import '../services/trial_limit_service.dart' show isPremium;
 
@@ -263,18 +264,15 @@ class _FeedbackDialogState extends State<_FeedbackDialog> {
 
     if (result.success) {
       Navigator.of(context).pop(true);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            isPremium
+      showSuccessSnackBar(
+        context,
+        isPremium
+            ? AppLabels.feedbackSuccessMax
+            : widget.feedbackService.isFeedbackMaxLevel
                 ? AppLabels.feedbackSuccessMax
-                : widget.feedbackService.isFeedbackMaxLevel
-                    ? AppLabels.feedbackSuccessMax
-                    : result.newLevel >= feedbackMaxLevel
-                        ? AppLabels.feedbackSuccessUnlockMax(result.newLevel)
-                        : AppLabels.feedbackSuccessUnlock(result.newLevel),
-          ),
-        ),
+                : result.newLevel >= feedbackMaxLevel
+                    ? AppLabels.feedbackSuccessUnlockMax(result.newLevel)
+                    : AppLabels.feedbackSuccessUnlock(result.newLevel),
       );
     } else {
       setState(() {
