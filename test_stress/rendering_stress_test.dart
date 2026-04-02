@@ -16,7 +16,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:yume_log/models/book.dart';
 import 'package:yume_log/models/constellation.dart';
 import 'package:yume_log/models/task.dart';
-import 'package:yume_log/services/study_stats_types.dart' show GanttMilestone;
 import 'package:yume_log/widgets/constellation/constellation_painter.dart';
 import 'package:yume_log/widgets/gantt/gantt_chart.dart';
 
@@ -25,7 +24,6 @@ const _ganttTaskCount = 200; // ガントチャート: 200タスク
 const _ganttTimelineYears = 2; // 2年間のタイムライン
 const _bookshelfCount = 200; // 本棚: 200冊
 const _constellationStarCount = 50; // 星座: 50個の星
-const _dialogFieldCount = 20; // ダイアログ: 20フィールド分のスクロール
 
 // ── 許容時間（ミリ秒） ──────────────────────────────
 // pumpAndSettle のフレーム処理時間基準
@@ -305,8 +303,8 @@ void main() {
       sw.stop();
 
       // ignore: avoid_print
-      print('  [星座初回描画 ${_constellationStarCount}星] ${sw.elapsedMilliseconds}ms');
-      _record('星座初回描画 ${_constellationStarCount}星',
+      print('  [星座初回描画 $_constellationStarCount星] ${sw.elapsedMilliseconds}ms');
+      _record('星座初回描画 $_constellationStarCount星',
           sw.elapsedMilliseconds, _thresholdRenderMs);
       expect(sw.elapsedMilliseconds, lessThan(_thresholdRenderMs));
     });
@@ -508,7 +506,7 @@ void main() {
 
       await tester.pumpWidget(ValueListenableBuilder<ThemeMode>(
         valueListenable: themeNotifier,
-        builder: (_, mode, __) => MaterialApp(
+        builder: (_, mode, _) => MaterialApp(
           themeMode: mode,
           theme: ThemeData.light(),
           darkTheme: ThemeData.dark(),

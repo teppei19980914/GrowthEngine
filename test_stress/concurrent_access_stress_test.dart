@@ -11,9 +11,9 @@
 ///
 /// 実行方法:
 ///   flutter test test_stress/concurrent_access_stress_test.dart
+// ignore_for_file: invalid_use_of_visible_for_testing_member
 library;
 
-import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
@@ -45,7 +45,6 @@ const _apiTimeoutMs = 15000; // API タイムアウト
 const _thresholdApiConcurrentMs = 5000; // 同時APIリクエスト
 const _thresholdDbConcurrentMs = 3000; // 同時DB操作
 const _thresholdSyncMs = 5000; // 同期処理
-const _thresholdApiDegradationPct = 300; // API劣化率（%）: 300% = 3倍まで許容
 
 /// 計測結果を収集するリスト.
 final _results = <Map<String, dynamic>>[];
@@ -67,7 +66,6 @@ AppDatabase _createDb() => AppDatabase(NativeDatabase.memory());
 MockClient _createLatencyClient({
   required int latencyMs,
   required Map<String, dynamic> response,
-  int? maxConcurrent,
 }) {
   var currentConcurrent = 0;
   var peakConcurrent = 0;
@@ -571,15 +569,6 @@ class _MockCloudSyncClient implements CloudSyncClient {
 
   @override
   bool get isSignedIn => true;
-
-  @override
-  bool get isLinked => true;
-
-  @override
-  String? get email => 'test@example.com';
-
-  @override
-  Future<void> ensureSignedIn() async {}
 
   @override
   Future<void> uploadData(String json) async {

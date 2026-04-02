@@ -5,6 +5,7 @@
 ///
 /// 実行方法:
 ///   flutter test test/stress/data_volume_stress_test.dart
+// ignore_for_file: invalid_use_of_visible_for_testing_member
 library;
 
 import 'dart:convert';
