@@ -123,46 +123,81 @@ class _FaqTab extends StatefulWidget {
 class _FaqTabState extends State<_FaqTab> {
   String _searchQuery = '';
 
+  static const _categoryOrder = [
+    '基本的な使い方',
+    'データ管理',
+    'プラン・料金',
+    '問い合わせ・感想',
+    '端末・環境',
+    'その他',
+  ];
+
   static const _faqs = <_FaqItem>[
     // ── 基本的な使い方 ──
     _FaqItem(
+      category: '基本的な使い方',
       question: AppLabels.helpFaqDreamGoalTaskQ,
       answer: AppLabels.helpFaqDreamGoalTaskA,
       keywords: ['夢', '目標', 'タスク', '違い', '使い分け', '階層'],
     ),
     _FaqItem(
+      category: '基本的な使い方',
       question: AppLabels.helpFaqNoDreamQ,
       answer: AppLabels.helpFaqNoDreamA,
       keywords: ['夢がない', 'やりたいこと', '発見', 'ガイド', '目標だけ'],
     ),
     _FaqItem(
+      category: '基本的な使い方',
       question: AppLabels.helpFaqScheduleQ,
       answer: AppLabels.helpFaqScheduleA,
       keywords: ['ガントチャート', 'ガント', 'スケジュール', 'チャート', 'タイムライン'],
     ),
     _FaqItem(
+      category: '基本的な使い方',
       question: AppLabels.helpFaqActivityLogQ,
       answer: AppLabels.helpFaqActivityLogA,
       keywords: ['活動ログ', 'ログ', '記録', 'タイマー', '時間', '入力'],
     ),
     _FaqItem(
+      category: '基本的な使い方',
       question: AppLabels.helpFaqConstellationQ,
       answer: AppLabels.helpFaqConstellationA,
       keywords: ['星座', '完成', '星', '輝く', '活動ログ', '時間'],
     ),
+    _FaqItem(
+      category: '基本的な使い方',
+      question: AppLabels.helpFaqBookQ,
+      answer: AppLabels.helpFaqBookA,
+      keywords: ['書籍', '本', '登録', '追加', '読書'],
+    ),
 
     // ── データ管理 ──
     _FaqItem(
+      category: 'データ管理',
       question: AppLabels.helpFaqDataStorageQ,
       answer: AppLabels.helpFaqDataStorageA,
-      keywords: ['データ', '保存', 'ローカル', 'ブラウザ', '消去', '削除', 'プライバシー'],
+      keywords: ['データ', '保存', 'ローカル', 'ブラウザ', 'クラウド', '認証', 'プライバシー'],
     ),
     _FaqItem(
+      category: 'データ管理',
+      question: AppLabels.helpFaqDataStorageCloudQ,
+      answer: AppLabels.helpFaqDataStorageCloudA,
+      keywords: ['クラウド', '同期', 'バックアップ', '復元', 'メール', '認証', 'Firestore'],
+    ),
+    _FaqItem(
+      category: 'データ管理',
+      question: AppLabels.helpFaqDataStorageLocalQ,
+      answer: AppLabels.helpFaqDataStorageLocalA,
+      keywords: ['ブラウザ', 'ローカル', '消去', '削除', '匿名', '未認証'],
+    ),
+    _FaqItem(
+      category: 'データ管理',
       question: AppLabels.helpFaqBackupQ,
       answer: AppLabels.helpFaqBackupA,
       keywords: ['バックアップ', 'エクスポート', 'インポート', '書き出し', '移行', 'データ管理'],
     ),
     _FaqItem(
+      category: 'データ管理',
       question: AppLabels.helpFaqOtherBrowserQ,
       answer: AppLabels.helpFaqOtherBrowserA,
       keywords: ['ブラウザ', '端末', '移行', 'エクスポート', 'インポート', '同期', '別'],
@@ -170,66 +205,73 @@ class _FaqTabState extends State<_FaqTab> {
 
     // ── プラン・料金 ──
     _FaqItem(
+      category: 'プラン・料金',
       question: AppLabels.helpFaqPremiumSubscribeQ,
       answer: AppLabels.helpFaqPremiumSubscribeA,
       keywords: ['プレミアム', '契約', '申し込み', '料金', '価格', '200', 'サブスク', 'アップグレード'],
     ),
     _FaqItem(
+      category: 'プラン・料金',
       question: AppLabels.helpFaqStarterLimitQ,
       answer: AppLabels.helpFaqStarterLimitA,
       keywords: ['制限', '解除', 'フィードバック', 'プレミアム', '無料', 'スターター', 'アップグレード'],
     ),
     _FaqItem(
+      category: 'プラン・料金',
       question: AppLabels.helpFaqPremiumCancelQ,
       answer: AppLabels.helpFaqPremiumCancelA,
       keywords: ['解約', 'キャンセル', '退会', '課金', '停止', 'やめる', '問い合わせ'],
     ),
 
-    // ── 問い合わせ・フィードバック ──
+    // ── 問い合わせ・感想 ──
     _FaqItem(
+      category: '問い合わせ・感想',
       question: AppLabels.helpFaqInquiryQ,
       answer: AppLabels.helpFaqInquiryA,
       keywords: ['問い合わせ', 'お問い合わせ', '連絡', '相談', 'メール', 'アイコン'],
     ),
     _FaqItem(
+      category: '問い合わせ・感想',
       question: AppLabels.helpFaqFeedbackQ,
       answer: AppLabels.helpFaqFeedbackA,
-      keywords: ['フィードバック', '意見', '要望', '不具合', '報告', 'メール'],
+      keywords: ['フィードバック', '意見', '要望', '不具合', '報告', 'メール', '感想'],
+    ),
+    _FaqItem(
+      category: '問い合わせ・感想',
+      question: AppLabels.helpFaqFeedbackWhyQ,
+      answer: AppLabels.helpFaqFeedbackWhyA,
+      keywords: ['感想', '要望', '機能', 'ほしい', '改善', '一緒', '育てる', '声'],
     ),
 
     // ── 端末・環境 ──
     _FaqItem(
+      category: '端末・環境',
       question: AppLabels.helpFaqSmartphoneQ,
       answer: AppLabels.helpFaqSmartphoneA,
       keywords: ['スマートフォン', 'スマホ', 'モバイル', '携帯', 'ホーム画面', 'iOS', 'Android'],
     ),
     _FaqItem(
+      category: '端末・環境',
       question: AppLabels.helpFaqBrowserQ,
       answer: AppLabels.helpFaqBrowserA,
       keywords: ['ブラウザ', '対応', 'Chrome', 'Edge', 'Safari', 'Firefox', '推奨'],
     ),
 
-    // ── アプリの利用終了 ──
+    // ── その他 ──
     _FaqItem(
+      category: 'その他',
       question: AppLabels.helpFaqQuitQ,
       answer: AppLabels.helpFaqQuitA,
       keywords: ['終了', '退会', 'やめる', '削除', 'アカウント', '解約', '利用停止'],
     ),
-
-    // ── 書籍 ──
     _FaqItem(
-      question: AppLabels.helpFaqBookQ,
-      answer: AppLabels.helpFaqBookA,
-      keywords: ['書籍', '本', '登録', '追加', '読書'],
-    ),
-
-    // ── その他 ──
-    _FaqItem(
+      category: 'その他',
       question: AppLabels.helpFaqTutorialQ,
       answer: AppLabels.helpFaqTutorialA,
       keywords: ['チュートリアル', 'やり直し', '再開', '使い方', '操作方法'],
     ),
     _FaqItem(
+      category: 'その他',
       question: AppLabels.helpFaqAchievementQ,
       answer: AppLabels.helpFaqAchievementA,
       keywords: ['実績', 'マイルストーン', 'トロフィー', '達成', 'バッジ'],
@@ -294,25 +336,64 @@ class _FaqTabState extends State<_FaqTab> {
                     ],
                   ),
                 )
-              : ListView.builder(
-                  padding: const EdgeInsets.symmetric(vertical: 4),
-                  itemCount: filtered.length,
-                  itemBuilder: (context, index) {
-                    return _FaqExpansionTile(faq: filtered[index]);
-                  },
-                ),
+              : _searchQuery.isNotEmpty
+                  // 検索時: フラットリスト
+                  ? ListView.builder(
+                      padding: const EdgeInsets.symmetric(vertical: 4),
+                      itemCount: filtered.length,
+                      itemBuilder: (_, index) =>
+                          _FaqExpansionTile(faq: filtered[index]),
+                    )
+                  // 通常時: カテゴリ別表示
+                  : _buildCategorizedList(theme, filtered),
         ),
       ],
+    );
+  }
+
+  Widget _buildCategorizedList(ThemeData theme, List<_FaqItem> faqs) {
+    // カテゴリ順でグルーピング
+    final grouped = <String, List<_FaqItem>>{};
+    for (final faq in faqs) {
+      (grouped[faq.category] ??= []).add(faq);
+    }
+
+    final children = <Widget>[];
+    for (final category in _categoryOrder) {
+      final items = grouped[category];
+      if (items == null || items.isEmpty) continue;
+      children.add(
+        Padding(
+          padding: const EdgeInsets.fromLTRB(4, 12, 4, 4),
+          child: Text(
+            category,
+            style: theme.textTheme.titleSmall?.copyWith(
+              fontWeight: FontWeight.bold,
+              color: theme.colorScheme.primary,
+            ),
+          ),
+        ),
+      );
+      for (final faq in items) {
+        children.add(_FaqExpansionTile(faq: faq));
+      }
+    }
+
+    return ListView(
+      padding: const EdgeInsets.symmetric(vertical: 4),
+      children: children,
     );
   }
 }
 
 class _FaqItem {
   const _FaqItem({
+    required this.category,
     required this.question,
     required this.answer,
     required this.keywords,
   });
+  final String category;
   final String question;
   final String answer;
   final List<String> keywords;
