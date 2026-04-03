@@ -64,6 +64,7 @@ class Dream {
     String? description,
     String? why,
     String? category,
+    this.sortOrder = 0,
     DateTime? createdAt,
     DateTime? updatedAt,
   })  : id = id ?? const Uuid().v4(),
@@ -97,6 +98,9 @@ class Dream {
   /// 更新日時.
   final DateTime updatedAt;
 
+  /// 並び順.
+  final int sortOrder;
+
   /// フィールドを変更したコピーを返す.
   Dream copyWith({
     String? id,
@@ -104,6 +108,7 @@ class Dream {
     String? description,
     String? why,
     String? category,
+    int? sortOrder,
     DateTime? createdAt,
     DateTime? updatedAt,
   }) {
@@ -113,6 +118,7 @@ class Dream {
       description: description ?? this.description,
       why: why ?? this.why,
       category: category ?? this.category,
+      sortOrder: sortOrder ?? this.sortOrder,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
     );
@@ -126,6 +132,7 @@ class Dream {
       'description': description,
       'why': why,
       'category': category,
+      'sort_order': sortOrder,
       'created_at': createdAt.toIso8601String(),
       'updated_at': updatedAt.toIso8601String(),
     };
@@ -139,6 +146,7 @@ class Dream {
       description: data['description'] as String? ?? '',
       why: data['why'] as String? ?? '',
       category: data['category'] as String? ?? 'other',
+      sortOrder: (data['sort_order'] as int?) ?? 0,
       createdAt: DateTime.parse(data['created_at'] as String),
       updatedAt: DateTime.parse(data['updated_at'] as String),
     );

@@ -66,4 +66,13 @@ class DreamListNotifier extends AsyncNotifier<List<Dream>> {
     ref.invalidateSelf();
     SyncManager().requestSync();
   }
+
+  /// 夢の並び順を更新する.
+  Future<void> reorderDreams(
+      List<(String dreamId, int sortOrder)> orders) async {
+    final service = ref.read(dreamServiceProvider);
+    await service.updateDreamOrders(orders);
+    ref.invalidateSelf();
+    SyncManager().requestSync();
+  }
 }

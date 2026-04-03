@@ -26,6 +26,9 @@ class Dreams extends Table {
   /// 更新日時.
   DateTimeColumn get updatedAt => dateTime()();
 
+  /// 並び順.
+  IntColumn get sortOrder => integer().withDefault(const Constant(0))();
+
   @override
   Set<Column> get primaryKey => {id};
 }

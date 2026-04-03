@@ -219,6 +219,7 @@ class DataExportService {
       'description': dream.description,
       'why': dream.why,
       'category': dream.category,
+      'sort_order': dream.sortOrder,
       'created_at': dream.createdAt.toIso8601String(),
       'updated_at': dream.updatedAt.toIso8601String(),
     };
@@ -231,6 +232,7 @@ class DataExportService {
       description: Value(map['description'] as String? ?? ''),
       why: Value(map['why'] as String? ?? ''),
       category: Value(map['category'] as String? ?? 'other'),
+      sortOrder: Value((map['sort_order'] as int?) ?? 0),
       createdAt: Value(DateTime.parse(map['created_at'] as String)),
       updatedAt: Value(DateTime.parse(map['updated_at'] as String)),
     );

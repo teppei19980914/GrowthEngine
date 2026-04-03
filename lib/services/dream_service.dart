@@ -92,6 +92,20 @@ class DreamService {
     return _dreamDao.deleteById(dreamId);
   }
 
+  /// 夢の並び順を更新する.
+  Future<void> updateDreamOrders(
+      List<(String dreamId, int sortOrder)> orders) async {
+    final allDreams = await _dreamDao.getAll();
+    final dreamMap = {for (final d in allDreams) d.id: d};
+
+    for (final (dreamId, sortOrder) in orders) {
+      final existing = dreamMap[dreamId];
+      if (existing == null) continue;
+      final updated = _rowToDream(existing).copyWith(sortOrder: sortOrder);
+      await _dreamDao.updateDream(_dreamToCompanion(updated));
+    }
+  }
+
   Dream _rowToDream(db.Dream row) {
     return Dream(
       id: row.id,
@@ -99,6 +113,7 @@ class DreamService {
       description: row.description,
       why: row.why,
       category: row.category,
+      sortOrder: row.sortOrder,
       createdAt: row.createdAt,
       updatedAt: row.updatedAt,
     );
@@ -111,6 +126,7 @@ class DreamService {
       description: Value(dream.description),
       why: Value(dream.why),
       category: Value(dream.category),
+      sortOrder: Value(dream.sortOrder),
       createdAt: Value(dream.createdAt),
       updatedAt: Value(dream.updatedAt),
     );

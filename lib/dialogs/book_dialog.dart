@@ -2,6 +2,7 @@
 library;
 
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 import '../l10n/app_labels.dart';
 import '../models/book.dart';
@@ -97,12 +98,25 @@ class _BookDialogContentState extends State<_BookDialogContent> {
     // ダイアログの最大高さ: 画面高さからキーボード・タイトル・ボタン分を引く
     final maxContentHeight = screenHeight - keyboardHeight - 200;
 
+    final dateFmt = DateFormat('yyyy/MM/dd HH:mm:ss');
+
     return AlertDialog(
       title: Row(
         children: [
           const Icon(Icons.menu_book_outlined, size: 24),
           const SizedBox(width: 8),
           Text(_isEdit ? AppLabels.bookDialogEdit : AppLabels.bookDialogAdd),
+          if (_isEdit) ...[
+            const Spacer(),
+            Text(
+              '${AppLabels.bookCreatedAt}: ${dateFmt.format(widget.book!.createdAt)}\n'
+              '${AppLabels.bookUpdatedAt}: ${dateFmt.format(widget.book!.updatedAt)}',
+              style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  ),
+              textAlign: TextAlign.right,
+            ),
+          ],
         ],
       ),
       insetPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
@@ -256,3 +270,4 @@ class _BookDialogContentState extends State<_BookDialogContent> {
     );
   }
 }
+

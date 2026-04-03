@@ -123,8 +123,9 @@ Future<void> _initInviteCodeAsync(SharedPreferences prefs) async {
 
 /// サブスクリプション状態を非同期で処理する.
 ///
-/// URLパラメータ `?subscription=success` を検出して有効化するか、
-/// サーバーに問い合わせてStripeの実契約状態とローカル状態を同期する.
+/// 必ずサーバーに問い合わせてStripeの実契約状態を検証し、
+/// その結果のみに基づいてプレミアム機能を制御する.
+/// URLパラメータだけでは有効化しない（不正アクセス防止）.
 Future<void> _initSubscriptionAsync(SharedPreferences prefs) async {
   if (!kIsWeb) return;
 
@@ -132,11 +133,7 @@ Future<void> _initSubscriptionAsync(SharedPreferences prefs) async {
   final configService = RemoteConfigService(prefs);
   final userKey = configService.savedUserKey;
 
-  // ?subscription=success パラメータの検出
   final subscriptionParam = _getUrlParam('subscription');
-  if (subscriptionParam == 'success') {
-    await stripeService.activateSubscription();
-  }
 
   // サーバーに問い合わせてStripe実契約状態を検証・同期
   // userKeyがある場合のみ検証（匿名ユーザーは検証不可）
@@ -157,7 +154,7 @@ Future<void> _initSubscriptionAsync(SharedPreferences prefs) async {
     setTrialPremium(enabled: true);
   }
 
-  // 新規サブスク成功時はクラウド認証フラグを立てる
+  // Stripe Checkout 復帰時はクラウド認証フラグを立てる
   if (subscriptionParam == 'success') {
     await prefs.setBool('cloud_auth_pending', true);
   }

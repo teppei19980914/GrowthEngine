@@ -606,7 +606,7 @@ class _TimelineHeaderPainter extends CustomPainter {
     required this.textColor,
     required this.mutedColor,
     required this.todayColor,
-  }) : _todayPaint = Paint()..color = todayColor..strokeWidth = 2;
+  }) : _todayFillPaint = Paint()..color = todayColor.withAlpha(25);
 
   final GanttCalculator calculator;
   final TimelineRange timeline;
@@ -616,7 +616,7 @@ class _TimelineHeaderPainter extends CustomPainter {
   final Color textColor;
   final Color mutedColor;
   final Color todayColor;
-  final Paint _todayPaint;
+  final Paint _todayFillPaint;
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -646,10 +646,12 @@ class _TimelineHeaderPainter extends CustomPainter {
     canvas.drawLine(Offset(0, size.height), Offset(size.width, size.height),
         Paint()..color = gridColor..strokeWidth = 1);
 
-    // 今日線
+    // 今日の帯
     final todayX = calculator.calculateTodayX(timeline);
-    canvas.drawLine(Offset(todayX, 0), Offset(todayX, size.height),
-        _todayPaint);
+    canvas.drawRect(
+      Rect.fromLTWH(todayX, 0, calculator.pixelsPerDay, size.height),
+      _todayFillPaint,
+    );
 
     // マイルストーン
     for (final ms in milestones) {
@@ -698,7 +700,7 @@ class _TimelineBodyPainter extends CustomPainter {
     required this.todayColor,
     required this.hoverColor,
   })  : _gridPaint = Paint()..color = gridColor.withAlpha(30)..strokeWidth = 0.5,
-        _todayPaint = Paint()..color = todayColor..strokeWidth = 2;
+        _todayFillPaint = Paint()..color = todayColor.withAlpha(25);
 
   final List<Task> tasks;
   final List<_GoalGroup> groups;
@@ -713,7 +715,7 @@ class _TimelineBodyPainter extends CustomPainter {
   final Color hoverColor;
 
   final Paint _gridPaint;
-  final Paint _todayPaint;
+  final Paint _todayFillPaint;
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -770,10 +772,12 @@ class _TimelineBodyPainter extends CustomPainter {
       }
     }
 
-    // 今日線
+    // 今日の帯
     final todayX = calculator.calculateTodayX(timeline);
-    canvas.drawLine(Offset(todayX, 0), Offset(todayX, size.height),
-        _todayPaint);
+    canvas.drawRect(
+      Rect.fromLTWH(todayX, 0, calculator.pixelsPerDay, size.height),
+      _todayFillPaint,
+    );
 
     // タスクバー
     for (var i = 0; i < tasks.length; i++) {

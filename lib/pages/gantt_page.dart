@@ -79,122 +79,141 @@ class _GanttPageState extends ConsumerState<GanttPage> {
     final theme = Theme.of(context);
     final colors = theme.appColors;
 
+    final showTaskActions = viewState.mode == GanttViewMode.allTasks ||
+        (viewState.mode == GanttViewMode.byGoal &&
+            viewState.selectedGoalId != null);
+    final showBookActions = viewState.mode == GanttViewMode.allBooks;
+
     return Padding(
       padding: const EdgeInsets.all(16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // セレクタ行
-          Wrap(
-            spacing: 8,
-            runSpacing: 8,
-            crossAxisAlignment: WrapCrossAlignment.center,
+          // ヘッダー行: 表示モード + 日付範囲 + メニュー + 追加ボタン
+          Row(
             children: [
               // 表示モードセレクタ
-              goalsAsync.when(
-                data: (goals) => _ViewSelector(
-                  viewState: viewState,
-                  goals: goals,
-                  onChanged: (mode, goalId) {
-                    final notifier =
-                        ref.read(ganttViewStateProvider.notifier);
-                    switch (mode) {
-                      case GanttViewMode.allTasks:
-                        notifier.showAllTasks();
-                      case GanttViewMode.byGoal:
-                        if (goalId != null) notifier.showByGoal(goalId);
-                      case GanttViewMode.allBooks:
-                        notifier.showAllBooks();
-                    }
-                  },
-                ),
-                loading: () => const SizedBox.shrink(),
-                error: (_, _) => const SizedBox.shrink(),
-              ),
-              // タスク追加ボタン（目標別・全タスク表示時）
-              if (viewState.mode == GanttViewMode.allTasks ||
-                  (viewState.mode == GanttViewMode.byGoal &&
-                      viewState.selectedGoalId != null)) ...[
-                OutlinedButton.icon(
-                  onPressed: () => _openTaskDiscovery(context, ref),
-                  icon: const Icon(Icons.lightbulb_outline, size: 18),
-                  label: const Text(AppLabels.ganttDiscoveryGuide),
-                ),
-                ElevatedButton.icon(
-                  key: TutorialTargetKeys.addTaskButton,
-                  onPressed: () => _addTask(
-                    context,
-                    ref,
-                    viewState.selectedGoalId ?? '',
+              Expanded(
+                child: goalsAsync.when(
+                  data: (goals) => _ViewSelector(
+                    viewState: viewState,
+                    goals: goals,
+                    onChanged: (mode, goalId) {
+                      final notifier =
+                          ref.read(ganttViewStateProvider.notifier);
+                      switch (mode) {
+                        case GanttViewMode.allTasks:
+                          notifier.showAllTasks();
+                        case GanttViewMode.byGoal:
+                          if (goalId != null) {
+                            notifier.showByGoal(goalId);
+                          }
+                        case GanttViewMode.allBooks:
+                          notifier.showAllBooks();
+                      }
+                    },
                   ),
-                  icon: const Icon(Icons.add, size: 18),
-                  label: const Text(AppLabels.taskAdd),
+                  loading: () => const SizedBox.shrink(),
+                  error: (_, _) => const SizedBox.shrink(),
                 ),
-              ],
-              // 読書スケジュール追加ボタン
-              if (viewState.mode == GanttViewMode.allBooks)
-                ElevatedButton.icon(
-                  onPressed: () => _addBookSchedule(context, ref),
-                  icon: const Icon(Icons.add, size: 18),
-                  label: const Text(AppLabels.scheduleAddButton),
-                ),
-              // エクスポート
-              IconButton(
-                icon: const Icon(Icons.file_download_outlined),
-                tooltip: AppLabels.tooltipExport,
-                onPressed: () => _showExportMenu(context, ref),
               ),
-            ],
-          ),
-          const SizedBox(height: 8),
-
-          // 日付範囲セレクタ + ジャンプ
-          Wrap(
-            spacing: 8,
-            runSpacing: 8,
-            crossAxisAlignment: WrapCrossAlignment.center,
-            children: [
-              // 日付範囲セレクタ
-              SegmentedButton<GanttDateRange>(
-                segments: [
+              // 日付範囲セレクタ（ドロップダウン）
+              DropdownButton<GanttDateRange>(
+                value: viewState.dateRange,
+                underline: const SizedBox.shrink(),
+                isDense: true,
+                items: [
                   for (final range in GanttDateRange.values)
-                    ButtonSegment(
+                    DropdownMenuItem(
                       value: range,
-                      label: Text(range.label),
+                      child: Text(range.label),
                     ),
                 ],
-                selected: {viewState.dateRange},
-                onSelectionChanged: (selected) {
-                  ref
-                      .read(ganttViewStateProvider.notifier)
-                      .setDateRange(selected.first);
+                onChanged: (range) {
+                  if (range != null) {
+                    ref
+                        .read(ganttViewStateProvider.notifier)
+                        .setDateRange(range);
+                  }
                 },
-                style: ButtonStyle(
-                  visualDensity: VisualDensity.compact,
-                  textStyle: WidgetStatePropertyAll(
-                    theme.textTheme.labelSmall,
+              ),
+              // その他メニュー
+              PopupMenuButton<String>(
+                icon: const Icon(Icons.more_vert, size: 20),
+                tooltip: '',
+                padding: EdgeInsets.zero,
+                onSelected: (value) {
+                  switch (value) {
+                    case 'today':
+                      _chartKey.currentState
+                          ?.scrollToDate(DateTime.now());
+                    case 'jump':
+                      _pickJumpDate(context);
+                    case 'discovery':
+                      _openTaskDiscovery(context, ref);
+                    case 'export':
+                      _showExportMenu(context, ref);
+                  }
+                },
+                itemBuilder: (_) => [
+                  const PopupMenuItem(
+                    value: 'today',
+                    child: ListTile(
+                      leading: Icon(Icons.today, size: 20),
+                      title: Text(AppLabels.ganttToday),
+                      dense: true,
+                      contentPadding: EdgeInsets.zero,
+                    ),
                   ),
-                ),
+                  const PopupMenuItem(
+                    value: 'jump',
+                    child: ListTile(
+                      leading: Icon(Icons.calendar_month, size: 20),
+                      title: Text(AppLabels.ganttJumpToDate),
+                      dense: true,
+                      contentPadding: EdgeInsets.zero,
+                    ),
+                  ),
+                  if (showTaskActions)
+                    const PopupMenuItem(
+                      value: 'discovery',
+                      child: ListTile(
+                        leading:
+                            Icon(Icons.lightbulb_outline, size: 20),
+                        title: Text(AppLabels.ganttDiscoveryGuide),
+                        dense: true,
+                        contentPadding: EdgeInsets.zero,
+                      ),
+                    ),
+                  const PopupMenuItem(
+                    value: 'export',
+                    child: ListTile(
+                      leading:
+                          Icon(Icons.file_download_outlined, size: 20),
+                      title: Text(AppLabels.tooltipExport),
+                      dense: true,
+                      contentPadding: EdgeInsets.zero,
+                    ),
+                  ),
+                ],
               ),
-              // 今日ボタン
-              OutlinedButton.icon(
-                onPressed: () =>
-                    _chartKey.currentState?.scrollToDate(DateTime.now()),
-                icon: const Icon(Icons.today, size: 16),
-                label: const Text(AppLabels.ganttToday),
-                style: OutlinedButton.styleFrom(
-                  visualDensity: VisualDensity.compact,
+              // 追加ボタン
+              if (showTaskActions || showBookActions)
+                FloatingActionButton.small(
+                  heroTag: 'gantt_add',
+                  key: showTaskActions
+                      ? TutorialTargetKeys.addTaskButton
+                      : null,
+                  onPressed: () {
+                    if (showBookActions) {
+                      _addBookSchedule(context, ref);
+                    } else {
+                      _addTask(
+                          context, ref, viewState.selectedGoalId ?? '');
+                    }
+                  },
+                  child: const Icon(Icons.add),
                 ),
-              ),
-              // 日付ジャンプ
-              OutlinedButton.icon(
-                onPressed: () => _pickJumpDate(context),
-                icon: const Icon(Icons.calendar_month, size: 16),
-                label: const Text(AppLabels.ganttJumpToDate),
-                style: OutlinedButton.styleFrom(
-                  visualDensity: VisualDensity.compact,
-                ),
-              ),
             ],
           ),
           const SizedBox(height: 8),
@@ -740,6 +759,7 @@ class _ViewSelector extends StatelessWidget {
     return DropdownButton<String>(
       key: TutorialTargetKeys.ganttDropdown,
       value: currentValue,
+      isExpanded: true,
       items: items,
       onChanged: (value) {
         if (value == null) return;

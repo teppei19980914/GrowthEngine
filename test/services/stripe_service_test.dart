@@ -263,6 +263,48 @@ void main() {
     });
   });
 
+  group('サブスク有効化のセキュリティ', () {
+    test('activateSubscription単体ではサーバー検証なしに有効化される（内部用）',
+        () async {
+      final service = StripeService(prefs);
+      await service.activateSubscription();
+      expect(service.isSubscriptionActive, isTrue);
+    });
+
+    test('verifySubscriptionがfalseを返した場合、ローカルの有効状態はクリアされる',
+        () async {
+      final mockClient = MockClient((_) async {
+        return http.Response(jsonEncode({'active': false}), 200);
+      });
+
+      final service = StripeService(prefs, httpClient: mockClient);
+      // 不正にローカルを有効化したとしても
+      await service.activateSubscription();
+      expect(service.isSubscriptionActive, isTrue);
+
+      // サーバー検証で無効化される
+      final result =
+          await service.verifySubscription(userKey: 'test-user');
+      expect(result, isFalse);
+      expect(service.isSubscriptionActive, isFalse);
+    });
+
+    test('サーバー検証のみがプレミアム有効化の正規経路である', () async {
+      final mockClient = MockClient((_) async {
+        return http.Response(jsonEncode({'active': true}), 200);
+      });
+
+      final service = StripeService(prefs, httpClient: mockClient);
+      expect(service.isSubscriptionActive, isFalse);
+
+      // サーバー検証でのみ有効化される
+      final result =
+          await service.verifySubscription(userKey: 'test-user');
+      expect(result, isTrue);
+      expect(service.isSubscriptionActive, isTrue);
+    });
+  });
+
   test('定数 stripeEndpointUrlが定義されている', () {
     expect(stripeEndpointUrl, isNotEmpty);
     expect(stripeEndpointUrl, contains('script.google.com'));

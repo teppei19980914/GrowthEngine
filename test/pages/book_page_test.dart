@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:yume_log/pages/book_page.dart';
@@ -21,8 +22,8 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    // 追加ボタンが表示される
-    expect(find.text('書籍を追加'), findsOneWidget);
+    // 追加ボタン（FAB）が表示される
+    expect(find.byIcon(Icons.add), findsOneWidget);
   });
 
   testWidgets('サンプル書籍が表示される', (tester) async {

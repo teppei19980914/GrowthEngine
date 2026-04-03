@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:yume_log/pages/dashboard_page.dart';
@@ -67,12 +66,12 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    // 編集ボタンをタップ
-    await tester.tap(find.byIcon(Icons.tune_outlined));
+    // カスタマイズボタンをタップ
+    await tester.tap(find.text('カスタマイズ'));
     await tester.pumpAndSettle();
 
     // 完了ボタンが表示される
-    expect(find.byIcon(Icons.check_circle_outline), findsOneWidget);
+    expect(find.text('完了'), findsOneWidget);
     // リセットボタンが表示される
     expect(find.text('リセット'), findsOneWidget);
   });

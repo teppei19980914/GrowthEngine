@@ -158,6 +158,11 @@ class AppLabels {
   static const bookDialogDelete = '書籍を削除';
   static const bookAddButton = '書籍を追加';
   static const bookDescription = '本棚に登録した書籍を管理できます。';
+  static const bookSortCreated = '登録日順';
+  static const bookSortUpdated = '更新日順';
+  static const bookSortTitle = '50音順';
+  static const bookCreatedAt = '登録日';
+  static const bookUpdatedAt = '更新日';
   static const bookEmptyTitle = '最初の一冊を登録しよう';
   static const bookEmptySubtitle = '上のフォームから書籍を登録できます';
   static const bookCategory = 'カテゴリ';
@@ -1011,6 +1016,7 @@ class AppLabels {
   static const dashEditReset = 'リセット';
   static const dashEditDone = '完了';
   static const dashEditWidgets = 'ウィジェット編集';
+  static const dashCustomize = 'カスタマイズ';
   static const dashTodayStudied = '今日は活動済み!';
   static const dashTodayStart = '今日の活動を始めよう';
   static String dashTodayDetail(int hours, int minutes, int sessions) =>

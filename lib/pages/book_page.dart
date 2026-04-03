@@ -56,7 +56,8 @@ class _BookPageState extends ConsumerState<BookPage> {
 
   @override
   Widget build(BuildContext context) {
-    final booksAsync = ref.watch(bookListProvider);
+    final booksAsync = ref.watch(sortedBookListProvider);
+    final sortOrder = ref.watch(bookSortOrderProvider);
     final theme = Theme.of(context);
     final colors = theme.appColors;
 
@@ -65,24 +66,37 @@ class _BookPageState extends ConsumerState<BookPage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // 書籍追加ボタン
+          // ヘッダー行: ソート + 追加ボタン
           Row(
             children: [
-              Text(
-                AppLabels.bookDescription,
-                style: theme.textTheme.bodySmall?.copyWith(
-                  color: colors.textSecondary,
-                ),
+              // ソートセレクタ
+              DropdownButton<BookSortOrder>(
+                value: sortOrder,
+                underline: const SizedBox.shrink(),
+                isDense: true,
+                icon: const Icon(Icons.sort, size: 18),
+                items: [
+                  for (final order in BookSortOrder.values)
+                    DropdownMenuItem(
+                      value: order,
+                      child: Text(order.label),
+                    ),
+                ],
+                onChanged: (value) {
+                  if (value != null) {
+                    ref.read(bookSortOrderProvider.notifier).state = value;
+                  }
+                },
               ),
               const Spacer(),
-              ElevatedButton.icon(
+              FloatingActionButton.small(
+                heroTag: 'book_add',
                 onPressed: _addBook,
-                icon: const Icon(Icons.add, size: 18),
-                label: const Text(AppLabels.bookAddButton),
+                child: const Icon(Icons.add),
               ),
             ],
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 8),
 
           // 本棚
           Expanded(
@@ -415,17 +429,14 @@ class _BookCover extends ConsumerWidget {
       return;
     }
 
-    await ref.read(bookListProvider.notifier).updateBookInfo(
+    await ref.read(bookListProvider.notifier).updateBookInfoAndStatus(
           book.id,
           title: result.title,
           category: result.category,
           why: result.why,
           description: result.description,
+          status: result.status,
         );
-    if (result.status != null) {
-      await ref.read(bookListProvider.notifier).updateStatus(
-            book.id, result.status!);
-    }
   }
 
 }

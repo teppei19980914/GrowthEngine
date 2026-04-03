@@ -103,9 +103,10 @@ class StripeService {
     }
   }
 
-  /// サブスクリプション成功時にローカル状態を更新する.
+  /// サブスクリプション状態をローカルに保存する.
   ///
-  /// `?subscription=success` パラメータ検出時に呼ばれる.
+  /// [verifySubscription] のサーバー検証結果に基づいて呼ばれる.
+  /// 外部から直接呼び出さないこと（サーバー検証を経由すること）.
   Future<void> activateSubscription() async {
     await _prefs.setBool(_subscriptionActiveKey, true);
     await _prefs.setInt(

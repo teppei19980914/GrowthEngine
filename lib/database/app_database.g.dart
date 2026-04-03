@@ -53,9 +53,17 @@ class $DreamsTable extends Dreams with TableInfo<$DreamsTable, Dream> {
   late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
       'updated_at', aliasedName, false,
       type: DriftSqlType.dateTime, requiredDuringInsert: true);
+  static const VerificationMeta _sortOrderMeta =
+      const VerificationMeta('sortOrder');
+  @override
+  late final GeneratedColumn<int> sortOrder = GeneratedColumn<int>(
+      'sort_order', aliasedName, false,
+      type: DriftSqlType.int,
+      requiredDuringInsert: false,
+      defaultValue: const Constant(0));
   @override
   List<GeneratedColumn> get $columns =>
-      [id, title, description, why, category, createdAt, updatedAt];
+      [id, title, description, why, category, createdAt, updatedAt, sortOrder];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -103,6 +111,10 @@ class $DreamsTable extends Dreams with TableInfo<$DreamsTable, Dream> {
     } else if (isInserting) {
       context.missing(_updatedAtMeta);
     }
+    if (data.containsKey('sort_order')) {
+      context.handle(_sortOrderMeta,
+          sortOrder.isAcceptableOrUnknown(data['sort_order']!, _sortOrderMeta));
+    }
     return context;
   }
 
@@ -126,6 +138,8 @@ class $DreamsTable extends Dreams with TableInfo<$DreamsTable, Dream> {
           .read(DriftSqlType.dateTime, data['${effectivePrefix}created_at'])!,
       updatedAt: attachedDatabase.typeMapping
           .read(DriftSqlType.dateTime, data['${effectivePrefix}updated_at'])!,
+      sortOrder: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}sort_order'])!,
     );
   }
 
@@ -156,6 +170,9 @@ class Dream extends DataClass implements Insertable<Dream> {
 
   /// 更新日時.
   final DateTime updatedAt;
+
+  /// 並び順.
+  final int sortOrder;
   const Dream(
       {required this.id,
       required this.title,
@@ -163,7 +180,8 @@ class Dream extends DataClass implements Insertable<Dream> {
       required this.why,
       required this.category,
       required this.createdAt,
-      required this.updatedAt});
+      required this.updatedAt,
+      required this.sortOrder});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
@@ -174,6 +192,7 @@ class Dream extends DataClass implements Insertable<Dream> {
     map['category'] = Variable<String>(category);
     map['created_at'] = Variable<DateTime>(createdAt);
     map['updated_at'] = Variable<DateTime>(updatedAt);
+    map['sort_order'] = Variable<int>(sortOrder);
     return map;
   }
 
@@ -186,6 +205,7 @@ class Dream extends DataClass implements Insertable<Dream> {
       category: Value(category),
       createdAt: Value(createdAt),
       updatedAt: Value(updatedAt),
+      sortOrder: Value(sortOrder),
     );
   }
 
@@ -200,6 +220,7 @@ class Dream extends DataClass implements Insertable<Dream> {
       category: serializer.fromJson<String>(json['category']),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
       updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
+      sortOrder: serializer.fromJson<int>(json['sortOrder']),
     );
   }
   @override
@@ -213,6 +234,7 @@ class Dream extends DataClass implements Insertable<Dream> {
       'category': serializer.toJson<String>(category),
       'createdAt': serializer.toJson<DateTime>(createdAt),
       'updatedAt': serializer.toJson<DateTime>(updatedAt),
+      'sortOrder': serializer.toJson<int>(sortOrder),
     };
   }
 
@@ -223,7 +245,8 @@ class Dream extends DataClass implements Insertable<Dream> {
           String? why,
           String? category,
           DateTime? createdAt,
-          DateTime? updatedAt}) =>
+          DateTime? updatedAt,
+          int? sortOrder}) =>
       Dream(
         id: id ?? this.id,
         title: title ?? this.title,
@@ -232,6 +255,7 @@ class Dream extends DataClass implements Insertable<Dream> {
         category: category ?? this.category,
         createdAt: createdAt ?? this.createdAt,
         updatedAt: updatedAt ?? this.updatedAt,
+        sortOrder: sortOrder ?? this.sortOrder,
       );
   Dream copyWithCompanion(DreamsCompanion data) {
     return Dream(
@@ -243,6 +267,7 @@ class Dream extends DataClass implements Insertable<Dream> {
       category: data.category.present ? data.category.value : this.category,
       createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
       updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+      sortOrder: data.sortOrder.present ? data.sortOrder.value : this.sortOrder,
     );
   }
 
@@ -255,14 +280,15 @@ class Dream extends DataClass implements Insertable<Dream> {
           ..write('why: $why, ')
           ..write('category: $category, ')
           ..write('createdAt: $createdAt, ')
-          ..write('updatedAt: $updatedAt')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('sortOrder: $sortOrder')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode =>
-      Object.hash(id, title, description, why, category, createdAt, updatedAt);
+  int get hashCode => Object.hash(
+      id, title, description, why, category, createdAt, updatedAt, sortOrder);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -273,7 +299,8 @@ class Dream extends DataClass implements Insertable<Dream> {
           other.why == this.why &&
           other.category == this.category &&
           other.createdAt == this.createdAt &&
-          other.updatedAt == this.updatedAt);
+          other.updatedAt == this.updatedAt &&
+          other.sortOrder == this.sortOrder);
 }
 
 class DreamsCompanion extends UpdateCompanion<Dream> {
@@ -284,6 +311,7 @@ class DreamsCompanion extends UpdateCompanion<Dream> {
   final Value<String> category;
   final Value<DateTime> createdAt;
   final Value<DateTime> updatedAt;
+  final Value<int> sortOrder;
   final Value<int> rowid;
   const DreamsCompanion({
     this.id = const Value.absent(),
@@ -293,6 +321,7 @@ class DreamsCompanion extends UpdateCompanion<Dream> {
     this.category = const Value.absent(),
     this.createdAt = const Value.absent(),
     this.updatedAt = const Value.absent(),
+    this.sortOrder = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   DreamsCompanion.insert({
@@ -303,6 +332,7 @@ class DreamsCompanion extends UpdateCompanion<Dream> {
     this.category = const Value.absent(),
     required DateTime createdAt,
     required DateTime updatedAt,
+    this.sortOrder = const Value.absent(),
     this.rowid = const Value.absent(),
   })  : id = Value(id),
         title = Value(title),
@@ -316,6 +346,7 @@ class DreamsCompanion extends UpdateCompanion<Dream> {
     Expression<String>? category,
     Expression<DateTime>? createdAt,
     Expression<DateTime>? updatedAt,
+    Expression<int>? sortOrder,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -326,6 +357,7 @@ class DreamsCompanion extends UpdateCompanion<Dream> {
       if (category != null) 'category': category,
       if (createdAt != null) 'created_at': createdAt,
       if (updatedAt != null) 'updated_at': updatedAt,
+      if (sortOrder != null) 'sort_order': sortOrder,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -338,6 +370,7 @@ class DreamsCompanion extends UpdateCompanion<Dream> {
       Value<String>? category,
       Value<DateTime>? createdAt,
       Value<DateTime>? updatedAt,
+      Value<int>? sortOrder,
       Value<int>? rowid}) {
     return DreamsCompanion(
       id: id ?? this.id,
@@ -347,6 +380,7 @@ class DreamsCompanion extends UpdateCompanion<Dream> {
       category: category ?? this.category,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
+      sortOrder: sortOrder ?? this.sortOrder,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -375,6 +409,9 @@ class DreamsCompanion extends UpdateCompanion<Dream> {
     if (updatedAt.present) {
       map['updated_at'] = Variable<DateTime>(updatedAt.value);
     }
+    if (sortOrder.present) {
+      map['sort_order'] = Variable<int>(sortOrder.value);
+    }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
     }
@@ -391,6 +428,7 @@ class DreamsCompanion extends UpdateCompanion<Dream> {
           ..write('category: $category, ')
           ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt, ')
+          ..write('sortOrder: $sortOrder, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -3076,6 +3114,7 @@ typedef $$DreamsTableCreateCompanionBuilder = DreamsCompanion Function({
   Value<String> category,
   required DateTime createdAt,
   required DateTime updatedAt,
+  Value<int> sortOrder,
   Value<int> rowid,
 });
 typedef $$DreamsTableUpdateCompanionBuilder = DreamsCompanion Function({
@@ -3086,6 +3125,7 @@ typedef $$DreamsTableUpdateCompanionBuilder = DreamsCompanion Function({
   Value<String> category,
   Value<DateTime> createdAt,
   Value<DateTime> updatedAt,
+  Value<int> sortOrder,
   Value<int> rowid,
 });
 
@@ -3113,6 +3153,7 @@ class $$DreamsTableTableManager extends RootTableManager<
             Value<String> category = const Value.absent(),
             Value<DateTime> createdAt = const Value.absent(),
             Value<DateTime> updatedAt = const Value.absent(),
+            Value<int> sortOrder = const Value.absent(),
             Value<int> rowid = const Value.absent(),
           }) =>
               DreamsCompanion(
@@ -3123,6 +3164,7 @@ class $$DreamsTableTableManager extends RootTableManager<
             category: category,
             createdAt: createdAt,
             updatedAt: updatedAt,
+            sortOrder: sortOrder,
             rowid: rowid,
           ),
           createCompanionCallback: ({
@@ -3133,6 +3175,7 @@ class $$DreamsTableTableManager extends RootTableManager<
             Value<String> category = const Value.absent(),
             required DateTime createdAt,
             required DateTime updatedAt,
+            Value<int> sortOrder = const Value.absent(),
             Value<int> rowid = const Value.absent(),
           }) =>
               DreamsCompanion.insert(
@@ -3143,6 +3186,7 @@ class $$DreamsTableTableManager extends RootTableManager<
             category: category,
             createdAt: createdAt,
             updatedAt: updatedAt,
+            sortOrder: sortOrder,
             rowid: rowid,
           ),
         ));
@@ -3185,6 +3229,11 @@ class $$DreamsTableFilterComposer
       column: $state.table.updatedAt,
       builder: (column, joinBuilders) =>
           ColumnFilters(column, joinBuilders: joinBuilders));
+
+  ColumnFilters<int> get sortOrder => $state.composableBuilder(
+      column: $state.table.sortOrder,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
 }
 
 class $$DreamsTableOrderingComposer
@@ -3222,6 +3271,11 @@ class $$DreamsTableOrderingComposer
 
   ColumnOrderings<DateTime> get updatedAt => $state.composableBuilder(
       column: $state.table.updatedAt,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+
+  ColumnOrderings<int> get sortOrder => $state.composableBuilder(
+      column: $state.table.sortOrder,
       builder: (column, joinBuilders) =>
           ColumnOrderings(column, joinBuilders: joinBuilders));
 }

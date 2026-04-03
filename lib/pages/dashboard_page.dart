@@ -284,7 +284,7 @@ class _GreetingBar extends StatelessWidget {
             ),
           ],
           const Spacer(),
-          if (editMode)
+          if (editMode) ...[
             TextButton.icon(
               onPressed: onReset,
               icon: Icon(Icons.restore, size: 16, color: colors.warning),
@@ -293,15 +293,24 @@ class _GreetingBar extends StatelessWidget {
                 style: TextStyle(color: colors.warning, fontSize: 13),
               ),
             ),
-          IconButton(
-            icon: Icon(
-              editMode ? Icons.check_circle_outline : Icons.tune_outlined,
-              size: 20,
-              color: editMode ? colors.success : colors.textMuted,
+            FilledButton.icon(
+              onPressed: onToggle,
+              icon: const Icon(Icons.check, size: 18),
+              label: const Text(AppLabels.dashEditDone),
+              style: FilledButton.styleFrom(
+                backgroundColor: colors.success,
+                visualDensity: VisualDensity.compact,
+              ),
             ),
-            onPressed: onToggle,
-            tooltip: editMode ? AppLabels.dashEditDone : AppLabels.dashEditWidgets,
-          ),
+          ] else
+            OutlinedButton.icon(
+              onPressed: onToggle,
+              icon: const Icon(Icons.dashboard_customize_outlined, size: 18),
+              label: const Text(AppLabels.dashCustomize),
+              style: OutlinedButton.styleFrom(
+                visualDensity: VisualDensity.compact,
+              ),
+            ),
         ],
       ),
     );
@@ -534,21 +543,17 @@ class _BookshelfContent extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final booksAsync = ref.watch(bookListProvider);
+    final booksAsync = ref.watch(sortedBookListProvider);
     final theme = Theme.of(context);
 
     return booksAsync.when(
       data: (books) {
-        // 読了・読書中の本のみ（読了を先に表示）
+        // 読了・読書中の本のみ（ソート済みリストの順序を維持）
         final displayBooks = books
             .where((b) =>
                 b.status == BookStatus.completed ||
                 b.status == BookStatus.reading)
-            .toList()
-          ..sort((a, b) {
-            if (a.status == b.status) return 0;
-            return a.status == BookStatus.completed ? -1 : 1;
-          });
+            .toList();
         final completedCount =
             books.where((b) => b.status == BookStatus.completed).length;
 

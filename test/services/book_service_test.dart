@@ -89,6 +89,70 @@ void main() {
       });
     });
 
+    group('updateBookInfoAndStatus', () {
+      test('基本情報とステータスを一括更新する', () async {
+        final book = await service.createBook('Before');
+        final updated = await service.updateBookInfoAndStatus(
+          book.id,
+          title: 'After',
+          category: BookCategory.it,
+          why: '理由',
+          description: 'メモ',
+          status: BookStatus.reading,
+        );
+        expect(updated!.title, 'After');
+        expect(updated.category, BookCategory.it);
+        expect(updated.why, '理由');
+        expect(updated.description, 'メモ');
+        expect(updated.status, BookStatus.reading);
+        expect(updated.updatedAt.isAfter(book.updatedAt), isTrue);
+      });
+
+      test('ステータスnullの場合は基本情報のみ更新する', () async {
+        final book = await service.createBook('Test');
+        await service.updateStatus(book.id, BookStatus.reading);
+        final updated = await service.updateBookInfoAndStatus(
+          book.id,
+          title: 'Updated',
+          category: BookCategory.other,
+          why: '',
+          description: '',
+        );
+        expect(updated!.title, 'Updated');
+        expect(updated.status, BookStatus.reading); // 変更なし
+      });
+
+      test('存在しないIDでnull', () async {
+        final result = await service.updateBookInfoAndStatus(
+          'nonexistent',
+          title: 'Test',
+          category: BookCategory.other,
+          why: '',
+          description: '',
+        );
+        expect(result, isNull);
+      });
+
+      test('DBに永続化される', () async {
+        final book = await service.createBook('Before');
+        await service.updateBookInfoAndStatus(
+          book.id,
+          title: 'After',
+          category: BookCategory.business,
+          why: 'why',
+          description: 'desc',
+          status: BookStatus.completed,
+        );
+        // DBから再取得して確認
+        final reloaded = await service.getBook(book.id);
+        expect(reloaded!.title, 'After');
+        expect(reloaded.category, BookCategory.business);
+        expect(reloaded.status, BookStatus.completed);
+        expect(reloaded.why, 'why');
+        expect(reloaded.description, 'desc');
+      });
+    });
+
     group('completeBook', () {
       test('書籍を読了にする', () async {
         final book = await service.createBook('Test');

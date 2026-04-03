@@ -44,27 +44,42 @@ class DreamPage extends ConsumerWidget {
               Expanded(
                 child: Text(
                   AppLabels.dreamPageDesc,
-                  style: theme.textTheme.bodyMedium?.copyWith(
+                  style: theme.textTheme.bodySmall?.copyWith(
                     color: colors.textSecondary,
                   ),
+                  overflow: TextOverflow.ellipsis,
                 ),
               ),
-              const SizedBox(width: 8),
-              OutlinedButton.icon(
-                onPressed: () => _openDiscoveryGuide(context, ref),
-                icon: const Icon(Icons.explore, size: 18),
-                label: const Text(AppLabels.dreamDiscoveryGuide),
+              PopupMenuButton<String>(
+                icon: const Icon(Icons.more_vert, size: 20),
+                tooltip: '',
+                padding: EdgeInsets.zero,
+                onSelected: (value) {
+                  if (value == 'discovery') {
+                    _openDiscoveryGuide(context, ref);
+                  }
+                },
+                itemBuilder: (_) => [
+                  const PopupMenuItem(
+                    value: 'discovery',
+                    child: ListTile(
+                      leading: Icon(Icons.explore, size: 20),
+                      title: Text(AppLabels.dreamDiscoveryGuide),
+                      dense: true,
+                      contentPadding: EdgeInsets.zero,
+                    ),
+                  ),
+                ],
               ),
-              const SizedBox(width: 8),
-              ElevatedButton.icon(
+              FloatingActionButton.small(
                 key: TutorialTargetKeys.addDreamButton,
+                heroTag: 'dream_add',
                 onPressed: () => _addDream(context, ref),
-                icon: const Icon(Icons.add, size: 18),
-                label: const Text(AppLabels.dreamAddButton),
+                child: const Icon(Icons.add),
               ),
             ],
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 8),
 
           // 夢リスト
           Expanded(
@@ -78,17 +93,23 @@ class DreamPage extends ConsumerWidget {
                           goalCountByDream[goal.dreamId] =
                               (goalCountByDream[goal.dreamId] ?? 0) + 1;
                         }
-                        return ListView.separated(
-                          itemCount: dreams.length,
-                          separatorBuilder: (_, _) =>
-                              const SizedBox(height: 8),
-                          itemBuilder: (_, index) => _DreamCard(
-                            dream: dreams[index],
-                            goalCount:
-                                goalCountByDream[dreams[index].id] ?? 0,
-                            onTap: () =>
-                                _editDream(context, ref, dreams[index]),
-                          ),
+                        final sorted = [...dreams]
+                          ..sort((a, b) =>
+                              a.sortOrder.compareTo(b.sortOrder));
+                        return _ReorderableDreamList(
+                          dreams: sorted,
+                          goalCountByDream: goalCountByDream,
+                          onEditDream: (dream) =>
+                              _editDream(context, ref, dream),
+                          onReorder: (reordered) {
+                            final orders = <(String, int)>[];
+                            for (var i = 0; i < reordered.length; i++) {
+                              orders.add((reordered[i].id, i));
+                            }
+                            ref
+                                .read(dreamListProvider.notifier)
+                                .reorderDreams(orders);
+                          },
                         );
                       },
                       loading: () =>
@@ -461,6 +482,100 @@ class _DreamCard extends StatelessWidget {
         ),
       ),
       ),
+    );
+  }
+}
+
+/// 並び替え可能な夢リスト.
+class _ReorderableDreamList extends StatefulWidget {
+  const _ReorderableDreamList({
+    required this.dreams,
+    required this.goalCountByDream,
+    required this.onEditDream,
+    required this.onReorder,
+  });
+
+  final List<Dream> dreams;
+  final Map<String, int> goalCountByDream;
+  final void Function(Dream) onEditDream;
+  final void Function(List<Dream>) onReorder;
+
+  @override
+  State<_ReorderableDreamList> createState() => _ReorderableDreamListState();
+}
+
+class _ReorderableDreamListState extends State<_ReorderableDreamList> {
+  late List<Dream> _ordered;
+
+  @override
+  void initState() {
+    super.initState();
+    _ordered = List.of(widget.dreams);
+  }
+
+  @override
+  void didUpdateWidget(_ReorderableDreamList old) {
+    super.didUpdateWidget(old);
+    if (old.dreams != widget.dreams) {
+      _ordered = List.of(widget.dreams);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).appColors;
+
+    return ReorderableListView.builder(
+      buildDefaultDragHandles: false,
+      itemCount: _ordered.length,
+      onReorder: (oldIndex, newIndex) {
+        setState(() {
+          if (newIndex > oldIndex) newIndex--;
+          final item = _ordered.removeAt(oldIndex);
+          _ordered.insert(newIndex, item);
+        });
+        widget.onReorder(_ordered);
+      },
+      proxyDecorator: (child, index, animation) {
+        return AnimatedBuilder(
+          animation: animation,
+          builder: (context, child) => Material(
+            elevation: 4,
+            borderRadius: BorderRadius.circular(12),
+            child: child,
+          ),
+          child: child,
+        );
+      },
+      itemBuilder: (context, index) {
+        final dream = _ordered[index];
+        return Padding(
+          key: ValueKey(dream.id),
+          padding: const EdgeInsets.only(bottom: 8),
+          child: Row(
+            children: [
+              Expanded(
+                child: _DreamCard(
+                  dream: dream,
+                  goalCount: widget.goalCountByDream[dream.id] ?? 0,
+                  onTap: () => widget.onEditDream(dream),
+                ),
+              ),
+              ReorderableDragStartListener(
+                index: index,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 4),
+                  child: Icon(
+                    Icons.drag_indicator,
+                    size: 20,
+                    color: colors.textMuted,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 }

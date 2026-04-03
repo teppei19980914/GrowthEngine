@@ -46,27 +46,42 @@ class GoalPage extends ConsumerWidget {
               Expanded(
                 child: Text(
                   AppLabels.goalPageDesc,
-                  style: theme.textTheme.bodyMedium?.copyWith(
+                  style: theme.textTheme.bodySmall?.copyWith(
                     color: colors.textSecondary,
                   ),
+                  overflow: TextOverflow.ellipsis,
                 ),
               ),
-              const SizedBox(width: 8),
-              OutlinedButton.icon(
-                onPressed: () => _openGoalGuide(context, ref),
-                icon: const Icon(Icons.explore, size: 16),
-                label: const Text(AppLabels.goalDiscoveryGuide),
+              PopupMenuButton<String>(
+                icon: const Icon(Icons.more_vert, size: 20),
+                tooltip: '',
+                padding: EdgeInsets.zero,
+                onSelected: (value) {
+                  if (value == 'discovery') {
+                    _openGoalGuide(context, ref);
+                  }
+                },
+                itemBuilder: (_) => [
+                  const PopupMenuItem(
+                    value: 'discovery',
+                    child: ListTile(
+                      leading: Icon(Icons.explore, size: 20),
+                      title: Text(AppLabels.goalDiscoveryGuide),
+                      dense: true,
+                      contentPadding: EdgeInsets.zero,
+                    ),
+                  ),
+                ],
               ),
-              const SizedBox(width: 8),
-              ElevatedButton.icon(
+              FloatingActionButton.small(
                 key: TutorialTargetKeys.addGoalButton,
+                heroTag: 'goal_add',
                 onPressed: () => _addGoal(context, ref),
-                icon: const Icon(Icons.add, size: 18),
-                label: const Text(AppLabels.goalAddButton),
+                child: const Icon(Icons.add),
               ),
             ],
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 8),
 
           // 目標リスト（夢別グルーピング）
           Expanded(
@@ -307,11 +322,11 @@ class _GroupedGoalList extends StatelessWidget {
       list.sort((a, b) => a.sortOrder.compareTo(b.sortOrder));
     }
 
-    // 夢のある目標を先、独立目標は末尾
+    // 夢のある目標を先、独立目標は末尾（夢の sortOrder 順）
     final dreamIds = grouped.keys.where((k) => k.isNotEmpty).toList()
       ..sort((a, b) {
-        final da = dreamMap[a]?.title ?? '';
-        final db = dreamMap[b]?.title ?? '';
+        final da = dreamMap[a]?.sortOrder ?? 0;
+        final db = dreamMap[b]?.sortOrder ?? 0;
         return da.compareTo(db);
       });
     final hasStandalone = grouped.containsKey('');

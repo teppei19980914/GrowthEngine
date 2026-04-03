@@ -72,6 +72,34 @@ class BookService {
     return updated;
   }
 
+  /// 書籍の基本情報とステータスを一括更新する.
+  ///
+  /// 1回のDB読み込み + 1回のDB書き込みで完結するため、
+  /// 分割更新時のレースコンディションを防ぐ.
+  Future<Book?> updateBookInfoAndStatus(
+    String bookId, {
+    required String title,
+    required BookCategory category,
+    required String why,
+    required String description,
+    BookStatus? status,
+  }) async {
+    final existing = await _bookDao.getById(bookId);
+    if (existing == null) return null;
+    var updated = _rowToBook(existing).copyWith(
+      title: title,
+      category: category,
+      why: why,
+      description: description,
+      updatedAt: DateTime.now(),
+    );
+    if (status != null) {
+      updated = updated.copyWith(status: status);
+    }
+    await _bookDao.updateBook(_bookToCompanion(updated));
+    return updated;
+  }
+
   /// 書籍のステータスを更新する.
   Future<Book?> updateStatus(String bookId, BookStatus status) async {
     final existing = await _bookDao.getById(bookId);
