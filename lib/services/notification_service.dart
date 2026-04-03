@@ -205,29 +205,45 @@ class NotificationService {
       // 旧ロジック（全削除→再作成）で発生した重複を除去
       await _notificationDao.removeDuplicates();
 
-      // 差分同期: 既存通知の既読状態を保持し、新規のみ追加
-      final created = <Notification>[];
+      // 初回アクセス判定: システム通知が1件もなければ初回ユーザー
+      final existingSystem =
+          await _notificationDao.countByType(NotificationType.system.value);
+      final isFirstAccess = existingSystem == 0;
+
+      // 同期対象を抽出（非空dedupKey・非未来・DB未登録）
+      final validItems = <Map<String, dynamic>>[];
       for (final item in items) {
         final dedupKey = item['dedup_key']?.toString() ?? '';
         if (dedupKey.isEmpty) continue;
         final dateStr = item['date']?.toString() ?? '';
         final createdAt =
             dateStr.isNotEmpty ? DateTime.tryParse(dateStr) : null;
-        // 予約通知: dateが未来の場合はスキップ（次回起動時に再判定）
         if (createdAt != null && createdAt.isAfter(now)) continue;
-        // 既に存在する通知はスキップ（既読状態を保持）
         if (await _notificationDao.existsByDedupKey(dedupKey)) continue;
+        validItems.add(item);
+      }
+
+      // 通知を作成（初回は最新1件のみ未読、残りは既読で登録）
+      final created = <Notification>[];
+      for (var i = 0; i < validItems.length; i++) {
+        final item = validItems[i];
+        final dedupKey = item['dedup_key']!.toString();
+        final dateStr = item['date']?.toString() ?? '';
+        final createdAt =
+            dateStr.isNotEmpty ? DateTime.tryParse(dateStr) : null;
+        final isRead = isFirstAccess && i < validItems.length - 1;
         final notification = Notification(
           notificationType: NotificationType.system,
           title: item['title']?.toString() ?? '',
           message: item['message']?.toString() ?? '',
           dedupKey: dedupKey,
+          isRead: isRead,
           createdAt: createdAt,
         );
         await _notificationDao.insertNotification(
           _notificationToCompanion(notification),
         );
-        created.add(notification);
+        if (!isRead) created.add(notification);
       }
       return AnnouncementSyncResult(notifications: created);
     } catch (_) {

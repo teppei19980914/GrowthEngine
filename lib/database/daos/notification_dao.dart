@@ -43,6 +43,16 @@ class NotificationDao extends DatabaseAccessor<AppDatabase>
     return result.read(count) ?? 0;
   }
 
+  /// 指定種別の通知件数を返す.
+  Future<int> countByType(String notificationType) async {
+    final count = countAll();
+    final query = selectOnly(notifications)
+      ..addColumns([count])
+      ..where(notifications.notificationType.equals(notificationType));
+    final result = await query.getSingle();
+    return result.read(count) ?? 0;
+  }
+
   /// 重複防止キーで存在チェックする.
   Future<bool> existsByDedupKey(String dedupKey) async {
     final query = select(notifications)

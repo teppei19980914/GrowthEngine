@@ -141,6 +141,62 @@ void main() {
         expect(result.notifications.length, 1);
         expect(result.notifications.first.title, '過去の通知');
       });
+
+      test('初回アクセス時は最新の通知のみ未読で表示される', () async {
+        const jsonStr = '['
+            '{"dedup_key":"release:1.0.0","title":"v1.0.0","message":"A",'
+            '"date":"2025-01-01"},'
+            '{"dedup_key":"release:1.0.1","title":"v1.0.1","message":"B",'
+            '"date":"2025-02-01"},'
+            '{"dedup_key":"release:1.0.2","title":"v1.0.2","message":"C",'
+            '"date":"2025-03-01"}'
+            ']';
+        final result =
+            await service.syncSystemNotificationsFromJson(jsonStr);
+
+        // 未読として返されるのは最新の1件のみ
+        expect(result.notifications.length, 1);
+        expect(result.notifications.first.title, 'v1.0.2');
+
+        // DB上は全件登録されている（過去分は既読）
+        final all = await service.getAllNotifications();
+        final system = all
+            .where((n) => n.notificationType == NotificationType.system)
+            .toList();
+        expect(system.length, 3);
+
+        final unread = system.where((n) => !n.isRead).toList();
+        expect(unread.length, 1);
+        expect(unread.first.title, 'v1.0.2');
+
+        final read = system.where((n) => n.isRead).toList();
+        expect(read.length, 2);
+      });
+
+      test('既存ユーザーは新規通知が全て未読で表示される', () async {
+        // 1回目の同期（初回アクセス）
+        const jsonStr1 =
+            '[{"dedup_key":"release:1.0.0","title":"v1.0.0","message":"A",'
+            '"date":"2025-01-01"}]';
+        await service.syncSystemNotificationsFromJson(jsonStr1);
+
+        // 2回目の同期（既存ユーザー：新バージョン追加）
+        const jsonStr2 = '['
+            '{"dedup_key":"release:1.0.0","title":"v1.0.0","message":"A",'
+            '"date":"2025-01-01"},'
+            '{"dedup_key":"release:1.0.1","title":"v1.0.1","message":"B",'
+            '"date":"2025-02-01"},'
+            '{"dedup_key":"release:1.0.2","title":"v1.0.2","message":"C",'
+            '"date":"2025-03-01"}'
+            ']';
+        final result =
+            await service.syncSystemNotificationsFromJson(jsonStr2);
+
+        // 既存ユーザーは新規の2件とも未読で表示される
+        expect(result.notifications.length, 2);
+        expect(result.notifications[0].title, 'v1.0.1');
+        expect(result.notifications[1].title, 'v1.0.2');
+      });
     });
   });
 }
