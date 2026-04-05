@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-04-02T16:48:48.028451",
+  "timestamp": "2026-04-05T05:18:28.978429",
   "test_type": "concurrent_access",
   "total_measurements": 10,
   "passed_count": 10,
@@ -8,61 +8,61 @@
   "measurements": [
     {
       "label": "Stripe同時 50件",
-      "ms": 732,
+      "ms": 727,
       "threshold_ms": 5000,
       "passed": true
     },
     {
       "label": "Checkout同時 50件",
-      "ms": 724,
+      "ms": 718,
       "threshold_ms": 5000,
       "passed": true
     },
     {
       "label": "低速API 10件",
-      "ms": 1110,
+      "ms": 1104,
       "threshold_ms": 15000,
       "passed": true
     },
     {
       "label": "同時INSERT 100件",
-      "ms": 25,
+      "ms": 45,
       "threshold_ms": 3000,
       "passed": true
     },
     {
       "label": "読み書き同時 100件",
-      "ms": 82,
+      "ms": 121,
       "threshold_ms": 3000,
       "passed": true
     },
     {
       "label": "エクスポート/インポート競合",
-      "ms": 37,
+      "ms": 69,
       "threshold_ms": 5000,
       "passed": true
     },
     {
       "label": "requestSync ×100 デバウンス",
-      "ms": 4002,
+      "ms": 4003,
       "threshold_ms": 5000,
       "passed": true
     },
     {
       "label": "syncOnExit 即時実行",
-      "ms": 2,
+      "ms": 3,
       "threshold_ms": 5000,
       "passed": true
     },
     {
       "label": "全エラー 20件",
-      "ms": 6,
+      "ms": 13,
       "threshold_ms": 5000,
       "passed": true
     },
     {
       "label": "タイムアウト混在 9件",
-      "ms": 15004,
+      "ms": 15003,
       "threshold_ms": 17000,
       "passed": true
     }
