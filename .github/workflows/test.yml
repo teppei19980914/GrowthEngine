@@ -51,6 +51,13 @@ jobs:
           echo "" >> $GITHUB_STEP_SUMMARY
           errors=0
 
+          # PR の HEAD コミットがすでに origin/main に含まれている場合（post-merge の競合実行）はチェックをスキップ
+          if git merge-base --is-ancestor HEAD origin/main 2>/dev/null; then
+            echo "- :information_source: PR の HEAD (${GITHUB_SHA:0:7}) はすでに main に含まれているためバージョンチェックをスキップ" >> $GITHUB_STEP_SUMMARY
+            echo "**:white_check_mark: バージョン更新チェック スキップ（post-merge）**" >> $GITHUB_STEP_SUMMARY
+            exit 0
+          fi
+
           # 1. pubspec.yaml のバージョンが main と異なるか
           MAIN_VERSION=$(git show origin/main:pubspec.yaml | grep '^version:' | sed 's/version: //' | sed 's/+.*//')
           PR_VERSION=$(grep '^version:' pubspec.yaml | sed 's/version: //' | sed 's/+.*//')

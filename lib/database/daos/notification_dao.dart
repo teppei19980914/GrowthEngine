@@ -87,6 +87,29 @@ class NotificationDao extends DatabaseAccessor<AppDatabase>
         .go();
   }
 
+  /// 指定種別の通知のうち、dedupKey が [keepKeys] に含まれない通知を削除する.
+  ///
+  /// announcements.json から削除されたエントリをユーザーの受信ボックスから
+  /// 取り除くために使用する. 空の dedupKey を持つ通知（リマインダー等）は
+  /// 影響を受けない.
+  Future<int> deleteByTypeWhereDedupKeyNotIn(
+    String notificationType,
+    Set<String> keepKeys,
+  ) async {
+    final targets = await (select(notifications)
+          ..where((t) => t.notificationType.equals(notificationType))
+          ..where((t) => t.dedupKey.isNotValue('')))
+        .get();
+    var removed = 0;
+    for (final n in targets) {
+      if (!keepKeys.contains(n.dedupKey)) {
+        await deleteById(n.id);
+        removed++;
+      }
+    }
+    return removed;
+  }
+
   /// 同じ dedup_key を持つ重複通知を除去する（最古の1件のみ残す）.
   Future<int> removeDuplicates() async {
     final all = await getAll();

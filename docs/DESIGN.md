@@ -246,5 +246,7 @@ test_stress/                 # ストレステスト（36件、CI分離）
 
 | 日付 | 内容 |
 |---|---|
+| 2026-04-07 | v2.0.1 反映: `NotificationService.syncSystemNotificationsFromJson` の仕様を変更。announcements.json を「受信ボックスの唯一のソース」とし、JSON から削除された dedup_key を持つシステム通知は DB からも除去する（重複告知の解消）。`NotificationDao.deleteByTypeWhereDedupKeyNotIn` を追加 |
+| 2026-04-07 | v2.0.0 反映: アプリ名「ユメハシ」への正式移行。対応プラットフォームを Web / Windows に限定し、Android / iOS / macOS / Linux のビルド設定を削除。`buildBackupFileName()` ヘルパーを `data_export_service.dart` に追加 |
 | 2026-04-05 | v1.2.0 反映: 状態管理ルール追加、同期設計、セキュリティ強化、DBマイグレーション履歴、テスト数更新 |
 | 2026-04-01 | 初版作成（v1.0.0） |

@@ -8,7 +8,7 @@ library;
 /// アプリの現在バージョン番号.
 ///
 /// pubspec.yaml の version と一致させること.
-const appVersion = '2.0.0';
+const appVersion = '2.0.1';
 
 /// 最終デプロイ日時.
 ///
@@ -25,6 +25,15 @@ const deployedAt = '---';
 ///
 /// 最新エントリ（先頭）がリリースノートポップアップに使用される.
 const releaseHistory = <ReleaseEntry>[
+  ReleaseEntry(
+    version: '2.0.1',
+    date: '2026-04-07',
+    notes: [
+      '受信ボックスで同じ内容の告知が重複表示される問題を修正（announcements.json から削除されたエントリが DB に残り続けていた）',
+      'CIワークフローのバージョンチェックがマージ後の再実行で誤判定する問題を修正',
+      'ドキュメント（要件・仕様・設計・運用）にv2.0.0リリースエントリを追記',
+    ],
+  ),
   ReleaseEntry(
     version: '2.0.0',
     date: '2026-04-07',

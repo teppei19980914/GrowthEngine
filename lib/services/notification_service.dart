@@ -205,6 +205,20 @@ class NotificationService {
       // 旧ロジック（全削除→再作成）で発生した重複を除去
       await _notificationDao.removeDuplicates();
 
+      // announcements.json に含まれる全 dedup_key を集計（未来日付も含む）
+      final jsonDedupKeys = <String>{
+        for (final item in items)
+          if ((item['dedup_key']?.toString() ?? '').isNotEmpty)
+            item['dedup_key']!.toString(),
+      };
+
+      // announcements.json から削除されたエントリを DB からも除去
+      // （リマインダー等の dedupKey が空の通知は影響を受けない）
+      await _notificationDao.deleteByTypeWhereDedupKeyNotIn(
+        NotificationType.system.value,
+        jsonDedupKeys,
+      );
+
       // 初回アクセス判定: システム通知が1件もなければ初回ユーザー
       final existingSystem =
           await _notificationDao.countByType(NotificationType.system.value);

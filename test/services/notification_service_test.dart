@@ -53,7 +53,7 @@ void main() {
         expect(systemNotifs.length, 2);
       });
 
-      test('空JSONで再同期しても既存の通知は保持される', () async {
+      test('空JSONで再同期するとシステム通知は全て削除される', () async {
         const jsonStr =
             '[{"dedup_key":"sys:v1","title":"A","message":"B"}]';
         await service.syncSystemNotificationsFromJson(jsonStr);
@@ -63,7 +63,39 @@ void main() {
         final all = await service.getAllNotifications();
         final systemNotifs =
             all.where((n) => n.notificationType == NotificationType.system);
-        expect(systemNotifs.length, 1);
+        expect(systemNotifs, isEmpty);
+      });
+
+      test('JSON から削除されたエントリは受信ボックスからも除去される', () async {
+        // 1回目: 2件同期
+        const jsonStr1 = '['
+            '{"dedup_key":"release:1.0.0","title":"v1.0.0","message":"A",'
+            '"date":"2025-01-01"},'
+            '{"dedup_key":"release:1.3.0","title":"旧告知","message":"重複メッセージ",'
+            '"date":"2025-02-01"}'
+            ']';
+        await service.syncSystemNotificationsFromJson(jsonStr1);
+
+        // 2回目: release:1.3.0 を削除し release:2.0.0 を追加
+        const jsonStr2 = '['
+            '{"dedup_key":"release:1.0.0","title":"v1.0.0","message":"A",'
+            '"date":"2025-01-01"},'
+            '{"dedup_key":"release:2.0.0","title":"v2.0.0","message":"新",'
+            '"date":"2025-03-01"}'
+            ']';
+        await service.syncSystemNotificationsFromJson(jsonStr2);
+
+        final all = await service.getAllNotifications();
+        final system = all
+            .where((n) => n.notificationType == NotificationType.system)
+            .toList();
+        final keys = system.map((n) => n.dedupKey).toSet();
+        // release:1.3.0 は削除されている
+        expect(keys.contains('release:1.3.0'), isFalse);
+        // release:1.0.0 は保持、release:2.0.0 は追加
+        expect(keys.contains('release:1.0.0'), isTrue);
+        expect(keys.contains('release:2.0.0'), isTrue);
+        expect(system.length, 2);
       });
 
       test('リマインダー通知はシステム同期で削除されない', () async {
