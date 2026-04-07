@@ -1,6 +1,6 @@
-# ユメログ（YumeLog）技術スタック ナレッジベース
+# ユメハシ（YumeHashi）技術スタック ナレッジベース
 
-> 個人開発プロジェクト「ユメログ」で採用した技術スタック・ツール・サービスの知見を整理し、
+> 個人開発プロジェクト「ユメハシ」で採用した技術スタック・ツール・サービスの知見を整理し、
 > 今後の技術選定やチーム共有に活用するためのドキュメントです。
 
 ---
@@ -26,13 +26,13 @@
 
 | 項目 | 内容 |
 |------|------|
-| **アプリ名** | ユメログ（YumeLog） |
+| **アプリ名** | ユメハシ（YumeHashi） |
 | **種別** | 目標管理・タスク管理 Web アプリケーション |
 | **対象プラットフォーム** | Web（GitHub Pages）、モバイルブラウザ対応 |
 | **開発期間** | 2026年3月〜 |
 | **開発体制** | 個人開発 + Claude Code（AI ペアプログラミング） |
 | **リポジトリ** | GitHub Private リポジトリ |
-| **公開URL** | https://teppei19980914.github.io/GrowthEngine/ |
+| **公開URL** | https://teppei19980914.github.io/YumeHashi/ |
 
 ---
 
@@ -175,7 +175,7 @@ Checkout → Flutter Setup → pub get → flutter analyze → flutter test --co
 | 項目 | 詳細 |
 |------|------|
 | **役割** | コード品質・セキュリティの継続的な監視 |
-| **プロジェクトキー** | `teppei19980914_GrowthEngine` |
+| **プロジェクトキー** | `teppei19980914_YumeHashi` |
 | **対象** | `lib/` 配下の Dart コード |
 | **除外** | 生成コード（`*.g.dart`, `*.freezed.dart`, `*.mocks.dart`） |
 | **カバレッジ** | `flutter test --coverage` の `lcov.info` を連携 |
@@ -261,8 +261,8 @@ Checkout → Flutter Setup → pub get → flutter analyze → flutter test --co
 | 項目 | 詳細 |
 |------|------|
 | **役割** | Web アプリの静的ホスティング |
-| **URL** | `https://teppei19980914.github.io/GrowthEngine/` |
-| **ビルドコマンド** | `flutter build web --release --base-href "/GrowthEngine/"` |
+| **URL** | `https://teppei19980914.github.io/YumeHashi/` |
+| **ビルドコマンド** | `flutter build web --release --base-href "/YumeHashi/"` |
 | **デプロイ方法** | GitHub Actions から自動デプロイ |
 | **コスト** | 完全無料 |
 

@@ -9,9 +9,11 @@ class AppLabels {
   AppLabels._();
 
   // ── アプリ情報 ──────────────────────────────────────────────
-  static const appName = 'ユメログ';
-  static const appTitle = 'ユメログ - 夢実現支援';
-  static const appSubtitle = '夢実現支援アプリ';
+  static const appName = 'ユメハシ';
+  static const appTitle = 'ユメハシ - 夢を現実へとつなぐ橋渡し';
+  static const appSubtitle = '夢を言葉にし、一歩ずつ現実へ';
+  static const appCatchphraseMain = '夢を現実へとつなぐ橋渡し';
+  static const appCatchphraseSub = '夢を言葉にし、一歩ずつ現実へ';
 
   // ── ページ名（ナビゲーション・タイトル共通） ────────────────────────
   static const pageHome = 'ホーム';
@@ -427,7 +429,7 @@ class AppLabels {
   static const onboardingStep2Emphasis = '文字にすることで、\n想いは「目標」へ変わる。';
   static const onboardingStep3Body = '動き出した人は、動き続けられる。\n'
       '最初の一歩さえ踏み出せば、\nあとは自然と進んでいけます。';
-  static const onboardingStep4Title = 'ユメログは、あなたの\n「最初の一歩」を支えます。';
+  static const onboardingStep4Title = 'ユメハシは、あなたの\n「最初の一歩」を支えます。';
   static const onboardingStep4Body = '夢を書き出し、目標に分解し、\n'
       '日々の行動に落とし込む。\n'
       '動き出したあなたと一緒に走り続けます。';
@@ -901,7 +903,7 @@ class AppLabels {
       'そんな思いから、このアプリを作りました。\n\n'
       '夢は頭の中に閉じ込めておくと、いつの間にか薄れてしまいます。\n'
       '言葉にして外に出すことで、脳が認識し、行動につながる。\n'
-      'ユメログは、その「言語化」と「行動」をつなぐ道具です。\n\n'
+      'ユメハシは、その「言語化」と「行動」をつなぐ道具です。\n\n'
       '人は慣性で動きます。\n'
       '止まっている人を動かすこと、動いている人を支えること。\n'
       'このアプリが、あなたの一歩目になれたら嬉しいです。\n\n'

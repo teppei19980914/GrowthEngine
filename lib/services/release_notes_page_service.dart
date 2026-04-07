@@ -104,7 +104,7 @@ a:hover { text-decoration: underline; }
   buf
     ..writeln('</div>')
     ..writeln('<div class="footer">')
-    ..writeln('<p>&copy; 2026 ${AppLabels.appName} (YumeLog)</p>')
+    ..writeln('<p>&copy; 2026 ${AppLabels.appName} (YumeHashi)</p>')
     ..writeln('</div>')
     ..writeln('</body></html>');
 

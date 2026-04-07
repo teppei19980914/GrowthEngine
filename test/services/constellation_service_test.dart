@@ -1,9 +1,9 @@
 import 'package:drift/drift.dart' hide isNull, isNotNull;
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:yume_log/data/constellations.dart';
-import 'package:yume_log/database/app_database.dart';
-import 'package:yume_log/services/constellation_service.dart';
+import 'package:yume_hashi/data/constellations.dart';
+import 'package:yume_hashi/database/app_database.dart';
+import 'package:yume_hashi/services/constellation_service.dart';
 
 void main() {
   late AppDatabase db;

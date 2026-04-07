@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:yume_log/models/constellation.dart';
-import 'package:yume_log/widgets/constellation/constellation_painter.dart';
+import 'package:yume_hashi/models/constellation.dart';
+import 'package:yume_hashi/widgets/constellation/constellation_painter.dart';
 
 const _testConstellation = ConstellationDef(
   id: 'test_constellation',

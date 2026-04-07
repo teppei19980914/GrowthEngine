@@ -2,7 +2,7 @@
 library;
 
 import 'package:drift/native.dart';
-import 'package:yume_log/database/app_database.dart';
+import 'package:yume_hashi/database/app_database.dart';
 
 /// テスト用のインメモリAppDatabaseを作成する.
 AppDatabase createTestDatabase() {

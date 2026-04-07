@@ -1,11 +1,11 @@
 {
-    "name": "yume_log",
-    "short_name": "yume_log",
+    "name": "ユメハシ",
+    "short_name": "ユメハシ",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
     "theme_color": "#0175C2",
-    "description": "ユメログ - 学習計画管理アプリ",
+    "description": "ユメハシ - 夢を現実へとつなぐ橋渡し",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [

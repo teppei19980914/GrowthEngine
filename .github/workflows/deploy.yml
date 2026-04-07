@@ -107,7 +107,7 @@ jobs:
           DEPLOY_TIME=$(TZ=Asia/Tokyo date '+%Y/%m/%d')
           sed -i "s|const deployedAt = '.*';|const deployedAt = '$DEPLOY_TIME';|" lib/app_version.dart
 
-      - run: flutter build web --release --base-href "/GrowthEngine/"
+      - run: flutter build web --release --base-href "/YumeHashi/"
 
       - uses: actions/upload-pages-artifact@v3
         with:

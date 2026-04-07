@@ -90,12 +90,12 @@ BEGIN
         BLOCK "040904e4"
         BEGIN
             VALUE "CompanyName", "com.studyplanner" "\0"
-            VALUE "FileDescription", "yume_log" "\0"
+            VALUE "FileDescription", "yume_hashi" "\0"
             VALUE "FileVersion", VERSION_AS_STRING "\0"
-            VALUE "InternalName", "yume_log" "\0"
+            VALUE "InternalName", "yume_hashi" "\0"
             VALUE "LegalCopyright", "Copyright (C) 2026 com.studyplanner. All rights reserved." "\0"
-            VALUE "OriginalFilename", "yume_log.exe" "\0"
-            VALUE "ProductName", "yume_log" "\0"
+            VALUE "OriginalFilename", "yume_hashi.exe" "\0"
+            VALUE "ProductName", "yume_hashi" "\0"
             VALUE "ProductVersion", VERSION_AS_STRING "\0"
         END
     END

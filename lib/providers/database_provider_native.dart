@@ -12,11 +12,11 @@ import 'package:path_provider/path_provider.dart';
 QueryExecutor openConnection() {
   return LazyDatabase(() async {
     final dbDir = await getApplicationDocumentsDirectory();
-    final dir = Directory(p.join(dbDir.path, 'YumeLog'));
+    final dir = Directory(p.join(dbDir.path, 'YumeHashi'));
     if (!dir.existsSync()) {
       dir.createSync(recursive: true);
     }
-    final file = File(p.join(dir.path, 'yume_log.db'));
+    final file = File(p.join(dir.path, 'yume_hashi.db'));
     return NativeDatabase.createInBackground(file);
   });
 }

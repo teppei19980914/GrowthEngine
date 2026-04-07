@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:yume_log/data/dream_templates.dart';
+import 'package:yume_hashi/data/dream_templates.dart';
 
 void main() {
   group('dreamTemplates', () {

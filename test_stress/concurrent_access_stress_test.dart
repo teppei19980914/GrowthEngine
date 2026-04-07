@@ -23,17 +23,17 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:yume_log/database/app_database.dart' hide Book, StudyLog;
-import 'package:yume_log/models/goal.dart' show WhenType;
-import 'package:yume_log/services/data_export_service.dart';
-import 'package:yume_log/services/dream_service.dart';
-import 'package:yume_log/services/firestore_sync_service.dart'
+import 'package:yume_hashi/database/app_database.dart' hide Book, StudyLog;
+import 'package:yume_hashi/models/goal.dart' show WhenType;
+import 'package:yume_hashi/services/data_export_service.dart';
+import 'package:yume_hashi/services/dream_service.dart';
+import 'package:yume_hashi/services/firestore_sync_service.dart'
     show CloudSyncClient;
-import 'package:yume_log/services/goal_service.dart';
-import 'package:yume_log/services/stripe_service.dart';
-import 'package:yume_log/services/study_log_service.dart';
-import 'package:yume_log/services/sync_manager.dart';
-import 'package:yume_log/services/task_service.dart';
+import 'package:yume_hashi/services/goal_service.dart';
+import 'package:yume_hashi/services/stripe_service.dart';
+import 'package:yume_hashi/services/study_log_service.dart';
+import 'package:yume_hashi/services/sync_manager.dart';
+import 'package:yume_hashi/services/task_service.dart';
 
 // ── テストパラメータ ──────────────────────────────
 const _concurrentUsers = 50; // 同時アクセスユーザー数

@@ -1,4 +1,4 @@
-/// ユメログ アプリケーションのエントリポイント.
+/// ユメハシ アプリケーションのエントリポイント.
 library;
 
 import 'package:firebase_core/firebase_core.dart';
@@ -46,7 +46,7 @@ Future<void> main() async {
   runApp(
     UncontrolledProviderScope(
       container: container,
-      child: const YumeLogApp(),
+      child: const YumeHashiApp(),
     ),
   );
 

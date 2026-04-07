@@ -4,25 +4,25 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:yume_log/app.dart' show YumeLogApp, disableInboxCheckForTest;
-import 'package:yume_log/database/app_database.dart' hide Book, Dream, Goal, Task;
-import 'package:yume_log/models/goal.dart';
-import 'package:yume_log/providers/dashboard_providers.dart';
-import 'package:yume_log/providers/database_provider.dart';
-import 'package:yume_log/providers/goal_providers.dart';
-import 'package:yume_log/providers/theme_provider.dart';
-import 'package:yume_log/services/study_stats_types.dart';
-import 'package:yume_log/models/task.dart';
-import 'package:yume_log/pages/stats_page.dart';
-import 'package:yume_log/providers/gantt_providers.dart';
-import 'package:yume_log/models/book.dart';
-import 'package:yume_log/models/constellation.dart';
-import 'package:yume_log/models/dream.dart';
-import 'package:yume_log/providers/book_providers.dart';
-import 'package:yume_log/providers/constellation_providers.dart';
-import 'package:yume_log/providers/dream_providers.dart';
-import 'package:yume_log/widgets/notification/notification_button.dart';
-import 'package:yume_log/widgets/stats/goal_stats_section.dart';
+import 'package:yume_hashi/app.dart' show YumeHashiApp, disableInboxCheckForTest;
+import 'package:yume_hashi/database/app_database.dart' hide Book, Dream, Goal, Task;
+import 'package:yume_hashi/models/goal.dart';
+import 'package:yume_hashi/providers/dashboard_providers.dart';
+import 'package:yume_hashi/providers/database_provider.dart';
+import 'package:yume_hashi/providers/goal_providers.dart';
+import 'package:yume_hashi/providers/theme_provider.dart';
+import 'package:yume_hashi/services/study_stats_types.dart';
+import 'package:yume_hashi/models/task.dart';
+import 'package:yume_hashi/pages/stats_page.dart';
+import 'package:yume_hashi/providers/gantt_providers.dart';
+import 'package:yume_hashi/models/book.dart';
+import 'package:yume_hashi/models/constellation.dart';
+import 'package:yume_hashi/models/dream.dart';
+import 'package:yume_hashi/providers/book_providers.dart';
+import 'package:yume_hashi/providers/constellation_providers.dart';
+import 'package:yume_hashi/providers/dream_providers.dart';
+import 'package:yume_hashi/widgets/notification/notification_button.dart';
+import 'package:yume_hashi/widgets/stats/goal_stats_section.dart';
 
 /// テスト用のProviderScopeオーバーライドを作成する.
 List<Override> _testOverrides(
@@ -178,7 +178,7 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         overrides: _testOverrides(prefs, db),
-        child: const YumeLogApp(),
+        child: const YumeHashiApp(),
       ),
     );
     await tester.pumpAndSettle();
@@ -193,7 +193,7 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         overrides: _testOverrides(prefs, db),
-        child: const YumeLogApp(),
+        child: const YumeHashiApp(),
       ),
     );
     await tester.pumpAndSettle();
@@ -214,7 +214,7 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         overrides: _testOverrides(prefs, db),
-        child: const YumeLogApp(),
+        child: const YumeHashiApp(),
       ),
     );
     await tester.pumpAndSettle();
@@ -238,7 +238,7 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         overrides: _testOverrides(prefs, db),
-        child: const YumeLogApp(),
+        child: const YumeHashiApp(),
       ),
     );
     await tester.pumpAndSettle();

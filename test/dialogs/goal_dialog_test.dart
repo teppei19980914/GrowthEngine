@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:yume_log/dialogs/goal_dialog.dart';
-import 'package:yume_log/models/dream.dart';
-import 'package:yume_log/models/goal.dart';
+import 'package:yume_hashi/dialogs/goal_dialog.dart';
+import 'package:yume_hashi/models/dream.dart';
+import 'package:yume_hashi/models/goal.dart';
 
 void main() {
   final testDreams = [

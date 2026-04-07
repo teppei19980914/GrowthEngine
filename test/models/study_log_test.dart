@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:yume_log/models/study_log.dart';
+import 'package:yume_hashi/models/study_log.dart';
 
 void main() {
   group('StudyLog', () {

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:yume_log/widgets/web/web_trial_banner.dart';
+import 'package:yume_hashi/widgets/web/web_trial_banner.dart';
 
 void main() {
   group('WebTrialBanner', () {
