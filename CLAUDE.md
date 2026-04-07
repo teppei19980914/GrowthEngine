@@ -2,7 +2,7 @@
 
 ## プロジェクト概要
 
-- **ユメハシ** - Flutter マルチプラットフォームアプリ
+- **ユメハシ** - Flutter アプリ（対応プラットフォーム: Web / Windows）
 - Web 体験版: GitHub Pages (`https://teppei19980914.github.io/YumeHashi/`)
 - Drift ORM + Riverpod 状態管理
 

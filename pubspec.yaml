@@ -1,7 +1,7 @@
 name: yume_hashi
 description: "ユメハシ - 夢を現実へとつなぐ橋渡し"
 publish_to: 'none'
-version: 1.3.0+1
+version: 2.0.0+3
 
 environment:
   sdk: ^3.11.1

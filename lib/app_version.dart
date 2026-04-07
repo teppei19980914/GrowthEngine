@@ -8,7 +8,7 @@ library;
 /// アプリの現在バージョン番号.
 ///
 /// pubspec.yaml の version と一致させること.
-const appVersion = '1.3.0';
+const appVersion = '2.0.0';
 
 /// 最終デプロイ日時.
 ///
@@ -25,6 +25,13 @@ const deployedAt = '---';
 ///
 /// 最新エントリ（先頭）がリリースノートポップアップに使用される.
 const releaseHistory = <ReleaseEntry>[
+  ReleaseEntry(
+    version: '2.0.0',
+    date: '2026-04-07',
+    notes: [
+      '【破壊的変更】アプリ名を「ユメログ」から「ユメハシ」に正式移行（メジャーバージョンアップ）'
+    ],
+  ),
   ReleaseEntry(
     version: '1.3.0',
     date: '2026-04-07',
