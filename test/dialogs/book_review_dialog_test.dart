@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:yume_log/dialogs/book_review_dialog.dart';
+import 'package:yume_hashi/dialogs/book_review_dialog.dart';
 
 void main() {
   Widget buildApp() {

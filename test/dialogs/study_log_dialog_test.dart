@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:yume_log/dialogs/study_log_dialog.dart';
+import 'package:yume_hashi/dialogs/study_log_dialog.dart';
 
 void main() {
   Widget buildApp() {

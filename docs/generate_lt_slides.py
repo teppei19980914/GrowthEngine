@@ -118,7 +118,7 @@ def create():
         'スクラッチ開発未経験エンジニアが\nAI駆動開発で3週間でアプリを作った話',
         size=38, color=ACCENT, bold=True, align=PP_ALIGN.CENTER)
     txt(s, Inches(1.5), Inches(2.8), Inches(10), Inches(0.6),
-        '— ユメログ (YumeLog) 開発記 —',
+        '— ユメハシ (YumeHashi) 開発記 —',
         size=22, color=TEXT_SECONDARY, align=PP_ALIGN.CENTER)
     if os.path.exists(qr):
         s.shapes.add_picture(qr, Inches(5.4), Inches(3.8), Inches(2.5), Inches(2.5))
@@ -142,9 +142,9 @@ def create():
         {'text': 'パッケージ開発（約3年）', 'size': 16, 'space': 4},
         {'text': 'ローコード開発（約3年）', 'size': 16, 'space': 16},
         {'text': 'スクラッチ開発経験', 'size': 13, 'color': TEXT_MUTED, 'space': 2},
-        {'text': 'なし（ユメログが初）', 'size': 16, 'color': WARNING, 'bold': True, 'space': 16},
+        {'text': 'なし（ユメハシが初）', 'size': 16, 'color': WARNING, 'bold': True, 'space': 16},
         {'text': 'Flutter / Dart 経験', 'size': 13, 'color': TEXT_MUTED, 'space': 2},
-        {'text': 'なし（ユメログが初）', 'size': 16, 'color': WARNING, 'bold': True},
+        {'text': 'なし（ユメハシが初）', 'size': 16, 'color': WARNING, 'bold': True},
     ])
 
     rect(s, Inches(6.8), Inches(1.4), Inches(5.7), Inches(5.3), BG_SURFACE)
@@ -329,7 +329,7 @@ def create():
         size=16, color=WARNING, bold=True)
 
     # ================================================================
-    # 7: ユメログ紹介
+    # 7: ユメハシ紹介
     # ================================================================
     s = prs.slides.add_slide(prs.slide_layouts[6])
     set_bg(s)
@@ -393,7 +393,7 @@ def create():
     ])
 
     txt(s, Inches(2), Inches(5.8), Inches(9), Inches(0.5),
-        'ユメログは「最初の一歩」を支えるアプリです。',
+        'ユメハシは「最初の一歩」を支えるアプリです。',
         size=26, color=WARNING, bold=True, align=PP_ALIGN.CENTER)
 
     txt(s, Inches(2), Inches(6.5), Inches(9), Inches(0.4),
@@ -416,7 +416,7 @@ def create():
         s.shapes.add_picture(qr, Inches(4.9), Inches(2.8), Inches(3.5), Inches(3.5))
 
     txt(s, Inches(2), Inches(6.5), Inches(9), Inches(0.4),
-        'https://teppei19980914.github.io/GrowthEngine/',
+        'https://teppei19980914.github.io/YumeHashi/',
         size=18, color=ACCENT, align=PP_ALIGN.CENTER)
 
     # ================================================================
@@ -448,7 +448,7 @@ def create():
         size=18, color=TEXT_MUTED, align=PP_ALIGN.CENTER)
 
     # ================================================================
-    out = os.path.join(os.path.dirname(__file__), 'LT_ユメログ.pptx')
+    out = os.path.join(os.path.dirname(__file__), 'LT_ユメハシ.pptx')
     prs.save(out)
     print(f'Generated: {out}')
 

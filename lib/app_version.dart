@@ -8,7 +8,7 @@ library;
 /// アプリの現在バージョン番号.
 ///
 /// pubspec.yaml の version と一致させること.
-const appVersion = '1.2.1';
+const appVersion = '1.3.0';
 
 /// 最終デプロイ日時.
 ///
@@ -25,6 +25,16 @@ const deployedAt = '---';
 ///
 /// 最新エントリ（先頭）がリリースノートポップアップに使用される.
 const releaseHistory = <ReleaseEntry>[
+  ReleaseEntry(
+    version: '1.3.0',
+    date: '2026-04-07',
+    notes: [
+      'アプリ名を「ユメログ」から「ユメハシ」に変更',
+      'キャッチコピー「夢を現実へとつなぐ橋渡し」「夢を言葉にし、一歩ずつ現実へ」を追加',
+      'URLを https://teppei19980914.github.io/YumeHashi/ に変更（旧URLは自動リダイレクト）',
+      '全ドキュメント・ソースコード・UIの名称を刷新',
+    ],
+  ),
   ReleaseEntry(
     version: '1.2.1',
     date: '2026-04-06',

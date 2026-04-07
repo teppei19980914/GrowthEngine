@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:yume_log/widgets/premium/premium_gate.dart';
+import 'package:yume_hashi/widgets/premium/premium_gate.dart';
 
 /// テスト環境では kIsWeb=false なので isTrialMode=false.
 /// そのため PremiumGate は child をそのまま表示し、

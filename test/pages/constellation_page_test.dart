@@ -4,14 +4,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:yume_log/data/constellations.dart';
-import 'package:yume_log/database/app_database.dart'
+import 'package:yume_hashi/data/constellations.dart';
+import 'package:yume_hashi/database/app_database.dart'
     hide Book, Dream, Goal, Task;
-import 'package:yume_log/models/constellation.dart';
-import 'package:yume_log/pages/constellation_page.dart';
-import 'package:yume_log/providers/constellation_providers.dart';
-import 'package:yume_log/providers/database_provider.dart';
-import 'package:yume_log/providers/theme_provider.dart';
+import 'package:yume_hashi/models/constellation.dart';
+import 'package:yume_hashi/pages/constellation_page.dart';
+import 'package:yume_hashi/providers/constellation_providers.dart';
+import 'package:yume_hashi/providers/database_provider.dart';
+import 'package:yume_hashi/providers/theme_provider.dart';
 
 void main() {
   late AppDatabase db;

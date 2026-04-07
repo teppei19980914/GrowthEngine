@@ -304,7 +304,7 @@ body { font-family: 'Hiragino Sans', 'Noto Sans JP', -apple-system, sans-serif; 
 
     buf.writeln('</div>');
     buf.writeln(
-        '<div class="footer">ユメログ - 活動予定エクスポート</div>');
+        '<div class="footer">ユメハシ - 活動予定エクスポート</div>');
     buf.writeln('</body></html>');
 
     return GanttExportResult(

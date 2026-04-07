@@ -4,7 +4,7 @@
   AI駆動開発で3週間でアプリを作った話
 
   ▶ 成果物を見る（無料・登録不要）
-  https://teppei19980914.github.io/GrowthEngine/
+  https://teppei19980914.github.io/YumeHashi/
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
@@ -70,7 +70,7 @@
 
 ■ で、何を作ったの？
 
-  ユメログ (YumeLog) — 夢を行動に変えるアプリ
+  ユメハシ (YumeHashi) — 夢を行動に変えるアプリ
 
   Step 1. 書き出す — 夢を言葉にする
   Step 2. 分解する — 目標→タスクに分解
@@ -102,8 +102,8 @@
   自分の目で確かめてみてください。
 
   ▶ 今すぐ開く（無料・登録不要）
-  https://teppei19980914.github.io/GrowthEngine/
+  https://teppei19980914.github.io/YumeHashi/
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-  (c) 2026 ユメログ (YumeLog)
+  (c) 2026 ユメハシ (YumeHashi)

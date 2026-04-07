@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:yume_log/dialogs/book_dialog.dart';
-import 'package:yume_log/models/book.dart';
+import 'package:yume_hashi/dialogs/book_dialog.dart';
+import 'package:yume_hashi/models/book.dart';
 
 void main() {
   Widget buildApp({Book? book}) {

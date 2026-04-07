@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:yume_log/services/study_stats_types.dart';
-import 'package:yume_log/theme/app_theme.dart';
-import 'package:yume_log/widgets/milestone/milestone_popup.dart';
+import 'package:yume_hashi/services/study_stats_types.dart';
+import 'package:yume_hashi/theme/app_theme.dart';
+import 'package:yume_hashi/widgets/milestone/milestone_popup.dart';
 
 Widget _wrap(MilestoneData data) {
   return MaterialApp(

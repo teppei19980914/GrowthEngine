@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:yume_log/services/dashboard_layout_service.dart';
-import 'package:yume_log/services/study_stats_types.dart';
+import 'package:yume_hashi/services/dashboard_layout_service.dart';
+import 'package:yume_hashi/services/study_stats_types.dart';
 
 void main() {
   late DashboardLayoutService service;

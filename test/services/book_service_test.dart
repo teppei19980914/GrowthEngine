@@ -1,10 +1,10 @@
 import 'package:drift/drift.dart' hide isNull, isNotNull;
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:yume_log/database/app_database.dart' hide Book;
-import 'package:yume_log/models/book.dart';
-import 'package:yume_log/models/task.dart' show bookGanttGoalId;
-import 'package:yume_log/services/book_service.dart';
+import 'package:yume_hashi/database/app_database.dart' hide Book;
+import 'package:yume_hashi/models/book.dart';
+import 'package:yume_hashi/models/task.dart' show bookGanttGoalId;
+import 'package:yume_hashi/services/book_service.dart';
 
 AppDatabase _createDb() => AppDatabase(NativeDatabase.memory());
 

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:yume_log/models/task.dart';
-import 'package:yume_log/services/study_stats_types.dart' show GanttMilestone;
-import 'package:yume_log/widgets/gantt/gantt_chart.dart';
+import 'package:yume_hashi/models/task.dart';
+import 'package:yume_hashi/services/study_stats_types.dart' show GanttMilestone;
+import 'package:yume_hashi/widgets/gantt/gantt_chart.dart';
 
 void main() {
   Widget buildSubject({

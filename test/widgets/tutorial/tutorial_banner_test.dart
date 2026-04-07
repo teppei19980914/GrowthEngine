@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:yume_log/services/tutorial_service.dart';
-import 'package:yume_log/widgets/tutorial/tutorial_banner.dart';
+import 'package:yume_hashi/services/tutorial_service.dart';
+import 'package:yume_hashi/widgets/tutorial/tutorial_banner.dart';
 
 void main() {
   group('TutorialState', () {

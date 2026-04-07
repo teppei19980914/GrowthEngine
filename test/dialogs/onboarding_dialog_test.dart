@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:yume_log/dialogs/onboarding_dialog.dart';
+import 'package:yume_hashi/dialogs/onboarding_dialog.dart';
 
 void main() {
   group('shouldShowOnboarding', () {
@@ -72,7 +72,7 @@ void main() {
       await tester.tap(find.text('次へ'));
       await tester.pumpAndSettle();
       expect(
-        find.text('ユメログは、あなたの\n「最初の一歩」を支えます。'),
+        find.text('ユメハシは、あなたの\n「最初の一歩」を支えます。'),
         findsOneWidget,
       );
     });

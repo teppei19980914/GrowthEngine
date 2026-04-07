@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:yume_log/services/remote_config_service.dart';
+import 'package:yume_hashi/services/remote_config_service.dart';
 
 void main() {
   late SharedPreferences prefs;

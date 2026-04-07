@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:yume_log/models/goal.dart';
+import 'package:yume_hashi/models/goal.dart';
 
 void main() {
   group('WhenType', () {

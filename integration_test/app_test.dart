@@ -10,37 +10,37 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:yume_log/app.dart';
-import 'package:yume_log/database/app_database.dart'
+import 'package:yume_hashi/app.dart';
+import 'package:yume_hashi/database/app_database.dart'
     hide Book, Dream, Goal, Task;
-import 'package:yume_log/models/book.dart';
-import 'package:yume_log/models/constellation.dart'
+import 'package:yume_hashi/models/book.dart';
+import 'package:yume_hashi/models/constellation.dart'
     show ConstellationOverallProgress;
-import 'package:yume_log/models/dream.dart';
-import 'package:yume_log/models/goal.dart' show Goal, WhenType;
-import 'package:yume_log/models/task.dart';
-import 'package:yume_log/pages/stats_page.dart';
-import 'package:yume_log/providers/book_providers.dart';
-import 'package:yume_log/providers/constellation_providers.dart';
-import 'package:yume_log/providers/dashboard_providers.dart';
-import 'package:yume_log/providers/database_provider.dart';
-import 'package:yume_log/providers/dream_providers.dart';
-import 'package:yume_log/providers/gantt_providers.dart';
-import 'package:yume_log/providers/goal_providers.dart';
-import 'package:yume_log/providers/service_providers.dart';
-import 'package:yume_log/providers/theme_provider.dart'
+import 'package:yume_hashi/models/dream.dart';
+import 'package:yume_hashi/models/goal.dart' show Goal, WhenType;
+import 'package:yume_hashi/models/task.dart';
+import 'package:yume_hashi/pages/stats_page.dart';
+import 'package:yume_hashi/providers/book_providers.dart';
+import 'package:yume_hashi/providers/constellation_providers.dart';
+import 'package:yume_hashi/providers/dashboard_providers.dart';
+import 'package:yume_hashi/providers/database_provider.dart';
+import 'package:yume_hashi/providers/dream_providers.dart';
+import 'package:yume_hashi/providers/gantt_providers.dart';
+import 'package:yume_hashi/providers/goal_providers.dart';
+import 'package:yume_hashi/providers/service_providers.dart';
+import 'package:yume_hashi/providers/theme_provider.dart'
     show sharedPreferencesProvider;
-import 'package:yume_log/services/remote_config_service.dart';
-import 'package:yume_log/services/study_stats_types.dart';
-import 'package:yume_log/services/feedback_service.dart'
+import 'package:yume_hashi/services/remote_config_service.dart';
+import 'package:yume_hashi/services/study_stats_types.dart';
+import 'package:yume_hashi/services/feedback_service.dart'
     show FeedbackCategory, feedbackUnlockableLevel;
-import 'package:yume_log/services/inquiry_service.dart'
+import 'package:yume_hashi/services/inquiry_service.dart'
     show InquiryCategory;
-import 'package:yume_log/services/trial_limit_service.dart'
+import 'package:yume_hashi/services/trial_limit_service.dart'
     show setTrialModeForTest;
-import 'package:yume_log/widgets/notification/notification_button.dart'
+import 'package:yume_hashi/widgets/notification/notification_button.dart'
     show allNotificationsProvider, unreadCountProvider;
-import 'package:yume_log/widgets/stats/goal_stats_section.dart';
+import 'package:yume_hashi/widgets/stats/goal_stats_section.dart';
 
 class _ImmediateDreamListNotifier extends DreamListNotifier {
   @override
@@ -214,7 +214,7 @@ void main() {
           ),
         ),
       ],
-      child: const YumeLogApp(),
+      child: const YumeHashiApp(),
     );
   }
 
@@ -318,7 +318,7 @@ void main() {
           ),
         ),
       ],
-      child: const YumeLogApp(),
+      child: const YumeHashiApp(),
     );
   }
 
@@ -417,7 +417,7 @@ void main() {
           ),
         ),
       ],
-      child: const YumeLogApp(),
+      child: const YumeHashiApp(),
     );
   }
 
@@ -904,7 +904,7 @@ void main() {
               ),
             ),
           ],
-          child: const YumeLogApp(),
+          child: const YumeHashiApp(),
         ),
       );
       await tester.pumpAndSettle();
@@ -1393,7 +1393,7 @@ void main() {
             ),
           ),
         ],
-        child: const YumeLogApp(),
+        child: const YumeHashiApp(),
       ),
     );
     await tester.pumpAndSettle();

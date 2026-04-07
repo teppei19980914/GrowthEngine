@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:yume_log/dialogs/feedback_dialog.dart';
-import 'package:yume_log/services/feedback_service.dart';
+import 'package:yume_hashi/dialogs/feedback_dialog.dart';
+import 'package:yume_hashi/services/feedback_service.dart';
 
 void main() {
   late FeedbackService feedbackService;

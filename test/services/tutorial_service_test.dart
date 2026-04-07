@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:yume_log/services/tutorial_service.dart';
+import 'package:yume_hashi/services/tutorial_service.dart';
 
 void main() {
   late TutorialService service;

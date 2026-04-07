@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:yume_log/dialogs/app_guide_dialog.dart';
+import 'package:yume_hashi/dialogs/app_guide_dialog.dart';
 
 void main() {
   Widget wrap({bool isPremium = false}) {

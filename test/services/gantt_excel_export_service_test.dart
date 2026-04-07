@@ -2,9 +2,9 @@ import 'dart:convert';
 
 import 'package:excel/excel.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:yume_log/models/goal.dart';
-import 'package:yume_log/models/task.dart';
-import 'package:yume_log/services/gantt_excel_export_service.dart';
+import 'package:yume_hashi/models/goal.dart';
+import 'package:yume_hashi/models/task.dart';
+import 'package:yume_hashi/services/gantt_excel_export_service.dart';
 
 void main() {
   late GanttExcelExportService service;

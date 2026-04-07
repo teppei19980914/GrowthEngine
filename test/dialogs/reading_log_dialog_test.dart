@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:yume_log/dialogs/reading_log_dialog.dart';
+import 'package:yume_hashi/dialogs/reading_log_dialog.dart';
 
 void main() {
   group('bookLogTaskId', () {

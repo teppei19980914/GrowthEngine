@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:yume_log/dialogs/dream_dialog.dart';
-import 'package:yume_log/models/dream.dart';
+import 'package:yume_hashi/dialogs/dream_dialog.dart';
+import 'package:yume_hashi/models/dream.dart';
 
 void main() {
   Widget buildApp({Dream? dream}) {

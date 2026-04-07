@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:yume_log/dialogs/dream_discovery_dialog.dart';
+import 'package:yume_hashi/dialogs/dream_discovery_dialog.dart';
 
 void main() {
   Future<void> pumpDialog(WidgetTester tester) async {

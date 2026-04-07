@@ -2,7 +2,7 @@
 library;
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:yume_log/models/book.dart';
+import 'package:yume_hashi/models/book.dart';
 
 void main() {
   group('書籍ソート', () {

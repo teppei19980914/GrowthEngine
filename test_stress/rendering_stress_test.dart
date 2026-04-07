@@ -13,11 +13,11 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:yume_log/models/book.dart';
-import 'package:yume_log/models/constellation.dart';
-import 'package:yume_log/models/task.dart';
-import 'package:yume_log/widgets/constellation/constellation_painter.dart';
-import 'package:yume_log/widgets/gantt/gantt_chart.dart';
+import 'package:yume_hashi/models/book.dart';
+import 'package:yume_hashi/models/constellation.dart';
+import 'package:yume_hashi/models/task.dart';
+import 'package:yume_hashi/widgets/constellation/constellation_painter.dart';
+import 'package:yume_hashi/widgets/gantt/gantt_chart.dart';
 
 // ── テストデータ件数 ──────────────────────────────
 const _ganttTaskCount = 200; // ガントチャート: 200タスク

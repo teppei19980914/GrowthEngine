@@ -1,9 +1,9 @@
-# ユメログ (GrowthEngine) - Claude Code 運用ガイド
+# ユメハシ (YumeHashi) - Claude Code 運用ガイド
 
 ## プロジェクト概要
 
-- **ユメログ** - Flutter マルチプラットフォームアプリ
-- Web 体験版: GitHub Pages (`https://teppei19980914.github.io/GrowthEngine/`)
+- **ユメハシ** - Flutter マルチプラットフォームアプリ
+- Web 体験版: GitHub Pages (`https://teppei19980914.github.io/YumeHashi/`)
 - Drift ORM + Riverpod 状態管理
 
 ## 運用フロー

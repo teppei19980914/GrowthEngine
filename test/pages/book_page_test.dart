@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:yume_log/pages/book_page.dart';
-import 'package:yume_log/providers/book_providers.dart';
+import 'package:yume_hashi/pages/book_page.dart';
+import 'package:yume_hashi/providers/book_providers.dart';
 
 import '../helpers/test_helpers.dart';
 

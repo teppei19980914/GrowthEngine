@@ -3,10 +3,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:yume_log/providers/theme_provider.dart';
-import 'package:yume_log/services/tutorial_service.dart';
-import 'package:yume_log/widgets/tutorial/tutorial_overlay.dart';
-import 'package:yume_log/widgets/tutorial/tutorial_target_keys.dart';
+import 'package:yume_hashi/providers/theme_provider.dart';
+import 'package:yume_hashi/services/tutorial_service.dart';
+import 'package:yume_hashi/widgets/tutorial/tutorial_overlay.dart';
+import 'package:yume_hashi/widgets/tutorial/tutorial_target_keys.dart';
 
 /// テスト用のラッパー（実際のアプリ構造を再現）.
 ///

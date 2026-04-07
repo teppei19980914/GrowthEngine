@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
-import 'package:yume_log/services/inquiry_service.dart';
+import 'package:yume_hashi/services/inquiry_service.dart';
 
 void main() {
   group('InquiryService', () {

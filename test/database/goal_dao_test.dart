@@ -1,7 +1,7 @@
 import 'package:drift/drift.dart' hide isNull, isNotNull;
 import 'package:flutter_test/flutter_test.dart';
-import 'package:yume_log/database/app_database.dart';
-import 'package:yume_log/database/daos/goal_dao.dart';
+import 'package:yume_hashi/database/app_database.dart';
+import 'package:yume_hashi/database/daos/goal_dao.dart';
 
 import 'test_database.dart';
 

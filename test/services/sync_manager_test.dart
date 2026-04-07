@@ -4,10 +4,10 @@ import 'package:drift/drift.dart' hide isNull, isNotNull;
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:yume_log/database/app_database.dart';
-import 'package:yume_log/services/data_export_service.dart';
-import 'package:yume_log/services/firestore_sync_service.dart' show CloudSyncClient;
-import 'package:yume_log/services/sync_manager.dart';
+import 'package:yume_hashi/database/app_database.dart';
+import 'package:yume_hashi/services/data_export_service.dart';
+import 'package:yume_hashi/services/firestore_sync_service.dart' show CloudSyncClient;
+import 'package:yume_hashi/services/sync_manager.dart';
 
 /// テスト用のCloudSyncClient実装.
 class FakeCloudSyncClient implements CloudSyncClient {

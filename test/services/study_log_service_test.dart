@@ -1,8 +1,8 @@
 import 'package:drift/drift.dart' hide isNull, isNotNull;
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:yume_log/database/app_database.dart';
-import 'package:yume_log/services/study_log_service.dart';
+import 'package:yume_hashi/database/app_database.dart';
+import 'package:yume_hashi/services/study_log_service.dart';
 
 AppDatabase _createDb() => AppDatabase(NativeDatabase.memory());
 

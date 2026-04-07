@@ -1,4 +1,4 @@
-# ユメログ 運用手順書
+# ユメハシ 運用手順書
 
 ## 目次
 
@@ -39,7 +39,7 @@
 6. ブランチにコミット & プッシュ → main へ PR 作成
 7. CI が テスト + バージョンチェック を自動実行
 8. CI 通過後にマージ → GitHub Pages に自動デプロイ
-9. ブラウザで https://teppei19980914.github.io/GrowthEngine/ を動作確認
+9. ブラウザで https://teppei19980914.github.io/YumeHashi/ を動作確認
 ```
 
 ### コミットルール
@@ -67,7 +67,7 @@ flutter analyze
 flutter test
 
 # Step 3: Web ビルド確認
-flutter build web --release --base-href "/GrowthEngine/"
+flutter build web --release --base-href "/YumeHashi/"
 ```
 
 **全て成功した場合のみコミット & プッシュする。**

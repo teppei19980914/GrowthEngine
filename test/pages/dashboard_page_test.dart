@@ -1,8 +1,8 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:yume_log/pages/dashboard_page.dart';
-import 'package:yume_log/services/study_stats_types.dart';
-import 'package:yume_log/providers/dashboard_providers.dart';
+import 'package:yume_hashi/pages/dashboard_page.dart';
+import 'package:yume_hashi/services/study_stats_types.dart';
+import 'package:yume_hashi/providers/dashboard_providers.dart';
 
 import '../helpers/test_helpers.dart';
 

@@ -104,9 +104,9 @@ final _router = GoRouter(
 );
 
 /// アプリケーションのルートウィジェット.
-class YumeLogApp extends ConsumerWidget {
-  /// YumeLogAppを作成する.
-  const YumeLogApp({super.key});
+class YumeHashiApp extends ConsumerWidget {
+  /// YumeHashiAppを作成する.
+  const YumeHashiApp({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:yume_log/pages/settings_page.dart';
+import 'package:yume_hashi/pages/settings_page.dart';
 
 import '../helpers/test_helpers.dart';
 
@@ -75,12 +75,12 @@ void main() {
     await tester.pumpAndSettle();
 
     await tester.scrollUntilVisible(
-      find.text('1.2.1'),
+      find.text('1.3.0'),
       200,
       scrollable: find.byType(Scrollable).first,
     );
 
-    expect(find.text('1.2.1'), findsOneWidget);
+    expect(find.text('1.3.0'), findsOneWidget);
   });
 
   testWidgets('全削除をタップすると確認ダイアログが表示される', (tester) async {

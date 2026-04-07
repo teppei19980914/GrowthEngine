@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:yume_log/services/trial_limit_service.dart';
+import 'package:yume_hashi/services/trial_limit_service.dart';
 
 void main() {
   // setTrialModeForTest / setSubscriptionPremium が呼ばれた場合に確実にリセットする
