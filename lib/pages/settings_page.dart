@@ -20,6 +20,7 @@ import '../dialogs/upgrade_dialog.dart';
 import '../providers/book_providers.dart';
 import '../providers/dream_providers.dart';
 import '../providers/goal_providers.dart';
+import '../services/data_export_service.dart' show buildBackupFileName;
 import '../services/file_save_service.dart' as file_io;
 import '../services/firestore_sync_service.dart';
 import '../providers/service_providers.dart';
@@ -351,12 +352,7 @@ class SettingsPage extends ConsumerWidget {
       final service = ref.read(dataExportServiceProvider);
       final jsonString = await service.exportData();
       final bytes = Uint8List.fromList(utf8.encode(jsonString));
-      final timestamp = DateTime.now()
-          .toIso8601String()
-          .replaceAll(':', '-')
-          .split('.')
-          .first;
-      final fileName = 'yumelog_backup_$timestamp.json';
+      final fileName = buildBackupFileName(DateTime.now());
 
       final saved = await file_io.saveFile(
         bytes: bytes,

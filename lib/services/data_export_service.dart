@@ -13,6 +13,16 @@ import '../database/daos/notification_dao.dart';
 import '../database/daos/study_log_dao.dart';
 import '../database/daos/task_dao.dart';
 
+/// バックアップファイル名を生成する.
+///
+/// 形式: `yumehashi_backup_<timestamp>.json`
+/// タイムスタンプは ISO8601 形式からコロンとミリ秒を除去したもの.
+String buildBackupFileName(DateTime now) {
+  final timestamp =
+      now.toIso8601String().replaceAll(':', '-').split('.').first;
+  return 'yumehashi_backup_$timestamp.json';
+}
+
 /// データエクスポート/インポートを行うサービス.
 class DataExportService {
   /// DataExportServiceを作成する.

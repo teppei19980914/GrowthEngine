@@ -44,11 +44,11 @@
 |------|------|
 | **Dart SDK** | ^3.11.1 |
 | **Flutter チャネル** | stable |
-| **ビルドターゲット** | Web（`flutter build web --release`） |
+| **ビルドターゲット** | Web（`flutter build web --release`） / Windows（`flutter build windows`） |
 
 #### Flutter を選定した理由
 
-- **マルチプラットフォーム**: 単一コードベースで Web / Android / iOS / Windows に対応可能
+- **マルチプラットフォーム対応ポテンシャル**: 単一コードベースで Web / Windows に対応（Android/iOS/macOS/Linux のビルド設定は v2.0.0 で削除）
 - **宣言的 UI**: ウィジェットベースの UI 構築で再利用性が高い
 - **豊富なエコシステム**: pub.dev に多数のパッケージが公開されている
 - **ホットリロード**: 開発効率が高い

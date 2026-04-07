@@ -222,5 +222,21 @@ void main() {
         expect(deleted, 0);
       });
     });
+
+    group('buildBackupFileName', () {
+      test('ユメハシのバックアップファイル名が生成される', () {
+        final now = DateTime(2026, 4, 7, 12, 34, 56);
+        final fileName = buildBackupFileName(now);
+        expect(fileName, 'yumehashi_backup_2026-04-07T12-34-56.json');
+      });
+
+      test('旧アプリ名（yumelog）は含まれない', () {
+        final now = DateTime(2026, 4, 7, 12, 34, 56);
+        final fileName = buildBackupFileName(now);
+        expect(fileName.contains('yumelog'), isFalse);
+        expect(fileName.startsWith('yumehashi_backup_'), isTrue);
+        expect(fileName.endsWith('.json'), isTrue);
+      });
+    });
   });
 }
