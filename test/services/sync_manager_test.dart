@@ -8,6 +8,7 @@ import 'package:yume_hashi/database/app_database.dart';
 import 'package:yume_hashi/services/data_export_service.dart';
 import 'package:yume_hashi/services/firestore_sync_service.dart' show CloudSyncClient;
 import 'package:yume_hashi/services/sync_manager.dart';
+import 'package:yume_hashi/services/sync_payload_codec.dart';
 
 /// テスト用のCloudSyncClient実装.
 class FakeCloudSyncClient implements CloudSyncClient {
@@ -98,8 +99,14 @@ void main() {
       expect(fakeSyncClient.downloadCount, 0);
       expect(fakeSyncClient.lastUploadedData, isNotNull);
 
-      final uploaded =
-          json.decode(fakeSyncClient.lastUploadedData!) as Map<String, dynamic>;
+      // v2.1.0: アップロードペイロードは format 2 (gzip + Base64) で送信される
+      expect(
+        isCompressedSyncPayload(fakeSyncClient.lastUploadedData!),
+        isTrue,
+        reason: 'v2.1.0以降はクラウド同期は gzip 圧縮形式で送信される',
+      );
+      final decodedJson = decodeSyncPayload(fakeSyncClient.lastUploadedData!);
+      final uploaded = json.decode(decodedJson) as Map<String, dynamic>;
       expect(uploaded['goals'], hasLength(1));
     });
 
@@ -226,6 +233,101 @@ void main() {
       expect(fakeSyncClient.downloadCount, 1);
       final goals = await db.goalDao.getAll();
       expect(goals, isEmpty);
+    });
+
+    test('legacy format 1（プレーンJSON）を保存している既存ユーザーのデータも'
+        'ダウンロードできる', () async {
+      // 既存ユーザーが v2.1.0 以前にアップロードしたプレーン JSON を模擬
+      final otherDb = _createDb();
+      final otherExport = DataExportService(
+        dreamDao: otherDb.dreamDao,
+        goalDao: otherDb.goalDao,
+        taskDao: otherDb.taskDao,
+        bookDao: otherDb.bookDao,
+        studyLogDao: otherDb.studyLogDao,
+        notificationDao: otherDb.notificationDao,
+      );
+      final now = DateTime.now();
+      await otherDb.goalDao.insertGoal(GoalsCompanion(
+        id: const Value('legacy-goal'),
+        dreamId: const Value(''),
+        why: const Value('legacy'),
+        whenTarget: const Value(''),
+        whenType: const Value('none'),
+        what: const Value('レガシー目標'),
+        how: const Value(''),
+        createdAt: Value(now),
+        updatedAt: Value(now),
+      ));
+      // 旧形式: プレーン JSON 文字列（圧縮なし）として保存
+      final legacyPayload = await otherExport.exportData();
+      await otherDb.close();
+
+      // legacy 形式であることを確認
+      expect(isCompressedSyncPayload(legacyPayload), isFalse);
+
+      fakeSyncClient.cloudData = legacyPayload;
+      fakeSyncClient.cloudUpdatedAt =
+          DateTime.now().toUtc().add(const Duration(hours: 1));
+
+      await syncManager.syncNow();
+
+      // 旧形式でも正しくインポートされる
+      final goals = await db.goalDao.getAll();
+      expect(goals, hasLength(1));
+      expect(goals.first.id, 'legacy-goal');
+      expect(goals.first.what, 'レガシー目標');
+    });
+
+    test('format 2（gzip圧縮）でアップロード後、別端末で正しくダウンロードできる', () async {
+      // 端末A: データ作成 + アップロード
+      await insertGoal();
+      await syncManager.syncNow();
+
+      // ペイロードが圧縮形式である
+      expect(
+        isCompressedSyncPayload(fakeSyncClient.cloudData!),
+        isTrue,
+      );
+
+      // クラウド側のタイムスタンプを設定（FakeCloudSyncClient は uploadData で
+      // cloudUpdatedAt を自動更新しないため、本物の Firestore を模擬して手動で設定）
+      fakeSyncClient.cloudUpdatedAt =
+          DateTime.now().toUtc().add(const Duration(hours: 1));
+
+      // 端末B: 別 DB で同じクラウドデータをダウンロード
+      final otherDb = _createDb();
+      addTearDown(otherDb.close);
+      final otherExport = DataExportService(
+        dreamDao: otherDb.dreamDao,
+        goalDao: otherDb.goalDao,
+        taskDao: otherDb.taskDao,
+        bookDao: otherDb.bookDao,
+        studyLogDao: otherDb.studyLogDao,
+        notificationDao: otherDb.notificationDao,
+      );
+      final otherSync = SyncManager.forTest(webMode: true);
+      addTearDown(otherSync.reset);
+      // 別端末の prefs を別インスタンスで用意し、ローカル時刻は過去にする
+      SharedPreferences.setMockInitialValues({
+        'cloud_last_sync_ms': DateTime.now()
+            .toUtc()
+            .subtract(const Duration(days: 1))
+            .millisecondsSinceEpoch,
+      });
+      final otherPrefs = await SharedPreferences.getInstance();
+      otherSync.init(
+        otherExport,
+        prefs: otherPrefs,
+        syncService: fakeSyncClient,
+      );
+
+      await otherSync.syncNow();
+
+      // 端末 B の DB に端末 A のデータが反映される
+      final goalsB = await otherDb.goalDao.getAll();
+      expect(goalsB, hasLength(1));
+      expect(goalsB.first.id, 'goal-1');
     });
   });
 }

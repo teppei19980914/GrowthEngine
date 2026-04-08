@@ -47,8 +47,26 @@ class DataExportService {
   final StudyLogDao _studyLogDao;
   final NotificationDao _notificationDao;
 
-  /// 全データをJSON文字列としてエクスポートする.
+  /// 全データを **整形済み JSON 文字列** としてエクスポートする.
+  ///
+  /// 主にローカルファイル書き出し用. インデント付きで人間が読みやすい形式.
+  /// クラウド同期用には [exportDataCompact] を使用する（サイズが約 20% 小さい）.
   Future<String> exportData() async {
+    final data = await _buildExportMap();
+    return const JsonEncoder.withIndent('  ').convert(data);
+  }
+
+  /// 全データを **コンパクト JSON 文字列** としてエクスポートする.
+  ///
+  /// 改行・インデントを含まない最小サイズの JSON. クラウド同期で使用する.
+  /// ファイルサイズと帯域コストを削減する目的で v2.1.0 で導入.
+  Future<String> exportDataCompact() async {
+    final data = await _buildExportMap();
+    return json.encode(data);
+  }
+
+  /// エクスポート対象のデータを Map として構築する（共通処理）.
+  Future<Map<String, dynamic>> _buildExportMap() async {
     final dreams = await _dreamDao.getAll();
     final goals = await _goalDao.getAll();
     final tasks = await _taskDao.getAll();
@@ -56,7 +74,7 @@ class DataExportService {
     final studyLogs = await _studyLogDao.getAll();
     final notifications = await _notificationDao.getAll();
 
-    final data = <String, dynamic>{
+    return <String, dynamic>{
       'version': 1,
       'exported_at': DateTime.now().toIso8601String(),
       'dreams': dreams.map(_dreamToMap).toList(),
@@ -66,8 +84,6 @@ class DataExportService {
       'study_logs': studyLogs.map(_studyLogToMap).toList(),
       'notifications': notifications.map(_notificationToMap).toList(),
     };
-
-    return const JsonEncoder.withIndent('  ').convert(data);
   }
 
   /// JSON文字列からデータをインポートする.
