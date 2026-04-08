@@ -50,7 +50,8 @@ app.*.symbols
 # Obfuscation related
 app.*.map.json
 
-# Android Studio will place build artifacts here
-/android/app/debug
-/android/app/profile
-/android/app/release
+# 未使用プラットフォーム（v2.0.0 で削除済み・ビルド時に再生成される stub を無視）
+/android/
+/ios/
+/macos/
+/linux/

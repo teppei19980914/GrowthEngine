@@ -1,8 +1,13 @@
 /// 書籍ソートのテスト.
 library;
 
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:yume_hashi/models/book.dart';
+import 'package:yume_hashi/providers/book_providers.dart';
+import 'package:yume_hashi/providers/theme_provider.dart'
+    show sharedPreferencesProvider;
 
 void main() {
   group('書籍ソート', () {
@@ -50,6 +55,61 @@ void main() {
       expect(sorted[0].title, 'ア行の本');
       expect(sorted[1].title, 'カ行の本');
       expect(sorted[2].title, 'サ行の本');
+    });
+  });
+
+  group('bookSortOrderProvider の永続化', () {
+    test('初期値はキャッシュがなければ created', () async {
+      SharedPreferences.setMockInitialValues({});
+      final prefs = await SharedPreferences.getInstance();
+      final container = ProviderContainer(
+        overrides: [sharedPreferencesProvider.overrideWithValue(prefs)],
+      );
+      addTearDown(container.dispose);
+
+      expect(container.read(bookSortOrderProvider), BookSortOrder.created);
+    });
+
+    test('SharedPreferences に保存された値が読み込まれる', () async {
+      SharedPreferences.setMockInitialValues({
+        bookSortOrderPrefsKey: 'title',
+      });
+      final prefs = await SharedPreferences.getInstance();
+      final container = ProviderContainer(
+        overrides: [sharedPreferencesProvider.overrideWithValue(prefs)],
+      );
+      addTearDown(container.dispose);
+
+      expect(container.read(bookSortOrderProvider), BookSortOrder.title);
+    });
+
+    test('setSortOrder で変更した値が SharedPreferences に保存される', () async {
+      SharedPreferences.setMockInitialValues({});
+      final prefs = await SharedPreferences.getInstance();
+      final container = ProviderContainer(
+        overrides: [sharedPreferencesProvider.overrideWithValue(prefs)],
+      );
+      addTearDown(container.dispose);
+
+      container
+          .read(bookSortOrderProvider.notifier)
+          .setSortOrder(BookSortOrder.updated);
+
+      expect(container.read(bookSortOrderProvider), BookSortOrder.updated);
+      expect(prefs.getString(bookSortOrderPrefsKey), 'updated');
+    });
+
+    test('不明な値は created にフォールバックする', () async {
+      SharedPreferences.setMockInitialValues({
+        bookSortOrderPrefsKey: 'unknown_value',
+      });
+      final prefs = await SharedPreferences.getInstance();
+      final container = ProviderContainer(
+        overrides: [sharedPreferencesProvider.overrideWithValue(prefs)],
+      );
+      addTearDown(container.dispose);
+
+      expect(container.read(bookSortOrderProvider), BookSortOrder.created);
     });
   });
 }

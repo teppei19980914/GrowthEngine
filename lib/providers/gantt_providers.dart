@@ -4,8 +4,12 @@ library;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../models/goal.dart';
-import '../models/task.dart' show Task, bookGanttGoalId;
+import '../models/task.dart' show Task, TaskStatus, bookGanttGoalId;
 import 'service_providers.dart';
+import 'theme_provider.dart' show sharedPreferencesProvider;
+
+/// 完了タスクの表示状態を保存する SharedPreferences キー.
+const ganttShowCompletedPrefsKey = 'gantt_show_completed';
 
 /// ガントチャートの表示モード.
 enum GanttViewMode {
@@ -74,6 +78,32 @@ class GanttViewState {
   }
 }
 
+/// 完了タスクを表示するかどうかを管理するNotifier.
+///
+/// デフォルトは `false`（完了タスクは非表示）. ユーザーが増えてタスク数が
+/// 増大しても描画パフォーマンスが劣化しないようにするための設計.
+/// SharedPreferences の `gantt_show_completed` キーで永続化される.
+class GanttShowCompletedNotifier extends Notifier<bool> {
+  @override
+  bool build() {
+    final prefs = ref.watch(sharedPreferencesProvider);
+    return prefs.getBool(ganttShowCompletedPrefsKey) ?? false;
+  }
+
+  /// 完了タスクの表示状態を切り替えて永続化する.
+  void setShowCompleted({required bool show}) {
+    state = show;
+    final prefs = ref.read(sharedPreferencesProvider);
+    prefs.setBool(ganttShowCompletedPrefsKey, show);
+  }
+}
+
+/// 完了タスクを表示するかどうかのProvider.
+final ganttShowCompletedProvider =
+    NotifierProvider<GanttShowCompletedNotifier, bool>(
+  GanttShowCompletedNotifier.new,
+);
+
 /// ガントチャートの表示状態Provider.
 final ganttViewStateProvider =
     NotifierProvider<GanttViewStateNotifier, GanttViewState>(
@@ -119,8 +149,10 @@ class GanttViewStateNotifier extends Notifier<GanttViewState> {
 /// ガントチャート用タスク一覧Provider.
 ///
 /// 目標名でグルーピングし、各グループ内は開始日の昇順でソートする.
+/// デフォルトでは完了タスクを除外する（[ganttShowCompletedProvider] で切替可）.
 final ganttTasksProvider = FutureProvider<List<Task>>((ref) async {
   final viewState = ref.watch(ganttViewStateProvider);
+  final showCompleted = ref.watch(ganttShowCompletedProvider);
   final taskService = ref.watch(taskServiceProvider);
   final bookGanttService = ref.watch(bookGanttServiceProvider);
 
@@ -140,6 +172,14 @@ final ganttTasksProvider = FutureProvider<List<Task>>((ref) async {
     case GanttViewMode.allBooks:
       final scheduledBooks = await bookGanttService.getScheduledBooks();
       tasks = bookGanttService.booksToTasks(scheduledBooks);
+  }
+
+  // 完了タスクフィルタ適用（デフォルトでは非表示）.
+  // 書籍ガントは現状「完了」状態を持たないので影響しない.
+  if (!showCompleted) {
+    tasks = tasks
+        .where((t) => t.status != TaskStatus.completed && t.progress < 100)
+        .toList();
   }
 
   // 日付範囲フィルタ適用

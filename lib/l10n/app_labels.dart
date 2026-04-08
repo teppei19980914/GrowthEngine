@@ -215,6 +215,9 @@ class AppLabels {
   static const ganttDiscoveryGuide = '発見ガイド';
   static const ganttToday = '今日';
   static const ganttJumpToDate = '日付へ移動';
+
+  /// 活動予定メニュー: 完了タスクの表示/非表示切替.
+  static const ganttShowCompleted = '完了タスクも表示';
   static const ganttEmptyTitle = '最初のタスクを追加しよう';
   static const ganttEmptySubtitle = '目標を選択してタスクを追加しましょう';
   static const ganttEditTask = 'タスクを編集';
@@ -779,6 +782,19 @@ class AppLabels {
       'メール連携済みなら、別の端末でも同じメールアドレスでログインすると'
       'データが自動復元されます。\n\n'
       'メール未連携の場合は、設定からデータを書き出し → 新しい端末で読み込んでください。';
+
+  /// データ肥大化対策で自動削除される既読通知・完了タスクの説明.
+  static const helpFaqAutoDeleteQ =
+      '古いデータが自動的に削除されることはありますか？';
+  static const helpFaqAutoDeleteA =
+      'はい、以下のデータは起動時に自動で削除されます（v2.1.0 以降）。\n\n'
+      '・受信ボックス … 既読かつ作成から30日経過した通知\n'
+      '・活動予定のタスク … 完了済みかつ最終更新から30日経過したタスク\n\n'
+      '未読の通知・未完了のタスクは期間にかかわらず削除されません。\n\n'
+      '削除されたくない完了タスクや通知がある場合は、事前に'
+      '「設定 → データを書き出す」でエクスポートしておいてください。'
+      'クラウド同期（メール連携）を利用していれば、同じアカウントで'
+      'ログインしている端末間で復元できます。';
 
   // FAQ Q&A: プラン・料金
   static const helpFaqPremiumSubscribeQ =

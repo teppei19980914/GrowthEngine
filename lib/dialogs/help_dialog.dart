@@ -203,6 +203,22 @@ class _FaqTabState extends State<_FaqTab> {
       answer: AppLabels.helpFaqOtherBrowserA,
       keywords: ['ブラウザ', '端末', '移行', 'エクスポート', 'インポート', '同期', '別'],
     ),
+    _FaqItem(
+      category: 'データ管理',
+      question: AppLabels.helpFaqAutoDeleteQ,
+      answer: AppLabels.helpFaqAutoDeleteA,
+      keywords: [
+        '自動削除',
+        '30日',
+        '保持期間',
+        '既読',
+        '完了',
+        'タスク',
+        '通知',
+        '受信ボックス',
+        'エクスポート',
+      ],
+    ),
 
     // ── プラン・料金 ──
     _FaqItem(

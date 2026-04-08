@@ -31,6 +31,23 @@
 
   <title>ユメハシ - 夢を現実へとつなぐ橋渡し</title>
   <link rel="manifest" href="manifest.json">
+
+  <!--
+    起動高速化のためのリソースヒント (v2.0.2 追加).
+    preconnect: 外部オリジンへのTLSハンドシェイクを先行実施して
+                初回アクセス時の接続遅延を数百ミリ秒短縮する.
+    preload   : main.dart.js を flutter_bootstrap.js と並行してダウンロードし
+                直列待ちを解消する.
+    動作への影響はゼロ（ブラウザへの取得タイミング指示のみ）.
+  -->
+  <link rel="preconnect" href="https://www.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://firestore.googleapis.com">
+  <link rel="preconnect" href="https://identitytoolkit.googleapis.com">
+  <link rel="preconnect" href="https://securetoken.googleapis.com">
+  <link rel="dns-prefetch" href="https://script.google.com">
+  <link rel="dns-prefetch" href="https://script.googleusercontent.com">
+  <link rel="preload" href="main.dart.js" as="script">
 </head>
 <body>
   <!--

@@ -7,6 +7,10 @@ import '../l10n/app_labels.dart';
 import '../models/book.dart';
 import '../services/sync_manager.dart';
 import 'service_providers.dart';
+import 'theme_provider.dart' show sharedPreferencesProvider;
+
+/// 書籍のソート基準を保存する SharedPreferences キー.
+const bookSortOrderPrefsKey = 'book_sort_order';
 
 /// 書籍のソート基準.
 enum BookSortOrder {
@@ -23,11 +27,40 @@ enum BookSortOrder {
 
   /// 表示ラベル.
   final String label;
+
+  /// 文字列から対応する値を取得する（不明な値は [BookSortOrder.created]）.
+  static BookSortOrder fromName(String? name) {
+    for (final value in BookSortOrder.values) {
+      if (value.name == name) return value;
+    }
+    return BookSortOrder.created;
+  }
+}
+
+/// 書籍のソート基準を管理するNotifier（SharedPreferencesで永続化）.
+class BookSortOrderNotifier extends Notifier<BookSortOrder> {
+  @override
+  BookSortOrder build() {
+    final prefs = ref.watch(sharedPreferencesProvider);
+    return BookSortOrder.fromName(prefs.getString(bookSortOrderPrefsKey));
+  }
+
+  /// ソート基準を変更して永続化する.
+  void setSortOrder(BookSortOrder order) {
+    state = order;
+    final prefs = ref.read(sharedPreferencesProvider);
+    prefs.setString(bookSortOrderPrefsKey, order.name);
+  }
 }
 
 /// 書籍のソート基準を管理するProvider.
+///
+/// SharedPreferences の `book_sort_order` キーで永続化される.
+/// ページ再読み込みやアプリ再起動後も選択状態が維持される.
 final bookSortOrderProvider =
-    StateProvider<BookSortOrder>((_) => BookSortOrder.created);
+    NotifierProvider<BookSortOrderNotifier, BookSortOrder>(
+  BookSortOrderNotifier.new,
+);
 
 /// ソート済みBook一覧を提供するProvider.
 final sortedBookListProvider = FutureProvider<List<Book>>((ref) async {

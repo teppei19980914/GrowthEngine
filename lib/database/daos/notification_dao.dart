@@ -87,6 +87,18 @@ class NotificationDao extends DatabaseAccessor<AppDatabase>
         .go();
   }
 
+  /// 既読かつ [threshold] より古い通知を物理削除する.
+  ///
+  /// 受信ボックスのデータ肥大化を防ぐためのクリーンアップ処理.
+  /// 未読通知は削除されない（ユーザーが見逃した重要な情報を消さないため）.
+  /// リマインダー等を含む全種別が対象.
+  Future<int> deleteReadNotificationsOlderThan(DateTime threshold) {
+    return (delete(notifications)
+          ..where((t) => t.isRead.equals(true))
+          ..where((t) => t.createdAt.isSmallerThanValue(threshold)))
+        .go();
+  }
+
   /// 指定種別の通知のうち、dedupKey が [keepKeys] に含まれない通知を削除する.
   ///
   /// announcements.json から削除されたエントリをユーザーの受信ボックスから

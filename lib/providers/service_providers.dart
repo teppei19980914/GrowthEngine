@@ -7,6 +7,7 @@ import '../services/book_gantt_service.dart';
 import '../services/book_service.dart';
 import '../services/dashboard_layout_service.dart';
 import '../services/data_export_service.dart';
+import '../services/data_retention_service.dart';
 import '../services/dream_service.dart';
 import '../services/feedback_service.dart';
 import '../services/invite_service.dart';
@@ -65,6 +66,17 @@ final bookGanttServiceProvider = Provider<BookGanttService>((ref) {
 final notificationServiceProvider = Provider<NotificationService>((ref) {
   final db = ref.watch(databaseProvider);
   return NotificationService(notificationDao: db.notificationDao);
+});
+
+/// DataRetentionServiceのProvider.
+///
+/// 既読通知・完了タスクの古いデータを物理削除するクリーンアップサービス.
+final dataRetentionServiceProvider = Provider<DataRetentionService>((ref) {
+  final db = ref.watch(databaseProvider);
+  return DataRetentionService(
+    notificationDao: db.notificationDao,
+    taskDao: db.taskDao,
+  );
 });
 
 /// DataExportServiceのProvider.

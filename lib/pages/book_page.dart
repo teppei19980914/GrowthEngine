@@ -84,7 +84,9 @@ class _BookPageState extends ConsumerState<BookPage> {
                 ],
                 onChanged: (value) {
                   if (value != null) {
-                    ref.read(bookSortOrderProvider.notifier).state = value;
+                    ref
+                        .read(bookSortOrderProvider.notifier)
+                        .setSortOrder(value);
                   }
                 },
               ),

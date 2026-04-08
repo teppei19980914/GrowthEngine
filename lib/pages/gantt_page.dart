@@ -76,6 +76,7 @@ class _GanttPageState extends ConsumerState<GanttPage> {
     final viewState = ref.watch(ganttViewStateProvider);
     final tasksAsync = ref.watch(ganttTasksProvider);
     final goalsAsync = ref.watch(ganttGoalListProvider);
+    final showCompleted = ref.watch(ganttShowCompletedProvider);
     final theme = Theme.of(context);
     final colors = theme.appColors;
 
@@ -149,6 +150,10 @@ class _GanttPageState extends ConsumerState<GanttPage> {
                           ?.scrollToDate(DateTime.now());
                     case 'jump':
                       _pickJumpDate(context);
+                    case 'toggle_completed':
+                      ref
+                          .read(ganttShowCompletedProvider.notifier)
+                          .setShowCompleted(show: !showCompleted);
                     case 'discovery':
                       showInfoSnackBar(
                           context, AppLabels.discoveryGuideComingSoon);
@@ -171,6 +176,20 @@ class _GanttPageState extends ConsumerState<GanttPage> {
                     child: ListTile(
                       leading: Icon(Icons.calendar_month, size: 20),
                       title: Text(AppLabels.ganttJumpToDate),
+                      dense: true,
+                      contentPadding: EdgeInsets.zero,
+                    ),
+                  ),
+                  PopupMenuItem(
+                    value: 'toggle_completed',
+                    child: ListTile(
+                      leading: Icon(
+                        showCompleted
+                            ? Icons.check_box_outlined
+                            : Icons.check_box_outline_blank,
+                        size: 20,
+                      ),
+                      title: const Text(AppLabels.ganttShowCompleted),
                       dense: true,
                       contentPadding: EdgeInsets.zero,
                     ),
