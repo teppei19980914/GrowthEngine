@@ -927,8 +927,9 @@ class AppLabels {
       '一人の視点では気づけないことがたくさんあります。\n'
       '皆さんと一緒に、もっと良いアプリに育てていきたいと思っていますので、\n'
       'ぜひ気軽にご感想やご要望をお聞かせください。';
-  static const helpDevHomepageLabel = '開発者のホームページ';
-  static const helpDevHomepageUrl = 'https://teppei19980914.github.io/HomePage/';
+  static const helpDevHomepageLabel = 'このアプリに込めた思い';
+  static const helpDevHomepageUrl =
+      'https://teppei19980914.github.io/HomePage/ja/product/yumehashi/';
 
   // ── ヘルプ・スタータープランタブ ──────────────────────────────────
   static const helpPlanRegistrationLimit = '登録上限';
