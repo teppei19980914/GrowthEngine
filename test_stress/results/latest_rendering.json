@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-04-05T05:18:03.751203",
+  "timestamp": "2026-04-12T05:28:27.380455",
   "test_type": "rendering",
   "total_measurements": 12,
   "passed_count": 12,
@@ -8,31 +8,31 @@
   "measurements": [
     {
       "label": "ガントチャート初回描画",
-      "ms": 468,
+      "ms": 458,
       "threshold_ms": 2000,
       "passed": true
     },
     {
       "label": "ガントチャート水平スクロール×10",
-      "ms": 102,
+      "ms": 93,
       "threshold_ms": 2000,
       "passed": true
     },
     {
       "label": "ガントチャート垂直スクロール×10",
-      "ms": 35,
+      "ms": 36,
       "threshold_ms": 2000,
       "passed": true
     },
     {
       "label": "ガントチャート再描画 10→200",
-      "ms": 71,
+      "ms": 77,
       "threshold_ms": 2000,
       "passed": true
     },
     {
       "label": "星座初回描画 50星",
-      "ms": 20,
+      "ms": 18,
       "threshold_ms": 2000,
       "passed": true
     },
@@ -44,37 +44,37 @@
     },
     {
       "label": "本棚初回描画 200冊",
-      "ms": 82,
+      "ms": 81,
       "threshold_ms": 2000,
       "passed": true
     },
     {
       "label": "本棚高速スクロール",
-      "ms": 184,
+      "ms": 172,
       "threshold_ms": 2000,
       "passed": true
     },
     {
       "label": "1000行ListTile初回描画",
-      "ms": 98,
+      "ms": 92,
       "threshold_ms": 2000,
       "passed": true
     },
     {
       "label": "1000行高速スクロール",
-      "ms": 625,
+      "ms": 603,
       "threshold_ms": 2000,
       "passed": true
     },
     {
       "label": "テーマ切替 dark→light",
-      "ms": 103,
+      "ms": 98,
       "threshold_ms": 2000,
       "passed": true
     },
     {
       "label": "テーマ切替 light→dark",
-      "ms": 64,
+      "ms": 59,
       "threshold_ms": 2000,
       "passed": true
     }
