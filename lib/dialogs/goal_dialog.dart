@@ -291,7 +291,7 @@ class _GoalDialogContentState extends State<_GoalDialogContent> {
                   decoration: const InputDecoration(
                     hintText: AppLabels.goalHintHow,
                   ),
-                  maxLines: 3,
+                  maxLines: 5,
                   minLines: 2,
                   validator: (v) =>
                       v == null || v.trim().isEmpty ? AppLabels.validRequired : null,

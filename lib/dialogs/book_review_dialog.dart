@@ -141,7 +141,7 @@ class _BookReviewDialogContentState extends State<_BookReviewDialogContent> {
                 decoration: const InputDecoration(
                   hintText: AppLabels.reviewSummaryHint,
                 ),
-                maxLines: 4,
+                maxLines: 6,
                 minLines: 3,
               ),
               const SizedBox(height: 16),
@@ -154,7 +154,7 @@ class _BookReviewDialogContentState extends State<_BookReviewDialogContent> {
                 decoration: const InputDecoration(
                   hintText: AppLabels.reviewImpressionsHint,
                 ),
-                maxLines: 4,
+                maxLines: 6,
                 minLines: 3,
               ),
             ],

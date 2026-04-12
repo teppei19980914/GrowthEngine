@@ -211,6 +211,31 @@ class _TaskDialogContentState extends State<_TaskDialogContent> {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                // 目標（編集時のみ表示、一番上に配置）
+                if (_isEdit && widget.goals.isNotEmpty) ...[
+                  Text(AppLabels.taskGoal, style: theme.textTheme.titleSmall),
+                  const SizedBox(height: 4),
+                  DropdownButtonFormField<String>(
+                    initialValue: _selectedGoalId,
+                    isExpanded: true,
+                    items: [
+                      const DropdownMenuItem(
+                        value: '',
+                        child: Text(AppLabels.taskIndependent),
+                      ),
+                      ...widget.goals.map(
+                        (g) => DropdownMenuItem(
+                          value: g.id,
+                          child: Text(g.what),
+                        ),
+                      ),
+                    ],
+                    onChanged: (v) =>
+                        setState(() => _selectedGoalId = v ?? ''),
+                  ),
+                  const SizedBox(height: 16),
+                ],
+
                 // タスク名
                 Text(AppLabels.taskName, style: theme.textTheme.titleSmall),
                 const SizedBox(height: 4),
@@ -281,31 +306,6 @@ class _TaskDialogContentState extends State<_TaskDialogContent> {
                   ],
                 ),
                 const SizedBox(height: 16),
-
-                // 目標（編集時のみ表示、goals が渡された場合のみ）
-                if (_isEdit && widget.goals.isNotEmpty) ...[
-                  Text(AppLabels.taskGoal, style: theme.textTheme.titleSmall),
-                  const SizedBox(height: 4),
-                  DropdownButtonFormField<String>(
-                    initialValue: _selectedGoalId,
-                    isExpanded: true,
-                    items: [
-                      const DropdownMenuItem(
-                        value: '',
-                        child: Text(AppLabels.taskIndependent),
-                      ),
-                      ...widget.goals.map(
-                        (g) => DropdownMenuItem(
-                          value: g.id,
-                          child: Text(g.what),
-                        ),
-                      ),
-                    ],
-                    onChanged: (v) =>
-                        setState(() => _selectedGoalId = v ?? ''),
-                  ),
-                  const SizedBox(height: 16),
-                ],
 
                 // 進捗
                 if (_isEdit) ...[

@@ -201,7 +201,7 @@ class _DreamDialogContentState extends State<_DreamDialogContent> {
                   decoration: const InputDecoration(
                     hintText: AppLabels.dreamHintDescription,
                   ),
-                  maxLines: 4,
+                  maxLines: 6,
                   minLines: 2,
                 ),
                 const SizedBox(height: 16),
@@ -215,7 +215,7 @@ class _DreamDialogContentState extends State<_DreamDialogContent> {
                   decoration: const InputDecoration(
                     hintText: AppLabels.dreamHintWhy,
                   ),
-                  maxLines: 3,
+                  maxLines: 5,
                   minLines: 2,
                 ),
               ],

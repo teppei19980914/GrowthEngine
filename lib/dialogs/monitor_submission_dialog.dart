@@ -361,7 +361,7 @@ class _MonitorSubmissionDialogState extends State<_MonitorSubmissionDialog> {
           decoration: const InputDecoration(
             hintText: AppLabels.monitorQ2Hint,
           ),
-          maxLines: 2,
+          maxLines: 4,
         ),
         const SizedBox(height: 16),
 
@@ -378,7 +378,7 @@ class _MonitorSubmissionDialogState extends State<_MonitorSubmissionDialog> {
           decoration: const InputDecoration(
             hintText: AppLabels.monitorQ3Hint,
           ),
-          maxLines: 2,
+          maxLines: 4,
         ),
       ],
     );

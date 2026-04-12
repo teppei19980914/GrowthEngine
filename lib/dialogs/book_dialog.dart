@@ -183,7 +183,7 @@ class _BookDialogContentState extends State<_BookDialogContent> {
                       labelText: AppLabels.bookWhy,
                       hintText: AppLabels.bookHintWhy,
                     ),
-                    maxLines: 2,
+                    maxLines: 4,
                   ),
                   const SizedBox(height: 16),
                   TextFormField(
@@ -192,7 +192,7 @@ class _BookDialogContentState extends State<_BookDialogContent> {
                       labelText: AppLabels.bookMemo,
                       hintText: AppLabels.bookHintMemo,
                     ),
-                    maxLines: 6,
+                    maxLines: 8,
                   ),
                 ],
               ),
