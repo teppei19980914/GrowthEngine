@@ -338,7 +338,7 @@ class _TaskDialogContentState extends State<_TaskDialogContent> {
                   decoration: const InputDecoration(
                     hintText: AppLabels.taskMemoHint,
                   ),
-                  maxLines: 3,
+                  maxLines: 5,
                   minLines: 2,
                 ),
 

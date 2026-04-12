@@ -192,7 +192,7 @@ class _BookDialogContentState extends State<_BookDialogContent> {
                       labelText: AppLabels.bookMemo,
                       hintText: AppLabels.bookHintMemo,
                     ),
-                    maxLines: 3,
+                    maxLines: 6,
                   ),
                 ],
               ),

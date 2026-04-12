@@ -191,7 +191,7 @@ class _StudyLogDialogContentState extends State<_StudyLogDialogContent> {
                 decoration: const InputDecoration(
                   hintText: AppLabels.logMemoHint,
                 ),
-                maxLines: 2,
+                maxLines: 3,
               ),
             ],
           ),
