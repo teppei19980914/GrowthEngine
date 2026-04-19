@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-04-12T05:28:52.857502",
+  "timestamp": "2026-04-19T05:34:42.128222",
   "test_type": "concurrent_access",
   "total_measurements": 10,
   "passed_count": 10,
@@ -8,19 +8,19 @@
   "measurements": [
     {
       "label": "Stripe同時 50件",
-      "ms": 730,
+      "ms": 727,
       "threshold_ms": 5000,
       "passed": true
     },
     {
       "label": "Checkout同時 50件",
-      "ms": 718,
+      "ms": 722,
       "threshold_ms": 5000,
       "passed": true
     },
     {
       "label": "低速API 10件",
-      "ms": 1104,
+      "ms": 1103,
       "threshold_ms": 15000,
       "passed": true
     },
@@ -32,7 +32,7 @@
     },
     {
       "label": "読み書き同時 100件",
-      "ms": 95,
+      "ms": 94,
       "threshold_ms": 3000,
       "passed": true
     },
@@ -44,13 +44,13 @@
     },
     {
       "label": "requestSync ×100 デバウンス",
-      "ms": 4004,
+      "ms": 4003,
       "threshold_ms": 5000,
       "passed": true
     },
     {
       "label": "syncOnExit 即時実行",
-      "ms": 5,
+      "ms": 4,
       "threshold_ms": 5000,
       "passed": true
     },
