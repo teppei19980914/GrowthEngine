@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-07-26T06:10:24.957868",
+  "timestamp": "2026-08-02T06:07:53.216176",
   "test_type": "concurrent_access",
   "total_measurements": 8,
   "passed_count": 8,
@@ -20,31 +20,31 @@
     },
     {
       "label": "低速API 10件",
-      "ms": 1104,
+      "ms": 1103,
       "threshold_ms": 15000,
       "passed": true
     },
     {
       "label": "同時INSERT 100件",
-      "ms": 42,
+      "ms": 38,
       "threshold_ms": 3000,
       "passed": true
     },
     {
       "label": "読み書き同時 100件",
-      "ms": 96,
+      "ms": 94,
       "threshold_ms": 3000,
       "passed": true
     },
     {
       "label": "エクスポート/インポート競合",
-      "ms": 54,
+      "ms": 51,
       "threshold_ms": 3000,
       "passed": true
     },
     {
       "label": "全エラー 20件",
-      "ms": 11,
+      "ms": 9,
       "threshold_ms": 5000,
       "passed": true
     },
