@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-08-02T06:07:53.216176",
+  "timestamp": "2026-08-09T03:37:10.417408",
   "test_type": "concurrent_access",
   "total_measurements": 8,
   "passed_count": 8,
@@ -14,7 +14,7 @@
     },
     {
       "label": "Checkout同時 50件",
-      "ms": 718,
+      "ms": 722,
       "threshold_ms": 5000,
       "passed": true
     },
@@ -32,19 +32,19 @@
     },
     {
       "label": "読み書き同時 100件",
-      "ms": 94,
+      "ms": 95,
       "threshold_ms": 3000,
       "passed": true
     },
     {
       "label": "エクスポート/インポート競合",
-      "ms": 51,
+      "ms": 54,
       "threshold_ms": 3000,
       "passed": true
     },
     {
       "label": "全エラー 20件",
-      "ms": 9,
+      "ms": 11,
       "threshold_ms": 5000,
       "passed": true
     },
